@@ -1,0 +1,9 @@
+{
+    "favorites.resources": [
+        "app\\tmp\\logs\\error.log",
+        "app\\tmp\\logs\\debug.log",
+        "app\\config\\database.php",
+        "app\\config\\comum.php",
+        "app\\webroot\\js\\rhhealth\\ithealthHelper.js"
+    ]
+}

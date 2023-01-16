@@ -1,0 +1,5 @@
+[ACO]
+create;buonny;FornecedoresContatos
+create;buonny/FornecedoresContatos;incluir
+create;buonny/FornecedoresContatos;editar
+create;buonny/FornecedoresContatos;excluir

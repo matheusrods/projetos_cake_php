@@ -1,0 +1,10 @@
+[ACO]
+create;buonny;MensageriaEsocial
+create;buonny/MensageriaEsocial;index_certificado
+create;buonny/MensageriaEsocial;listagem_certificado
+create;buonny/MensageriaEsocial;importacao_certificado
+create;buonny/MensageriaEsocial;status_certificado
+create;buonny/MensageriaEsocial;rel_cliente_certificado
+create;buonny/MensageriaEsocial;get_termo_certificado
+create;buonny/MensageriaEsocial;integracao_certificado
+create;buonny/MensageriaEsocial;get_servico_assinatura

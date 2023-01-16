@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;MetodosTipo
+create;buonny/MetodosTipo;index
+create;buonny/MetodosTipo;listagem
+create;buonny/MetodosTipo;incluir
+create;buonny/MetodosTipo;editar
+create;buonny/MetodosTipo;excluir

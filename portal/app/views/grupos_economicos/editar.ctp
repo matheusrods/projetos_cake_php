@@ -1,0 +1,2 @@
+<?php echo $this->BForm->create('GrupoEconomico', array('url'=>array('controller' => 'grupos_economicos', 'action' => 'editar', $this->passedArgs[0]))); ?>
+<?php echo $this->element('grupos_economicos/fields'); ?>

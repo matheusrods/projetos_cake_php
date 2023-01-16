@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/MotivosRecusa;exames_listagem
+create;buonny/MotivosRecusa;exames_status
+create;buonny/MotivosRecusa;exames_incluir
+create;buonny/MotivosRecusa;exames_editar

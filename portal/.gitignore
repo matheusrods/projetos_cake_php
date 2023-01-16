@@ -1,0 +1,17 @@
+#mailer.php
+database.php
+ 
+.production
+/app/config
+/app/tmp
+/app/webroot/ ?/app/webroot/img/teste.svg
+/plugins
+/vendors
+*.sublime-*
+/.phpintel
+/.svn/
+/app/webroot/files/documentacao/5310/*.pdf
+.idea
+.idea/
+.idea/*
+app/plugins/mailer/controllers/components/mailer.php

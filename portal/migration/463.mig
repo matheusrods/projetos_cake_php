@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Processos
+create;buonny/Processos;index
+create;buonny/Processos;comboProcessoTipo
+create;buonny/Processos;listagem
+create;buonny/Processos;modal_processos
+create;buonny/Processos;modal_anexos

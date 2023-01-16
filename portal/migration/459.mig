@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;ClienteFuncionario
+create;buonny/ClienteFuncionario;autocomplete_funcionario
+create;buonny/ClienteFuncionario;vidas_listagem
+create;buonny/ClienteFuncionario;existe_alerta_hierarquia_pendente
+create;buonny/ClienteFuncionario;listagem_matriculas
+create;buonny/ClienteFuncionario;get_tomador
+create;buonny/ClienteFuncionario;edita_matricula

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_relatorio_efeito_critico" language="groovy" pageWidth="555" pageHeight="804" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.3579476910000032"/>
+	<property name="ireport.x" value="127"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ASO"/>
+	<property name="ireport.jasperserver.url" value="http://punto:8080/jasperserver/services/repository"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select top 1
+case when (SELECT TOP 1 ri.risco_caracterizado_por_altura
+FROM rhhealth.dbo.pedidos_exames pe
+	INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = pe.codigo_func_setor_cargo
+	INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = fsc.codigo_cliente_funcionario
+	INNER JOIN RHHealth.dbo.cliente c ON c.codigo = cf.codigo_cliente_matricula
+	INNER JOIN RHHealth.dbo.cargos cg ON cg.codigo = fsc.codigo_cargo
+	INNER JOIN RHHealth.dbo.setores st ON st.codigo = fsc.codigo_setor
+	INNER JOIN RHHealth.dbo.clientes_setores cs ON (cs.codigo_setor = st.codigo AND cs.codigo_cliente_alocacao = fsc.codigo_cliente_alocacao )
+	INNER JOIN RHHealth.dbo.grupo_exposicao ge  ON (ge.codigo_cargo = cg.codigo AND ge.codigo_cliente_setor = cs.codigo AND ((ge.codigo_funcionario = pe.codigo_funcionario) OR (ge.codigo_funcionario IS NULL)))
+	INNER JOIN RHHealth.dbo.grupos_exposicao_risco ger ON (ger.codigo_grupo_exposicao = ge.codigo)
+	INNER JOIN RHHealth.dbo.riscos ri ON (ri.codigo = ger.codigo_risco)
+WHERE pe.codigo = $P{CODIGO_PEDIDO_EXAME} and ri.risco_caracterizado_por_altura is not null and ri.risco_caracterizado_por_altura <> 0) = 1 then  'S' ELSE 'N' END AS por_altura,
+case when (SELECT TOP 1 ri.risco_caracterizado_por_trabalho_confinado
+FROM rhhealth.dbo.pedidos_exames pe
+	INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = pe.codigo_func_setor_cargo
+	INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = fsc.codigo_cliente_funcionario
+	INNER JOIN RHHealth.dbo.cliente c ON c.codigo = cf.codigo_cliente_matricula
+	INNER JOIN RHHealth.dbo.cargos cg ON cg.codigo = fsc.codigo_cargo
+	INNER JOIN RHHealth.dbo.setores st ON st.codigo = fsc.codigo_setor
+	INNER JOIN RHHealth.dbo.clientes_setores cs ON (cs.codigo_setor = st.codigo AND cs.codigo_cliente_alocacao = fsc.codigo_cliente_alocacao)
+	INNER JOIN RHHealth.dbo.grupo_exposicao ge  ON (ge.codigo_cargo = cg.codigo AND ge.codigo_cliente_setor = cs.codigo AND ((ge.codigo_funcionario = pe.codigo_funcionario) OR (ge.codigo_funcionario IS NULL)))
+	INNER JOIN RHHealth.dbo.grupos_exposicao_risco ger ON (ger.codigo_grupo_exposicao = ge.codigo)
+	INNER JOIN RHHealth.dbo.riscos ri ON (ri.codigo = ger.codigo_risco)
+WHERE pe.codigo = $P{CODIGO_PEDIDO_EXAME} and ri.risco_caracterizado_por_trabalho_confinado is not null and ri.risco_caracterizado_por_trabalho_confinado <> 0) = 1 then  'S' ELSE 'N' END  AS por_confinado
+from rhhealth.dbo.pedidos_exames ped
+	INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = ped.codigo_func_setor_cargo
+	INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = fsc.codigo_cliente_funcionario
+	INNER JOIN RHHealth.dbo.cliente c ON c.codigo = cf.codigo_cliente_matricula
+	INNER JOIN RHHealth.dbo.cargos cg ON cg.codigo = fsc.codigo_cargo
+	INNER JOIN RHHealth.dbo.setores st ON st.codigo = fsc.codigo_setor
+	INNER JOIN RHHealth.dbo.clientes_setores cs ON (cs.codigo_setor = st.codigo )
+	INNER JOIN RHHealth.dbo.grupo_exposicao ge  ON (ge.codigo_cargo = cg.codigo AND ge.codigo_cliente_setor = cs.codigo AND ((ge.codigo_funcionario = ped.codigo_funcionario) OR (ge.codigo_funcionario IS NULL)))
+	INNER JOIN RHHealth.dbo.grupos_exposicao_risco ger ON (ger.codigo_grupo_exposicao = ge.codigo)
+	INNER JOIN RHHealth.dbo.riscos ri ON (ri.codigo = ger.codigo_risco)
+WHERE ped.codigo = $P{CODIGO_PEDIDO_EXAME}
+and ri.risco_caracterizado_por_trabalho_confinado is not null
+and ri.risco_caracterizado_por_altura is not null]]>
+	</queryString>
+	<field name="por_altura" class="java.lang.String"/>
+	<field name="por_confinado" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<summary>
+		<band height="26" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="13" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{por_altura}.equals('S')]]></printWhenExpression>
+				</reportElement>
+				<textField>
+					<reportElement x="5" y="0" width="250" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[" [    ]  -  Apto para trabalho em altura"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="283" y="0" width="250" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["[    ]  -  Inapto para trabalho em altura"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement x="0" y="12" width="555" height="14" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{por_confinado}.equals("S")]]></printWhenExpression>
+				</reportElement>
+				<textField>
+					<reportElement x="5" y="1" width="250" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[" [    ]  -  Apto para espaço confinado"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="283" y="1" width="250" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["[    ]  -  Inapto para espaço confinado"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</summary>
+</jasperReport>

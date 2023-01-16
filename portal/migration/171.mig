@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;GruposHomogeneos
+create;buonny/GruposHomogeneos;index
+create;buonny/GruposHomogeneos;incluir
+create;buonny/GruposHomogeneos;editar
+create;buonny/GruposHomogeneos;listagem

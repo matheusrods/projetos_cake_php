@@ -1,0 +1,37 @@
+
+                                                                                                               Data: 2/08/2013  07:00
+                                                                  Romaneio
+                                                                                                               Nro:   42371
+
+
+ Placa do veícu DTB 1612                                                     Ajudantes:   Jair Candido Rabelo
+ Nome do        Ademilson Ferreira de Matos                                  CPF do motor 30273184890
+ motorista:
+
+ Km de saída:   496.381      Km de chegad                                    Hr de saída: 07:00     Hr de chegad
+
+
+ Docto       Nota FiscaRemetente   Rota     Destinatár Endereço de entreg Cidade Dest  Bairro de enolume     Peso   Frete  Valor NF Rota
+ 42.3714629  401930    SCHNEIDER C Campinas SCHWING EQ Rodovia Fernao Dia Mairipora    Terra Preta   2,00    6,65   21,02  1.880,25 010
+ 42.3714611  401185    SCHNEIDER C Campinas SCHWING EQ Rodovia Fernao Dia Mairipora    Terra Preta   1,00    4,37   23,44  5.289,47 010
+ 42.3714641  402120    SCHNEIDER C Jundiai  J. V. PINH Rua Araguaia, 229  Varzea Paul  Vila São Jos  1,00    3,22   25,16    540,97 015
+ 42.3714646  402081    SCHNEIDER C Jundiai  ASSEPLAM C Rua Jose Maria Mar Jundiai      Vila Agrícol  1,00    2,99   25,16    961,86 015
+ 42.3714655  402655    SCHNEIDER C Jundiai  MGA DO BRA Rua Alipio Simoes  Itupeva      SANTA JULIA   1,00    4,16   25,16  1.269,51 015
+ 42.3710     402200    SCHNEIDER C Jundiai  MAK PAINEI Rua Osasco, 1231   Cajamar      Parque Empre 27,00  189,19  207,61 25.666,79 015
+ 42.3714652  3536\3586 SCHNEIDER J Sorocaba BANCO COME Avenida Americo de Sorocaba     Alphaville I  2,00   11,00   63,36  2.600,00
+ 42.3714656  402643    SCHNEIDER C Jundiai  FILOAUTO I Rua dos Indaias, 1 Indaiatuba   Jardim Santa  1,00   25,60   74,02  8.000,00
+ 42.3714643  401894/402SCHNEIDER C Jundiai  INDUCTOTHE Rua Herminio de Me Indaiatuba   DISTRITO IND  6,00   39,26   50,68  5.432,45 015
+             062
+ 42.3714646  402061    SCHNEIDER C Jundiai  MEGA STEEL Rua Macassit, 611  Indaiatuba   Recreio Camp  1,00    0,73   25,16    193,20 015
+ 42.3714653  402426    SCHNEIDER C Jundiai  GH DO BRAS Avenida Engenheiro Cabreuva     Pinhal        3,00   18,63   60,83  6.548,24
+ 42.3714644  402101    SCHNEIDER C Jundiai  KREBSFER S Rua Krebsfer, 566  Valinhos     MACUCO        1,00    1,36   25,16    332,46 015
+ 42.3714639  401470    SCHNEIDER C Jundiai  WENGER DO  Rua A - Loteamento Valinhos     Macuco        1,00    2,03   25,16    938,49
+ 42.3714627  401748    SCHNEIDER C Jundiai  FRANHO MAQ Rua Da Formiga, 12 Vinhedo      Jardim Santa  4,00   32,24   31,20  3.289,84 015
+ 42.3714644  402078    SCHNEIDER C Jundiai  ROGEFRAN I Estrada Municipal  Vinhedo      CAPELA        1,00    1,47   25,16    531,67 015
+ 42.3714654  402622    SCHNEIDER C Jundiai  JOBER COME Avenida Brasil, 78 Vinhedo      CENTRO        1,00    1,64   25,16    348,69 015
+ 42.3714643  402067    SCHNEIDER C Jundiai  BENER COME Rua Iracema Lucas, Vinhedo      Distrito Ind  6,00   20,95   54,65  5.869,21
+ Total de             CTRC:   17   Colet  0                                                         60,00  365,49  788,09 69.693,10
+ embarques:                        a:
+
+
+ Assinatura Motorista __________________

@@ -1,0 +1,5 @@
+[ACO]	
+create;buonny/Atestados;upload_anexo_atestado
+create;buonny/Atestados;salvar_anexo
+create;buonny/Atestados;excluir_anexo
+create;buonny/Atestados;listagem_log_anexo

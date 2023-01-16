@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Questoes
+create;buonny/Questoes;index
+create;buonny/Questoes;incluir
+create;buonny/Questoes;alterar
+create;buonny/Questoes;excluir
+create;buonny/Questoes;listagem

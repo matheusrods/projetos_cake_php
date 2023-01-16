@@ -1,0 +1,1 @@
+<h4><?php echo (Ambiente::getServidor() == Ambiente::SERVIDOR_PRODUCAO ? 'Produção' : (Ambiente::getServidor() == Ambiente::SERVIDOR_HOMOLOGACAO ? 'Homologação' : 'Desenvolvimento' )) ?></h4>

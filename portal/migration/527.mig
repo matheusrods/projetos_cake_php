@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;AuditoriasNcs
+create;buonny/AuditoriasNcs;index 
+create;buonny/AuditoriasNcs;listagem
+create;buonny/AuditoriasNcs;incluir
+create;buonny/AuditoriasNcs;editar
+create;buonny/AuditoriasNcs;loadCombo
+create;buonny/AuditoriasNcs;loadInfos

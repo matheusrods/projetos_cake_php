@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;ClientesProdutosDescontos
+create;buonny/ClientesProdutosDescontos;index
+create;buonny/ClientesProdutosDescontos;gerenciar
+create;buonny/ClientesProdutosDescontos;incluir
+create;buonny/ClientesProdutosDescontos;excluir
+create;buonny/ClientesProdutosDescontos;consulta
+create;buonny/ClientesProdutosDescontos;consulta_listagem

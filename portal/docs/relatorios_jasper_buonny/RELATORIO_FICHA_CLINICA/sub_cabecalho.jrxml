@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_cabecalho" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.9487171000000025"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ficha_clinica"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<style name="style1">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FUNCIONARIO" class="java.lang.String"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_FICHA_CLINICA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+TOP 1
+dbBuonny.publico.ufn_decode_utf8_string(cl.nome_fantasia) AS descricao_unidade,
+dbBuonny.publico.ufn_decode_utf8_string(cl.razao_social) AS descricao_empresa,
+dbBuonny.publico.ufn_decode_utf8_string(fu.nome) AS nome,
+dbBuonny.publico.ufn_formata_cpf(fu.cpf) as cpf,
+(SELECT dbBuonny.publico.ufn_decode_utf8_string(descricao) FROM RHHealth.dbo.setores WHERE codigo = (SELECT TOP 1 codigo_setor FROM RHHealth.dbo.funcionario_setores_cargos WHERE codigo_cliente_funcionario = cf.codigo ORDER BY 1 DESC)) as setor_descricao,
+(SELECT dbBuonny.publico.ufn_decode_utf8_string(descricao) FROM RHHealth.dbo.cargos WHERE codigo = (SELECT TOP 1 codigo_cargo FROM RHHealth.dbo.funcionario_setores_cargos WHERE codigo_cliente_funcionario = cf.codigo ORDER BY 1 DESC)) as cargo_descricao,
+CONVERT(VARCHAR(10), getdate(), 103) AS data,
+CASE
+WHEN pe.exame_admissional = '1' THEN 'Exame admissional'
+WHEN pe.exame_periodico = '1' THEN 'Exame periódico'
+WHEN pe.exame_demissional = '1' THEN 'Exame demissional'
+WHEN pe.exame_retorno = '1' THEN 'Retorno'
+WHEN pe.exame_mudanca = '1' THEN 'Mudança de setor'
+WHEN pe.qualidade_vida = '1' THEN 'Qualidade de vida'
+WHEN pe.exame_monitoracao = '1' THEN 'Monitoração'
+ELSE 'Pontual'
+END AS tipo_exame_ocupacional
+FROM RHHealth.dbo.cliente_funcionario cf
+    INNER JOIN RHHealth.dbo.funcionarios fu
+        ON(fu.codigo = cf.codigo_funcionario)
+    INNER JOIN RHHEalth.dbo.funcionario_setores_cargos fsc ON fsc.codigo_cliente_funcionario = cf.codigo
+    INNER JOIN RHHealth.dbo.cliente cl ON(cl.codigo = fsc.codigo_cliente_alocacao)
+    LEFT JOIN RHHealth.dbo.pedidos_exames pe
+        ON(pe.codigo = $P{CODIGO_PEDIDO_EXAME})
+WHERE cf.codigo_funcionario = $P{CODIGO_FUNCIONARIO}
+ORDER BY cf.codigo DESC]]>
+	</queryString>
+	<field name="descricao_unidade" class="java.lang.String"/>
+	<field name="descricao_empresa" class="java.lang.String"/>
+	<field name="nome" class="java.lang.String"/>
+	<field name="cpf" class="java.lang.String"/>
+	<field name="setor_descricao" class="java.lang.String"/>
+	<field name="cargo_descricao" class="java.lang.String"/>
+	<field name="data" class="java.lang.String"/>
+	<field name="tipo_exame_ocupacional" class="java.lang.String"/>
+	<detail>
+		<band height="110" splitType="Stretch">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="556" height="109" backcolor="#FFFFFF"/>
+				<staticText>
+					<reportElement x="4" y="5" width="72" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Razão Social:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="18" width="71" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Nome Fantasia:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="31" width="60" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Funcionario:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="44" width="41" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CPF:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="57" width="41" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Setor:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="70" width="41" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Cargo:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="83" width="130" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Tipo do exame ocupacional:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="46" y="5" width="509" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descricao_empresa}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="56" y="18" width="499" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descricao_unidade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="47" y="31" width="508" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="29" y="44" width="526" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cpf}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="29" y="57" width="526" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{setor_descricao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="29" y="70" width="526" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cargo_descricao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="94" y="83" width="461" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{tipo_exame_ocupacional}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="95" width="89" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Código do Pedido:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="208" y="95" width="89" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Código da Ficha Clínica:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="65" y="95" width="133" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="285" y="95" width="133" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

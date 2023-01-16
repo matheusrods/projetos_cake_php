@@ -1,0 +1,12 @@
+[ACO]
+create;buonny;HospitaisEmergencia
+create;buonny/HospitaisEmergencia;index
+create;buonny/HospitaisEmergencia;carrega_combos_formulario
+create;buonny/HospitaisEmergencia;incluir
+create;buonny/HospitaisEmergencia;carrega_combos
+create;buonny/HospitaisEmergencia;unidades_hospital_emergencia
+
+
+
+
+

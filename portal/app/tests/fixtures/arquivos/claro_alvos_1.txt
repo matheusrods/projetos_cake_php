@@ -1,0 +1,2 @@
+Filial-Manifesto#Tipo#Emissao#Hora#Placa#Proprietario#Motorista#Filial-CTC#Data CTC#Hora CTC#Remetente#Destinatario#Cidade#UF#Endereco#CEP#Notas Fiscais#Valor Merc#Peso#Volumes#Modal#Rota#Prev.Entrega#Natureza Prod.#Tecnologia-isca#Terminal-isca
+01002262#DIS#03/12/2013#18:40#ABC1234#LIANO SANTOS DE ARAUJO#RICHARD SANTANA LINS#0100015981#03/12/2013#13:49#CLARO S A#VIA VAREJO S A#DUQUE DE CAXIAS#RJ#AV AUTOMOVEL CLUBE.7453 .#25255030#976307-24/123456#498456#112#80#RODOVIARIO#******#05/12/2013 18:00:00#ELETRO ELETRONI-VUC#OMNILINK#ALV7252*

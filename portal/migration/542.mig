@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;AuditoriaProgramacao
+create;buonny/AuditoriaProgramacao;relatorio_contestacoes_ncs_om
+create;buonny/AuditoriaProgramacao;listagem_relatorio_contestacoes_ncs_om
+create;buonny/AuditoriaProgramacao;export_listagem_relatorio_contestacoes_ncs_om
+create;buonny/AuditoriaProgramacao;modal_contestacoes_ncs_om

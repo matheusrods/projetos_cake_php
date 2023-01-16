@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Instrutores
+create;buonny/Instrutores;index
+create;buonny/Instrutores;listagem
+create;buonny/Instrutores;incluir
+create;buonny/Instrutores;editar 
+create;buonny/Instrutores;atualiza_status_instrutor

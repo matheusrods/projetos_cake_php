@@ -1,0 +1,1201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="laudo_pcd" pageWidth="595" pageHeight="1000" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9ae6ac12-1484-4c5a-b4fb-415c8e8d03f7">
+	<property name="ireport.zoom" value="0.8264462809917619"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ficha_pcd"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/relatorio_ficha_pcd_files/relatorio_ficha_pcd_jrxml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<style name="border">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FICHA_CLINICA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[68045]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\relatorio_ficha_pcd\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[DECLARE @MaxCount INT;
+                    DECLARE @Cod INT;
+                    SELECT @MaxCount = max(cnt)
+                    FROM(
+                            SELECT count(codigo) AS cnt
+                            FROM RHHealth.dbo.fichas_clinicas_questoes fcq
+                    ) X;
+                    DECLARE @SQL NVARCHAR(max)
+                                        ,@i INT;
+                    SET @i = 0;
+                    WHILE @i < @MaxCount
+                    BEGIN
+                        SET @i = @i + 1;
+                        SELECT @Cod = codigo from (
+                            SELECT codigo, CAST(row_number() OVER (ORDER BY codigo) AS Varchar(10)) AS RowNo
+                            FROM RHHealth.dbo.fichas_clinicas_questoes
+                        ) pv WHERE RowNo = @i
+                        SET @SQL = COALESCE(@Sql + ', ', '') + 'questao_' + CONVERT(VARCHAR(10), @Cod);
+                    END
+                    ;SET @SQL = N';WITH CTE AS
+                    (
+                    SELECT
+                        CONCAT(
+                            IIF(Respostas.resposta  = ''0'', '' '', RHHealth.publico.Ufn_decode_utf8_string(Respostas.resposta)) COLLATE SQL_Latin1_General_CP1_CI_AS,
+                            ''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+                            ISNULL(CASE Respostas.parentesco
+                            WHEN '''' THEN '' ''
+                            ELSE RHHealth.publico.Ufn_decode_utf8_string(Respostas.parentesco)
+                            END, '' '') COLLATE SQL_Latin1_General_CP1_CI_AS,
+                            ''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+                            CASE Respostas.campo_livre
+                            WHEN '''' THEN '' ''
+                            ELSE RHHealth.publico.Ufn_decode_utf8_string(Respostas.campo_livre)
+                            END COLLATE SQL_Latin1_General_CP1_CI_AS) AS resposta,
+                            ''questao_'' +  CONVERT(VARCHAR(10), Questoes.codigo) COLLATE database_default AS RowNo,
+                            RHHealth.publico.Ufn_decode_utf8_string(Cliente.nome_fantasia) AS cliente_nome_fantasia,
+RHHealth.publico.Ufn_decode_utf8_string(Cliente.razao_social) AS cliente_razao_social,
+                            RHHealth.publico.ufn_formata_cnpj(Cliente.codigo_documento) AS cliente_cnpj,
+                            RHHealth.publico.Ufn_decode_utf8_string(Funcionario.nome) AS funcionario_nome,
+                            RHHealth.publico.Ufn_decode_utf8_string(Funcionario.cpf) AS funcionario_cpf,
+							(
+								SELECT
+									COUNT(Resp.resposta)
+								FROM RHHealth.dbo.fichas_clinicas_respostas AS Resp
+								WHERE Resp.codigo_ficha_clinica = ' + $P{CODIGO_FICHA_CLINICA} + ' AND
+									codigo_ficha_clinica_questao IN (293,294,295,296,297,298) AND
+									Resp.resposta IS NOT NULL
+							) AS Count_Def
+                            FROM RHHealth.dbo.fichas_clinicas_questoes AS Questoes
+                            LEFT JOIN RHHealth.dbo.fichas_clinicas_respostas AS Respostas
+                            ON (Respostas.codigo_ficha_clinica_questao = Questoes.codigo)
+                            LEFT JOIN RHHealth.dbo.fichas_clinicas AS FichaClinica
+                            ON (Respostas.codigo_ficha_clinica = FichaClinica.codigo)
+                            LEFT JOIN RHHealth.dbo.pedidos_exames AS PedidoExame
+                            ON FichaClinica.codigo_pedido_exame = PedidoExame.codigo
+                            LEFT JOIN RHHealth.dbo.cliente AS Cliente
+                            ON PedidoExame.codigo_cliente = Cliente.codigo
+                            LEFT JOIN RHHealth.dbo.funcionarios AS Funcionario
+                            ON PedidoExame.codigo_funcionario = Funcionario.codigo
+                            WHERE Questoes.codigo_ficha_clinica_grupo_questao = 8 AND Respostas.codigo_ficha_clinica = ' + $P{CODIGO_FICHA_CLINICA} + '
+                        )
+                    SELECT *
+                    FROM   CTE
+                    PIVOT (MAX(resposta) FOR RowNo IN (' + @SQL + N')) pvt';
+                    EXECUTE (@SQL)]]>
+	</queryString>
+	<field name="cliente_nome_fantasia" class="java.lang.String"/>
+	<field name="cliente_razao_social" class="java.lang.String"/>
+	<field name="cliente_cnpj" class="java.lang.String"/>
+	<field name="funcionario_nome" class="java.lang.String"/>
+	<field name="funcionario_cpf" class="java.lang.String"/>
+	<field name="Count_Def" class="java.lang.Integer"/>
+	<field name="questao_7" class="java.lang.String"/>
+	<field name="questao_8" class="java.lang.String"/>
+	<field name="questao_9" class="java.lang.String"/>
+	<field name="questao_10" class="java.lang.String"/>
+	<field name="questao_11" class="java.lang.String"/>
+	<field name="questao_12" class="java.lang.String"/>
+	<field name="questao_13" class="java.lang.String"/>
+	<field name="questao_15" class="java.lang.String"/>
+	<field name="questao_16" class="java.lang.String"/>
+	<field name="questao_17" class="java.lang.String"/>
+	<field name="questao_18" class="java.lang.String"/>
+	<field name="questao_19" class="java.lang.String"/>
+	<field name="questao_20" class="java.lang.String"/>
+	<field name="questao_21" class="java.lang.String"/>
+	<field name="questao_22" class="java.lang.String"/>
+	<field name="questao_23" class="java.lang.String"/>
+	<field name="questao_24" class="java.lang.String"/>
+	<field name="questao_25" class="java.lang.String"/>
+	<field name="questao_26" class="java.lang.String"/>
+	<field name="questao_31" class="java.lang.String"/>
+	<field name="questao_35" class="java.lang.String"/>
+	<field name="questao_36" class="java.lang.String"/>
+	<field name="questao_37" class="java.lang.String"/>
+	<field name="questao_38" class="java.lang.String"/>
+	<field name="questao_39" class="java.lang.String"/>
+	<field name="questao_40" class="java.lang.String"/>
+	<field name="questao_41" class="java.lang.String"/>
+	<field name="questao_42" class="java.lang.String"/>
+	<field name="questao_43" class="java.lang.String"/>
+	<field name="questao_44" class="java.lang.String"/>
+	<field name="questao_49" class="java.lang.String"/>
+	<field name="questao_50" class="java.lang.String"/>
+	<field name="questao_53" class="java.lang.String"/>
+	<field name="questao_54" class="java.lang.String"/>
+	<field name="questao_55" class="java.lang.String"/>
+	<field name="questao_56" class="java.lang.String"/>
+	<field name="questao_61" class="java.lang.String"/>
+	<field name="questao_62" class="java.lang.String"/>
+	<field name="questao_63" class="java.lang.String"/>
+	<field name="questao_64" class="java.lang.String"/>
+	<field name="questao_65" class="java.lang.String"/>
+	<field name="questao_70" class="java.lang.String"/>
+	<field name="questao_71" class="java.lang.String"/>
+	<field name="questao_72" class="java.lang.String"/>
+	<field name="questao_73" class="java.lang.String"/>
+	<field name="questao_74" class="java.lang.String"/>
+	<field name="questao_75" class="java.lang.String"/>
+	<field name="questao_76" class="java.lang.String"/>
+	<field name="questao_81" class="java.lang.String"/>
+	<field name="questao_82" class="java.lang.String"/>
+	<field name="questao_83" class="java.lang.String"/>
+	<field name="questao_84" class="java.lang.String"/>
+	<field name="questao_109" class="java.lang.String"/>
+	<field name="questao_110" class="java.lang.String"/>
+	<field name="questao_111" class="java.lang.String"/>
+	<field name="questao_112" class="java.lang.String"/>
+	<field name="questao_117" class="java.lang.String"/>
+	<field name="questao_118" class="java.lang.String"/>
+	<field name="questao_119" class="java.lang.String"/>
+	<field name="questao_120" class="java.lang.String"/>
+	<field name="questao_122" class="java.lang.String"/>
+	<field name="questao_123" class="java.lang.String"/>
+	<field name="questao_124" class="java.lang.String"/>
+	<field name="questao_126" class="java.lang.String"/>
+	<field name="questao_127" class="java.lang.String"/>
+	<field name="questao_128" class="java.lang.String"/>
+	<field name="questao_129" class="java.lang.String"/>
+	<field name="questao_130" class="java.lang.String"/>
+	<field name="questao_131" class="java.lang.String"/>
+	<field name="questao_132" class="java.lang.String"/>
+	<field name="questao_137" class="java.lang.String"/>
+	<field name="questao_138" class="java.lang.String"/>
+	<field name="questao_139" class="java.lang.String"/>
+	<field name="questao_140" class="java.lang.String"/>
+	<field name="questao_141" class="java.lang.String"/>
+	<field name="questao_143" class="java.lang.String"/>
+	<field name="questao_148" class="java.lang.String"/>
+	<field name="questao_150" class="java.lang.String"/>
+	<field name="questao_152" class="java.lang.String"/>
+	<field name="questao_153" class="java.lang.String"/>
+	<field name="questao_154" class="java.lang.String"/>
+	<field name="questao_155" class="java.lang.String"/>
+	<field name="questao_156" class="java.lang.String"/>
+	<field name="questao_157" class="java.lang.String"/>
+	<field name="questao_158" class="java.lang.String"/>
+	<field name="questao_159" class="java.lang.String"/>
+	<field name="questao_160" class="java.lang.String"/>
+	<field name="questao_161" class="java.lang.String"/>
+	<field name="questao_162" class="java.lang.String"/>
+	<field name="questao_163" class="java.lang.String"/>
+	<field name="questao_164" class="java.lang.String"/>
+	<field name="questao_165" class="java.lang.String"/>
+	<field name="questao_166" class="java.lang.String"/>
+	<field name="questao_168" class="java.lang.String"/>
+	<field name="questao_169" class="java.lang.String"/>
+	<field name="questao_170" class="java.lang.String"/>
+	<field name="questao_171" class="java.lang.String"/>
+	<field name="questao_172" class="java.lang.String"/>
+	<field name="questao_173" class="java.lang.String"/>
+	<field name="questao_174" class="java.lang.String"/>
+	<field name="questao_181" class="java.lang.String"/>
+	<field name="questao_182" class="java.lang.String"/>
+	<field name="questao_183" class="java.lang.String"/>
+	<field name="questao_190" class="java.lang.String"/>
+	<field name="questao_192" class="java.lang.String"/>
+	<field name="questao_195" class="java.lang.String"/>
+	<field name="questao_197" class="java.lang.String"/>
+	<field name="questao_199" class="java.lang.String"/>
+	<field name="questao_201" class="java.lang.String"/>
+	<field name="questao_203" class="java.lang.String"/>
+	<field name="questao_205" class="java.lang.String"/>
+	<field name="questao_207" class="java.lang.String"/>
+	<field name="questao_209" class="java.lang.String"/>
+	<field name="questao_210" class="java.lang.String"/>
+	<field name="questao_211" class="java.lang.String"/>
+	<field name="questao_212" class="java.lang.String"/>
+	<field name="questao_213" class="java.lang.String"/>
+	<field name="questao_214" class="java.lang.String"/>
+	<field name="questao_215" class="java.lang.String"/>
+	<field name="questao_216" class="java.lang.String"/>
+	<field name="questao_217" class="java.lang.String"/>
+	<field name="questao_218" class="java.lang.String"/>
+	<field name="questao_219" class="java.lang.String"/>
+	<field name="questao_220" class="java.lang.String"/>
+	<field name="questao_221" class="java.lang.String"/>
+	<field name="questao_222" class="java.lang.String"/>
+	<field name="questao_223" class="java.lang.String"/>
+	<field name="questao_224" class="java.lang.String"/>
+	<field name="questao_225" class="java.lang.String"/>
+	<field name="questao_226" class="java.lang.String"/>
+	<field name="questao_227" class="java.lang.String"/>
+	<field name="questao_228" class="java.lang.String"/>
+	<field name="questao_229" class="java.lang.String"/>
+	<field name="questao_230" class="java.lang.String"/>
+	<field name="questao_231" class="java.lang.String"/>
+	<field name="questao_232" class="java.lang.String"/>
+	<field name="questao_233" class="java.lang.String"/>
+	<field name="questao_234" class="java.lang.String"/>
+	<field name="questao_235" class="java.lang.String"/>
+	<field name="questao_236" class="java.lang.String"/>
+	<field name="questao_237" class="java.lang.String"/>
+	<field name="questao_238" class="java.lang.String"/>
+	<field name="questao_239" class="java.lang.String"/>
+	<field name="questao_240" class="java.lang.String"/>
+	<field name="questao_241" class="java.lang.String"/>
+	<field name="questao_242" class="java.lang.String"/>
+	<field name="questao_243" class="java.lang.String"/>
+	<field name="questao_244" class="java.lang.String"/>
+	<field name="questao_245" class="java.lang.String"/>
+	<field name="questao_246" class="java.lang.String"/>
+	<field name="questao_247" class="java.lang.String"/>
+	<field name="questao_248" class="java.lang.String"/>
+	<field name="questao_249" class="java.lang.String"/>
+	<field name="questao_250" class="java.lang.String"/>
+	<field name="questao_251" class="java.lang.String"/>
+	<field name="questao_252" class="java.lang.String"/>
+	<field name="questao_253" class="java.lang.String"/>
+	<field name="questao_254" class="java.lang.String"/>
+	<field name="questao_255" class="java.lang.String"/>
+	<field name="questao_256" class="java.lang.String"/>
+	<field name="questao_257" class="java.lang.String"/>
+	<field name="questao_258" class="java.lang.String"/>
+	<field name="questao_259" class="java.lang.String"/>
+	<field name="questao_260" class="java.lang.String"/>
+	<field name="questao_261" class="java.lang.String"/>
+	<field name="questao_262" class="java.lang.String"/>
+	<field name="questao_263" class="java.lang.String"/>
+	<field name="questao_264" class="java.lang.String"/>
+	<field name="questao_265" class="java.lang.String"/>
+	<field name="questao_266" class="java.lang.String"/>
+	<field name="questao_267" class="java.lang.String"/>
+	<field name="questao_268" class="java.lang.String"/>
+	<field name="questao_269" class="java.lang.String"/>
+	<field name="questao_270" class="java.lang.String"/>
+	<field name="questao_271" class="java.lang.String"/>
+	<field name="questao_272" class="java.lang.String"/>
+	<field name="questao_273" class="java.lang.String"/>
+	<field name="questao_274" class="java.lang.String"/>
+	<field name="questao_280" class="java.lang.String"/>
+	<field name="questao_281" class="java.lang.String"/>
+	<field name="questao_282" class="java.lang.String"/>
+	<field name="questao_283" class="java.lang.String"/>
+	<field name="questao_284" class="java.lang.String"/>
+	<field name="questao_285" class="java.lang.String"/>
+	<field name="questao_286" class="java.lang.String"/>
+	<field name="questao_288" class="java.lang.String"/>
+	<field name="questao_290" class="java.lang.String"/>
+	<field name="questao_291" class="java.lang.String"/>
+	<field name="questao_293" class="java.lang.String"/>
+	<field name="questao_294" class="java.lang.String"/>
+	<field name="questao_295" class="java.lang.String"/>
+	<field name="questao_296" class="java.lang.String"/>
+	<field name="questao_297" class="java.lang.String"/>
+	<field name="questao_298" class="java.lang.String"/>
+	<field name="questao_299" class="java.lang.String"/>
+	<field name="questao_300" class="java.lang.String"/>
+	<field name="questao_302" class="java.lang.String"/>
+	<field name="questao_303" class="java.lang.String"/>
+	<field name="questao_304" class="java.lang.String"/>
+	<field name="questao_305" class="java.lang.String"/>
+	<field name="questao_306" class="java.lang.String"/>
+	<field name="questao_307" class="java.lang.String"/>
+	<field name="questao_308" class="java.lang.String"/>
+	<field name="questao_309" class="java.lang.String"/>
+	<field name="questao_310" class="java.lang.String"/>
+	<field name="questao_311" class="java.lang.String"/>
+	<field name="questao_312" class="java.lang.String"/>
+	<field name="questao_313" class="java.lang.String"/>
+	<field name="questao_314" class="java.lang.String"/>
+	<field name="questao_315" class="java.lang.String"/>
+	<field name="questao_316" class="java.lang.String"/>
+	<field name="questao_317" class="java.lang.String"/>
+	<field name="questao_318" class="java.lang.String"/>
+	<field name="questao_319" class="java.lang.String"/>
+	<field name="questao_320" class="java.lang.String"/>
+	<field name="questao_321" class="java.lang.String"/>
+	<field name="questao_322" class="java.lang.String"/>
+	<field name="questao_323" class="java.lang.String"/>
+	<field name="questao_324" class="java.lang.String"/>
+	<field name="questao_325" class="java.lang.String"/>
+	<field name="questao_326" class="java.lang.String"/>
+	<field name="questao_327" class="java.lang.String"/>
+	<field name="questao_328" class="java.lang.String"/>
+	<field name="questao_329" class="java.lang.String"/>
+	<field name="questao_330" class="java.lang.String"/>
+	<field name="questao_331" class="java.lang.String"/>
+	<field name="questao_332" class="java.lang.String"/>
+	<field name="questao_333" class="java.lang.String"/>
+	<field name="questao_334" class="java.lang.String"/>
+	<field name="questao_335" class="java.lang.String"/>
+	<field name="questao_336" class="java.lang.String"/>
+	<field name="questao_337" class="java.lang.String"/>
+	<field name="questao_338" class="java.lang.String"/>
+	<field name="questao_339" class="java.lang.String"/>
+	<field name="questao_340" class="java.lang.String"/>
+	<field name="questao_341" class="java.lang.String"/>
+	<field name="questao_342" class="java.lang.String"/>
+	<field name="questao_343" class="java.lang.String"/>
+	<field name="questao_344" class="java.lang.String"/>
+	<field name="questao_345" class="java.lang.String"/>
+	<field name="questao_346" class="java.lang.String"/>
+	<field name="questao_347" class="java.lang.String"/>
+	<field name="questao_348" class="java.lang.String"/>
+	<field name="questao_349" class="java.lang.String"/>
+	<field name="questao_350" class="java.lang.String"/>
+	<field name="questao_351" class="java.lang.String"/>
+	<field name="questao_352" class="java.lang.String"/>
+	<field name="questao_353" class="java.lang.String"/>
+	<field name="questao_354" class="java.lang.String"/>
+	<field name="questao_355" class="java.lang.String"/>
+	<variable name="COUNT" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="44" splitType="Stretch">
+			<frame>
+				<reportElement style="border" x="0" y="0" width="555" height="44" isRemoveLineWhenBlank="true" uuid="b3786848-1f0f-4dc7-877b-cf823facee22"/>
+				<staticText>
+					<reportElement mode="Transparent" x="138" y="4" width="52" height="15" uuid="fb939a60-31f3-4810-8edc-bbeb2802075b"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="11" isBold="true" isItalic="false" isUnderline="false"/>
+					</textElement>
+					<text><![CDATA[Empresa:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="138" y="25" width="52" height="15" uuid="689d7690-96a5-4bde-bf41-8bc73e22e0b3"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="11" isBold="true" isItalic="false" isUnderline="false"/>
+					</textElement>
+					<text><![CDATA[CNPJ:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="197" y="5" width="217" height="14" uuid="f3c4739b-0b44-4f5c-8126-8bf9cc339a59"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cliente_razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="196" y="25" width="135" height="15" uuid="5db60c3c-72d4-4ca9-a6d6-f643967d6649"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cliente_cnpj}]]></textFieldExpression>
+				</textField>
+				<image>
+					<reportElement x="10" y="5" width="95" height="30" uuid="f153fbc3-17b3-4195-9dd3-06d7728ce085">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+				</image>
+				<image>
+					<reportElement x="450" y="4" width="100" height="40" uuid="859aaa22-8485-403e-928c-9524ce14077c">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+					</reportElement>
+					<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+				</image>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="719" splitType="Stretch">
+			<frame>
+				<reportElement style="border" x="0" y="5" width="555" height="52" uuid="d038b74f-bea5-42db-9c4f-900c186c4b5d"/>
+				<staticText>
+					<reportElement x="0" y="0" width="555" height="20" uuid="a3f831c2-d7a2-434a-9fd8-fbb3010507ec"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[LAUDO CARACTERIZADOR DE DEFICIÊNCIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="21" width="554" height="31" uuid="ecb60aeb-0c42-44b4-a477-33c963aa3e6b"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9"/>
+					</textElement>
+					<text><![CDATA[De acordo com o Decreto 3.298/1999 e com a Instrução Normativa SIT/ MTE n.º 98 de 15/08/2012, observados os dispositivos da Convenção sobre os Direitos das Pessoas com deficiência, Lei 12764/12, Lei13146/2015.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="59" width="555" height="660" uuid="19a03f21-de76-414a-9b56-54b260102181"/>
+				<frame>
+					<reportElement style="border" x="0" y="1" width="555" height="15" forecolor="#00FF99" uuid="af27b8a1-8e53-49ea-9b2f-bd9947f217c3"/>
+					<staticText>
+						<reportElement x="21" y="1" width="34" height="12" uuid="df7b47e9-d211-4528-a8a7-9ec2a65fcb31"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="5"/>
+						</textElement>
+						<text><![CDATA[Nome:]]></text>
+					</staticText>
+					<line>
+						<reportElement x="349" y="0" width="1" height="15" uuid="2e789366-dc8c-4395-9799-8c0e3a06e2dc"/>
+					</line>
+					<staticText>
+						<reportElement x="357" y="1" width="30" height="12" uuid="882b5781-d25a-47c1-94a5-7e857d032115"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="5"/>
+						</textElement>
+						<text><![CDATA[CPF:]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="62" y="1" width="290" height="12" uuid="ef7489f7-c6c4-4db6-bacf-2377ef54ea33"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{funcionario_nome}]]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement x="387" y="1" width="128" height="12" uuid="40cf9a81-3c37-482c-bc74-7a85758a4353"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{funcionario_cpf}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="16" width="555" height="29" uuid="18b736df-21b3-4c1a-953e-2a0d638652e7"/>
+					<frame>
+						<reportElement x="0" y="0" width="555" height="15" forecolor="#00FF99" uuid="8ffc2259-6673-4227-95be-90eaf4385028"/>
+						<staticText>
+							<reportElement x="0" y="0" width="34" height="15" uuid="bb949a8f-c992-43cb-9f93-cae6416364ca"/>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="Arial" size="9" isBold="true"/>
+								<paragraph firstLineIndent="5"/>
+							</textElement>
+							<text><![CDATA[CID:]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="227" y="0" width="130" height="15" uuid="3dbfc792-e753-4be3-a979-40a36a9dcd1a"/>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="Arial" size="9" isBold="true"/>
+							</textElement>
+							<text><![CDATA[Origem da deficiência:]]></text>
+						</staticText>
+						<textField isBlankWhenNull="true">
+							<reportElement x="34" y="1" width="188" height="13" uuid="f33a8f5f-cc4b-4e15-b718-af9cecd63707">
+								<printWhenExpression><![CDATA[(!$F{questao_195}.isEmpty())]]></printWhenExpression>
+							</reportElement>
+							<textFieldExpression><![CDATA[$F{questao_195}.replaceAll("# #", "")]]></textFieldExpression>
+						</textField>
+					</frame>
+					<frame>
+						<reportElement mode="Transparent" x="0" y="14" width="555" height="15" uuid="b123feea-c8f9-4919-b9e5-71255ffa8871"/>
+						<rectangle>
+							<reportElement x="5" y="4" width="8" height="8" uuid="bef08af6-1404-4cd9-9260-7b977decde5f"/>
+						</rectangle>
+						<staticText>
+							<reportElement x="18" y="0" width="100" height="15" uuid="4e3918ef-8714-4553-af74-064a9e7d8d35"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9"/>
+							</textElement>
+							<text><![CDATA[Acidente de trabalho]]></text>
+						</staticText>
+						<rectangle>
+							<reportElement x="122" y="4" width="8" height="8" uuid="c5aebb31-eebc-4689-bc55-42a96c8c096c"/>
+						</rectangle>
+						<staticText>
+							<reportElement x="137" y="0" width="77" height="15" uuid="f0dc3131-8824-4c82-82af-dbc65ebf11b9"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9"/>
+							</textElement>
+							<text><![CDATA[Congênita]]></text>
+						</staticText>
+						<rectangle>
+							<reportElement x="222" y="4" width="8" height="8" uuid="2cd896e8-6a58-4945-9345-8a1c7e27c22c"/>
+						</rectangle>
+						<staticText>
+							<reportElement x="239" y="0" width="92" height="15" uuid="440a9855-1873-44b6-a9eb-0c3f708a41d1"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9"/>
+							</textElement>
+							<text><![CDATA[Adquirida em pós operatório]]></text>
+						</staticText>
+						<rectangle>
+							<reportElement x="335" y="4" width="8" height="8" uuid="910dc10c-f227-4875-a765-6744d1a1f77d"/>
+						</rectangle>
+						<staticText>
+							<reportElement x="350" y="0" width="89" height="15" uuid="be3e23f9-a78a-417d-9e90-82812d7fbcfb"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9"/>
+							</textElement>
+							<text><![CDATA[Acidente comum]]></text>
+						</staticText>
+						<rectangle>
+							<reportElement x="440" y="4" width="8" height="8" uuid="b761c997-fe4a-43aa-bfa7-4b98976b8a73"/>
+						</rectangle>
+						<staticText>
+							<reportElement x="455" y="0" width="98" height="15" uuid="ee1bea42-312f-48c2-96f6-62f3aae212e3"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9"/>
+							</textElement>
+							<text><![CDATA[Doença]]></text>
+						</staticText>
+						<rectangle>
+							<reportElement x="6" y="5" width="6" height="6" backcolor="#000000" uuid="8303dd05-5d9e-4d4b-8c53-2cc5b83947ff">
+								<printWhenExpression><![CDATA[new Boolean($F{questao_288}.replaceAll("# #", "").equals("Acidente de trabalho"))]]></printWhenExpression>
+							</reportElement>
+							<graphicElement>
+								<pen lineWidth="1.4"/>
+							</graphicElement>
+						</rectangle>
+						<rectangle>
+							<reportElement x="123" y="5" width="6" height="6" backcolor="#000000" uuid="38745ca7-bd91-41c1-89a7-15f049ba5917">
+								<printWhenExpression><![CDATA[new Boolean($F{questao_288}.replaceAll("# #", "").equals("Congênita"))]]></printWhenExpression>
+							</reportElement>
+							<graphicElement>
+								<pen lineWidth="1.4"/>
+							</graphicElement>
+						</rectangle>
+						<rectangle>
+							<reportElement x="223" y="5" width="6" height="6" backcolor="#000000" uuid="48bf1291-e0d8-4d3b-944d-c4ff49447183">
+								<printWhenExpression><![CDATA[new Boolean($F{questao_288}.replaceAll("# #", "").equals("Adquirida em pós operatório"))]]></printWhenExpression>
+							</reportElement>
+							<graphicElement>
+								<pen lineWidth="1.4"/>
+							</graphicElement>
+						</rectangle>
+						<rectangle>
+							<reportElement x="336" y="5" width="6" height="6" backcolor="#000000" uuid="d379eba7-4c97-42a8-adae-bce64ad43ff8">
+								<printWhenExpression><![CDATA[new Boolean($F{questao_288}.replaceAll("# #", "").equals("Acidente comum"))]]></printWhenExpression>
+							</reportElement>
+							<graphicElement>
+								<pen lineWidth="1.4"/>
+							</graphicElement>
+						</rectangle>
+						<rectangle>
+							<reportElement x="441" y="5" width="6" height="6" backcolor="#000000" uuid="05f57585-02b0-4c0d-9158-9649e80d6710">
+								<printWhenExpression><![CDATA[new Boolean($F{questao_288}.replaceAll("# #", "").equals("Doença"))]]></printWhenExpression>
+							</reportElement>
+							<graphicElement>
+								<pen lineWidth="1.4"/>
+							</graphicElement>
+						</rectangle>
+					</frame>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="45" width="555" height="55" uuid="0aaaec4a-7a1e-4d9f-9675-cc501a92520f"/>
+					<elementGroup>
+						<staticText>
+							<reportElement x="106" y="0" width="447" height="15" uuid="acc3de1c-6af4-4107-81fc-b9f3634c4dcc"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9" isUnderline="false"/>
+							</textElement>
+							<text><![CDATA[das alterações físicas (anatômicas e funcionais), sensoriais, intelectuais e mentais:]]></text>
+						</staticText>
+						<staticText>
+							<reportElement mode="Opaque" x="57" y="2" width="45" height="15" uuid="24a5d3e8-8087-4bfc-a77c-3d060e112bd8"/>
+							<textElement>
+								<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							</textElement>
+							<text><![CDATA[detalhada]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="1" y="0" width="55" height="15" uuid="3c406710-dcbb-4b6b-a1c0-ea2ded87ddc2"/>
+							<textElement>
+								<paragraph firstLineIndent="5"/>
+							</textElement>
+							<text><![CDATA[Descrição]]></text>
+						</staticText>
+					</elementGroup>
+					<textField isBlankWhenNull="true">
+						<reportElement x="6" y="14" width="545" height="41" uuid="a9f2cc6d-73f3-45ad-963c-0d3e6453b625"/>
+						<textFieldExpression><![CDATA[$F{questao_290}.replaceAll("# #", "")]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="100" width="555" height="55" uuid="b7fd74d8-5019-4c35-8e68-ccf5e2b31722"/>
+					<staticText>
+						<reportElement x="0" y="2" width="554" height="15" uuid="f3d23065-ada8-4f30-877d-a9feab0e6453"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isUnderline="false"/>
+							<paragraph firstLineIndent="5"/>
+						</textElement>
+						<text><![CDATA[Descrição das limitações funcionais para atividades da vida diária e social e dos apoios necessários:]]></text>
+					</staticText>
+					<textField isBlankWhenNull="true">
+						<reportElement x="6" y="17" width="547" height="38" uuid="b854225e-e7d2-43ae-8c27-2375d699e8b9"/>
+						<textFieldExpression><![CDATA[$F{questao_291}.replaceAll("# #", "")]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="156" width="278" height="105" uuid="e602e896-571d-429d-846d-e6bad60db663"/>
+					<rectangle>
+						<reportElement x="5" y="6" width="8" height="8" uuid="04935193-fc87-45f1-89b9-d238aeb20869"/>
+					</rectangle>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="6" width="112" height="15" uuid="18381846-4641-4daf-92c7-531a0d635096"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[I- Deficiência Física -]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="0" width="268" height="95" uuid="c293b241-7225-4bb5-a456-c0b4719872f3"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="110"/>
+						</textElement>
+						<text><![CDATA[alteração completa ou parcial de um ou mais segmentos do corpo humano, acarretando o comprometimento da função física, apresentando-se sob a forma de paraplegia, paraparesia, monoplegia, monoparesia, tetraplegia, tetraparesia, triplegia, triparesia, hemiplegia, hemiparesia, ostomia, amputação ou ausência de membro, paralisia cerebral, membros com deformidade congênita ou adquirida, nanismo (altura: _______), outras (especificar). ]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="7" width="6" height="6" backcolor="#000000" uuid="fac2e6f4-66e6-4bb5-8234-6da09d93bf5d">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_293}.toString() != "null")]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+					<textField isBlankWhenNull="true">
+						<reportElement x="3" y="90" width="267" height="15" uuid="e127aacf-ed86-4e3d-b994-f97ca70cf442">
+							<printWhenExpression><![CDATA[!new Boolean($F{questao_293}.split("#")[2].trim().startsWith("1") ||
+$F{questao_293}.split("#")[2].trim().startsWith("2") ||
+$F{questao_293}.split("#")[2].trim().startsWith("3") ||
+$F{questao_293}.split("#")[2].trim().startsWith("4") ||
+$F{questao_293}.split("#")[2].trim().startsWith("5") ||
+$F{questao_293}.split("#")[2].trim().startsWith("6") ||
+$F{questao_293}.split("#")[2].trim().startsWith("7") ||
+$F{questao_293}.split("#")[2].trim().startsWith("8") ||
+$F{questao_293}.split("#")[2].trim().startsWith("9"))]]></printWhenExpression>
+						</reportElement>
+						<textElement>
+							<font isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{questao_293}.split("#")[2]]]></textFieldExpression>
+					</textField>
+					<textField isBlankWhenNull="true">
+						<reportElement x="14" y="76" width="36" height="15" uuid="c7834844-d252-4f13-8373-94998f8a2579">
+							<printWhenExpression><![CDATA[$F{questao_293}.split("#")[2].trim().startsWith("1") ||
+$F{questao_293}.split("#")[2].trim().startsWith("2") ||
+$F{questao_293}.split("#")[2].trim().startsWith("3") ||
+$F{questao_293}.split("#")[2].trim().startsWith("4") ||
+$F{questao_293}.split("#")[2].trim().startsWith("5") ||
+$F{questao_293}.split("#")[2].trim().startsWith("6") ||
+$F{questao_293}.split("#")[2].trim().startsWith("7") ||
+$F{questao_293}.split("#")[2].trim().startsWith("8") ||
+$F{questao_293}.split("#")[2].trim().startsWith("9")]]></printWhenExpression>
+						</reportElement>
+						<textFieldExpression><![CDATA[$F{questao_293}.split("#")[2]]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="border" mode="Opaque" x="0" y="261" width="278" height="75" uuid="f5cf9bb3-62dc-407a-b719-e07bed161594"/>
+					<rectangle>
+						<reportElement x="5" y="3" width="8" height="8" uuid="904af82c-0376-4413-ba99-6ace85f87d66"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="2" width="117" height="15" uuid="7e2dce8b-4b32-41d6-b0cd-5c75810e00a7"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[II- Deficiência Auditiva - ]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="0" width="268" height="35" uuid="ca58f673-9c1a-4b8c-a0b5-c545add0530b"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="125"/>
+						</textElement>
+						<text><![CDATA[perda bilateral, parcial ou total, de 41 decibéis (dB) ou mais, aferida por audiograma nas frequências de 500HZ, 1.000HZ, 2.000Hz e 3.000Hz]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="34" width="268" height="15" uuid="59436caa-d263-4875-b142-011109506856"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[Obs: Anexar audiograma]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="4" width="6" height="6" backcolor="#000000" uuid="4a923683-6e39-47d6-bde1-535f772b32d0">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_294}.toString() != "null")]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="336" width="278" height="171" uuid="a75bb9b1-9789-4aeb-b040-7bb8e28e43e8"/>
+					<rectangle>
+						<reportElement x="5" y="2" width="8" height="8" uuid="28782de1-2290-4b3a-b50b-b33a3a9923ff"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="1" width="127" height="15" uuid="42e6f839-64fa-4617-84f9-c77f5612624b"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[III- Deficiência Visual]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="15" width="268" height="65" uuid="70b26c11-20fc-4868-823d-8a7f2e36e4c9"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[( ) cegueira - acuidade visual ≤ 0,05 (20/400) no melhor olho, com a melhor correção óptica;
+( ) baixa visão - acuidade visual entre 0,3 (20/60) e 0,05 (20/400) no melhor olho, com a melhor correção óptica;
+( ) somatória da medida do campo visual em ambos os olhos for igual ou menor que 60o.]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="80" width="265" height="29" uuid="313e29fc-33c4-4c74-bf09-0c1b3584c802"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[Obs: Anexar laudo oftalmológico, utilizar tabela Snellen para avaliar acuidade visual.
+]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="3" width="6" height="6" backcolor="#000000" uuid="558347b1-e0df-40a0-ad16-81a895c9a6c5">
+							<printWhenExpression><![CDATA[new Boolean(
+$F{questao_295}.toString() != "null" &&
+!$F{questao_295}.replaceAll("# #", "").equals("Visão Monocular - conforme parecer CONJUR/MTE 444/11: cegueira, na qual a acuidade visual com a melhor correção óptica é igual ou menor que 0,05 (20/400) em um olho (ou cegueira declarada por oftalmologista).")
+)]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+					<staticText>
+						<reportElement x="7" y="15" width="7" height="15" uuid="dd3e5abe-c632-4cf5-a0d5-c4ac65066044">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_295}.replaceAll("# #", "").indexOf("Cegueira -") != -1)]]></printWhenExpression>
+						</reportElement>
+						<text><![CDATA[x]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="7" y="36" width="7" height="15" uuid="43522d4a-88bc-40ba-97d5-f3d95eaa1747">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_295}.replaceAll("# #", "").indexOf("Baixa visão -") != -1)]]></printWhenExpression>
+						</reportElement>
+						<text><![CDATA[x]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="7" y="56" width="7" height="15" uuid="66d705b6-7cce-49f3-8e6f-2514d169edf8">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_295}.replaceAll("# #", "").indexOf("Deficiência Visual -") != -1)]]></printWhenExpression>
+						</reportElement>
+						<text><![CDATA[x]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="507" width="555" height="26" uuid="22cd2e58-75c7-48d1-84be-499f74119051"/>
+					<rectangle>
+						<reportElement x="6" y="5" width="8" height="8" uuid="26c38afa-8291-4909-b2fb-fd76bf71fd8b"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="5" width="131" height="15" uuid="d9c0af6c-ea9d-4394-8463-27c68800cfdd"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[V- Deficiência Múltipla - ]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="3" width="546" height="15" uuid="f1bd3255-1a7c-46e8-a6a4-43d6bac5fa44"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="120"/>
+						</textElement>
+						<text><![CDATA[associação de duas ou mais deficiências. (Assinalar cada uma acima)]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="7" y="6" width="6" height="6" backcolor="#000000" uuid="8e9f5cee-c209-4ab1-b508-ef67b4fc3dae">
+							<printWhenExpression><![CDATA[new Boolean($F{Count_Def} > 1)]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+				</frame>
+				<frame>
+					<reportElement style="border" x="278" y="156" width="277" height="55" uuid="a7026eea-a46d-4a2c-92b2-df414f806057"/>
+					<rectangle>
+						<reportElement x="6" y="6" width="8" height="8" uuid="d9b0035e-1739-40df-be17-211ba11f49e1"/>
+					</rectangle>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="4" width="119" height="15" uuid="a9b01252-04c5-4374-a1e7-7a65d5ff6121"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph lineSpacing="Single" firstLineIndent="12"/>
+						</textElement>
+						<text><![CDATA[III a- Visão Monocular -]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="3" width="270" height="48" uuid="30a1cc9b-2ac7-4c03-ab12-2df230dc1871"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="114"/>
+						</textElement>
+						<text><![CDATA[conforme parecer CONJUR/MTE 444/11: cegueira, na qual a acuidade visual com a melhor correção óptica é igual ou menor que 0,05 (20/400) em um olho (ou cegueira declarada por oftalmologista).]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="7" y="7" width="6" height="6" backcolor="#000000" uuid="c555cf0e-e5cf-4860-b2de-fc0ffa569691">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_295}.replaceAll("# #", "").indexOf("Visão Monocular -") != -1)]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+				</frame>
+				<frame>
+					<reportElement style="border" x="278" y="211" width="277" height="195" uuid="57cc327b-dd88-43d9-9e0b-e5d1723790a2"/>
+					<rectangle>
+						<reportElement x="6" y="8" width="8" height="8" uuid="470d1209-ea32-469b-a57a-9b55fe34bff5"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="6" y="5" width="130" height="14" uuid="ef51dbb2-bde5-4866-890b-c8e6ff68124e"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="10"/>
+						</textElement>
+						<text><![CDATA[IV- Deficiência Intelectual -]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="5" width="268" height="46" uuid="98a4da28-4c4c-406c-b5ad-ac3f5e9cf878"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="130"/>
+						</textElement>
+						<text><![CDATA[funcionamento intelectual significativamente inferior à média, com manifestação antes dos 18 anos e limitações associadas a duas ou mais habilidades adaptativas, tais como:]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="55" width="8" height="8" uuid="cd8d086a-701f-43d7-9f6d-a4147137d74e"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="6" y="51" width="268" height="15" uuid="c764ccff-ec2e-42db-93ce-390aef16ef45"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[a) - Comunicação;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="69" width="8" height="8" uuid="2d3ac8b2-b2d8-4df2-bd21-71ca007ff107"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="65" width="268" height="15" uuid="56eaa403-20ec-4c08-a984-3649bc6a3f50"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[b) - Cuidado pessoal;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="83" width="8" height="8" uuid="aba45f44-4207-4d95-8bd1-d2e072c61b57"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="79" width="268" height="15" uuid="484b36a4-d67a-4cba-ad9d-41ac25321c3d"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[c) - Habilidades sociais;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="97" width="8" height="8" uuid="296542fc-b3e5-4692-b28e-049c04b57270"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="93" width="268" height="15" uuid="4fae7325-abf2-4cf2-bff9-3f503ed9bbc7"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[d) - Utilização de recursos da comunidade;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="111" width="8" height="8" uuid="b303dfce-7e01-4c94-a2fa-4d1e7b7d7001"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="107" width="268" height="15" uuid="c7847a6f-d602-465f-a355-157c0a8f5467"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[e) - Saúde e segurança;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="125" width="8" height="8" uuid="a979b9b6-62ab-4689-ab66-85e004752860"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="121" width="268" height="15" uuid="ce45a751-cabc-40d2-ba17-6c22c1485e94"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[f) - Habilidades acadêmicas;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="139" width="8" height="8" uuid="dd3ec820-e9d4-4bd9-bda0-ea67ff21e1c1"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="135" width="268" height="15" uuid="110007be-e841-4340-85bb-473391c473ab"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[g) - Lazer;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="153" width="8" height="8" uuid="86856a7c-58ab-4dcb-be8d-5f8a030078b4"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="149" width="268" height="15" uuid="548b1d84-d884-436c-bbe1-324d92ca55a3"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[h) - Trabalho.]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="163" width="268" height="15" uuid="7d5e11b6-17bc-429e-8305-df5df1f0d6d9"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[Idade de Início: ______]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="177" width="268" height="15" uuid="3bacb851-c823-4e30-9e7e-a8af88d49e5a"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[Obs: Anexar laudo do especialista.]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="7" y="9" width="6" height="6" backcolor="#000000" uuid="5e638215-99f8-423a-a511-26ed63b2f724">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_296}.toString() != "null")]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+					<rectangle>
+						<reportElement x="7" y="154" width="6" height="6" backcolor="#000000" uuid="0f46e6f1-8fc9-44d1-a720-507476a96360">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_296}.replaceAll("# #", "").indexOf("Trabalho") != -1)]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+					<rectangle>
+						<reportElement x="7" y="140" width="6" height="6" backcolor="#000000" uuid="22b37396-965a-4050-94af-66bbf5da5287">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_296}.replaceAll("# #", "").indexOf("Lazer") != -1)]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+					<rectangle>
+						<reportElement x="7" y="56" width="6" height="6" backcolor="#000000" uuid="5fc9d768-dbfa-4540-abff-16d7e61f90e3">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_296}.replaceAll("# #", "").indexOf("Comunicação") != -1)]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+					<rectangle>
+						<reportElement x="7" y="70" width="6" height="6" backcolor="#000000" uuid="c835b6bc-bddb-4632-9cc8-936dabb613cc">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_296}.replaceAll("# #", "").indexOf("Cuidado pessoa") != -1)]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+					<rectangle>
+						<reportElement x="7" y="84" width="6" height="6" backcolor="#000000" uuid="858941ee-1bab-4a05-a84e-d25c23a55dfb">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_296}.replaceAll("# #", "").indexOf("Habilidades sociais") != -1)]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+					<rectangle>
+						<reportElement x="7" y="98" width="6" height="6" backcolor="#000000" uuid="9d706ec1-033a-4b28-94c7-6ca370a4b9a1">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_296}.replaceAll("# #", "").indexOf("Utilização de recursos da comunidade") != -1)]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+					<rectangle>
+						<reportElement x="7" y="112" width="6" height="6" backcolor="#000000" uuid="885aed23-a3e8-4720-bfc3-c9abfb553d28">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_296}.replaceAll("# #", "").indexOf("Saúde e segurança") != -1)]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+					<rectangle>
+						<reportElement x="7" y="126" width="6" height="6" backcolor="#000000" uuid="92c8928d-3501-49c8-b727-c0b3793a0e24">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_296}.replaceAll("# #", "").indexOf("Habilidades acadêmicas") != -1)]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+					<textField isBlankWhenNull="true">
+						<reportElement x="71" y="164" width="54" height="20" uuid="78768f6c-8a02-46ee-b599-7e354287748c"/>
+						<textFieldExpression><![CDATA[$F{questao_296}.split("#")[2]]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="border" x="278" y="406" width="277" height="75" uuid="d667e196-8ca8-49ad-8e3e-29c4cd8150ea"/>
+					<rectangle>
+						<reportElement x="6" y="5" width="8" height="8" uuid="4bbe3d42-c85d-46c0-b7dc-0d3895113e0c"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="6" y="3" width="130" height="15" uuid="f3ea0e8d-948e-4e4f-a1ad-6defacf9e107"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="10"/>
+						</textElement>
+						<text><![CDATA[IV a- Deficiência Mental  - ]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="0" width="268" height="73" uuid="99217d9c-6ae7-42d7-9c4c-aba9a3a46d2a"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="130"/>
+						</textElement>
+						<text><![CDATA[Psicossocial – conforme Convenção ONU – Esquizofrenia, outros transtornos psicóticos, outras limitações psicossociais. Informar se há outras doenças associadas e data de inicio de manifestação da doença (assinalar também as limitações para habilidades adaptativas no quadro acima).]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="47" y="56" width="203" height="14" uuid="5e0e72b6-9d75-496c-acde-48d255f34e0f"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							<paragraph lineSpacing="Single" firstLineIndent="35"/>
+						</textElement>
+						<text><![CDATA[Obs: Anexar laudo do especialista.]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="7" y="6" width="6" height="6" backcolor="#000000" uuid="9aad7112-fb4a-4970-a62d-40938bddaa90">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_297}.toString() != "null")]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+				</frame>
+				<frame>
+					<reportElement style="border" x="278" y="481" width="277" height="26" uuid="f224f13d-91ed-40a1-ac9d-9fd5dfdf8e43"/>
+					<rectangle>
+						<reportElement x="5" y="5" width="8" height="8" uuid="1fbfe87c-6af2-4698-a0be-cd36c0d55f36"/>
+					</rectangle>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="4" width="120" height="11" uuid="ec5ef372-d4b1-4839-9772-7f36b023c561"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="10"/>
+						</textElement>
+						<text><![CDATA[IV b- Deficiência Mental - ]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="4" width="268" height="11" uuid="4eddff3f-4d22-4f26-89da-86cf7cbab4a1"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="120"/>
+						</textElement>
+						<text><![CDATA[Lei 12764/2012 – Espectro Autista]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="13" width="268" height="11" uuid="e06230ab-03b5-4c15-a3f6-31e6fabf121b"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[Obs: Anexar laudo do especialista.]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="6" width="6" height="6" backcolor="#000000" uuid="10f4c529-3b4e-4a43-9e22-f69d2fb6faeb">
+							<printWhenExpression><![CDATA[new Boolean($F{questao_298}.toString() != "null")]]></printWhenExpression>
+						</reportElement>
+						<graphicElement>
+							<pen lineWidth="1.4"/>
+						</graphicElement>
+					</rectangle>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="533" width="555" height="33" uuid="79eabad5-44da-424c-adcd-97284d3d4628"/>
+					<staticText>
+						<reportElement x="5" y="0" width="56" height="15" uuid="f180d621-a049-47ef-b2dd-03998d0cde9e"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Conclusão: ]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="0" width="546" height="32" uuid="99e6bf4b-0647-4881-b4ac-965d6ea464c6"/>
+						<textElement>
+							<font fontName="Arial" size="9"/>
+							<paragraph firstLineIndent="55"/>
+						</textElement>
+						<text><![CDATA[A pessoa está enquadrada nas definições dos artigos 3º e 4º do Decreto nº 3.298/1999, com alterações do Dec. 5296/2004, Lei 12764/2012, de acordo com dispositivos da Convenção sobre os Direitos das Pessoas com Deficiência promulgada pelo Decreto n°. 6.949/2009 e recomendações da IN 98/SIT/2012.]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="566" width="555" height="39" uuid="5e9bfa96-f074-44fc-849e-9d1f1ad8818b"/>
+					<staticText>
+						<reportElement x="5" y="1" width="546" height="20" uuid="1a860222-7703-4f4f-b9b4-6b38305b7e05"/>
+						<textElement>
+							<font fontName="Arial" size="9"/>
+						</textElement>
+						<text><![CDATA[Assinatura e carimbo do Profissional de nível superior da área da saúde/Especialidade]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="605" width="555" height="25" uuid="3aa76471-dd83-4640-8bd1-251605d3873d"/>
+					<staticText>
+						<reportElement x="5" y="2" width="546" height="22" uuid="d863d6a0-3e69-4521-8317-734582bc07f6"/>
+						<textElement>
+							<font fontName="Arial" size="9"/>
+						</textElement>
+						<text><![CDATA[Estou ciente de que estou sendo enquadrado na cota de pessoas com deficiência/reabilitados da empresa Autorizo a apresentação deste Laudo e exames ao Ministério do Trabalho e Emprego.]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="630" width="555" height="30" uuid="ca944acb-6017-4183-8d84-ec81c84b72b8"/>
+					<staticText>
+						<reportElement x="0" y="0" width="32" height="12" uuid="fea260aa-72d3-48a7-8b77-b02b2b87542e"/>
+						<textElement>
+							<font fontName="Arial" size="9"/>
+							<paragraph firstLineIndent="5"/>
+						</textElement>
+						<text><![CDATA[Data:]]></text>
+					</staticText>
+					<line>
+						<reportElement x="272" y="0" width="1" height="30" uuid="6002fb71-d509-4be4-bc04-37ce04aed0e4"/>
+					</line>
+					<staticText>
+						<reportElement x="277" y="0" width="169" height="12" uuid="97c3af42-9983-4858-ba8c-4e6554a757d7"/>
+						<textElement>
+							<font fontName="Arial" size="9"/>
+						</textElement>
+						<text><![CDATA[Assinatura do avaliado:]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="3" y="12" width="267" height="17" uuid="f3294ce6-786e-4c25-a14e-54dfd629e6da"/>
+						<textElement>
+							<font size="12"/>
+						</textElement>
+						<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+					</textField>
+				</frame>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

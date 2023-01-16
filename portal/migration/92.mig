@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;MatrizesFiliais
+create;buonny/MatrizesFiliais;index
+create;buonny/MatrizesFiliais;listagem
+create;buonny/MatrizesFiliais;remover
+create;buonny/MatrizesFiliais;incluir
+create;buonny;MatrizesProdutosPagadores
+create;buonny/MatrizesProdutosPagadores;excluir
+create;buonny/MatrizesProdutosPagadores;editar

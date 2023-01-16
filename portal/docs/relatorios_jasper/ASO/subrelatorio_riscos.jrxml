@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subrelatorio_riscos" printOrder="Horizontal" pageWidth="595" pageHeight="360" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.996500000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ASO"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<import value="java.util.Arrays"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[;WITH cte_resultados AS (
+    SELECT * FROM RHHealth.dbo.ufn_riscos($P{CODIGO_PEDIDO_EXAME})
+),
+cte_hierarquia AS(
+    select codigo,grupos_riscos_descricao,LEFT(risco_descricao,130) as descricao,linha,1 AS ordem from cte_resultados
+    UNION ALL
+    select codigo,'',SUBSTRING(risco_descricao,131,130),linha,2 from cte_resultados WHERE LEN(risco_descricao) > 130
+    UNION ALL
+    select codigo,'',SUBSTRING(risco_descricao,261,130),linha,3 from cte_resultados WHERE LEN(risco_descricao) > 260
+    UNION ALL
+    select codigo,'',SUBSTRING(risco_descricao,391,130),linha,4 from cte_resultados WHERE LEN(risco_descricao) > 390
+)
+SELECT codigo, grupos_riscos_descricao, descricao, linha FROM cte_hierarquia ORDER BY codigo, ordem ASC;]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="grupos_riscos_descricao" class="java.lang.String"/>
+	<field name="descricao" class="java.lang.String"/>
+	<field name="linha" class="java.lang.String"/>
+	<variable name="TEM_ALTURA_CONFINADO" class="java.lang.String" resetType="None">
+		<variableExpression><![CDATA[Arrays.asList((new String[]{"50", "4402", "3451", "4450"})).contains($F{codigo}.toString()) ? $F{codigo}.toString() : ($V{TEM_ALTURA_CONFINADO} != null ? $V{TEM_ALTURA_CONFINADO} : "0")]]></variableExpression>
+		<initialValueExpression><![CDATA["0"]]></initialValueExpression>
+	</variable>
+	<detail>
+		<band height="12" splitType="Prevent">
+			<textField isBlankWhenNull="false">
+				<reportElement isPrintRepeatedValues="false" x="3" y="1" width="588" height="10" isRemoveLineWhenBlank="true"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{grupos_riscos_descricao} != "") ? $F{grupos_riscos_descricao} + "  -  " + $F{descricao} : $F{descricao}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

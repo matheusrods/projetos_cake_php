@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;MotivosAprovadoAjuste
+create;buonny/MotivosAprovadoAjuste;index
+create;buonny/MotivosAprovadoAjuste;listagem
+create;buonny/MotivosAprovadoAjuste;incluir
+create;buonny/MotivosAprovadoAjuste;editar
+create;buonny/MotivosAprovadoAjuste;atualiza_status

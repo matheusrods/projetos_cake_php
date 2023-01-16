@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;ClientesProdutosServicos
+create;buonny/ClientesProdutosServicos;atualizar_servico_assinatura
+create;buonny/ClientesProdutosServicos;assinatura_visualizar
+
+
+

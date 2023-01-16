@@ -1,0 +1,5 @@
+[ACO]	
+create;buonny/Configuracoes;index_param_cargos
+create;buonny/Configuracoes;listagem_param_cargos
+create;buonny/Configuracoes;atualiza_status_param_cargos
+create;buonny/Configuracoes;incluir_param_cargos

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_epi" language="groovy" pageWidth="518" pageHeight="802" columnWidth="518" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppra"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_GRUPOS_EXPOSICAO_RISCO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+RHHealth.publico.Ufn_decode_utf8_string(ep.nome) AS nome,
+ep.fabricante,
+ger.numero_ca,
+CONVERT(VARCHAR(10), ger.data_validade_ca, 103) as data_validade_ca,
+ger.atenuacao,
+CASE WHEN ger.controle= 1 THEN 'Existente' WHEN ger.controle = 2 THEN 'Recomendado' END as controle
+FROM RHHealth.dbo.grupos_exposicao_risco_epi ger
+    INNER JOIN RHHealth.dbo.epi ep
+        ON(ep.codigo = ger.codigo_epi)
+where ger.codigo_grupos_exposicao_risco = $P{CODIGO_GRUPOS_EXPOSICAO_RISCO}]]>
+	</queryString>
+	<field name="nome" class="java.lang.String"/>
+	<field name="fabricante" class="java.lang.String"/>
+	<field name="numero_ca" class="java.lang.Integer"/>
+	<field name="data_validade_ca" class="java.lang.String"/>
+	<field name="atenuacao" class="java.lang.Integer"/>
+	<field name="controle" class="java.lang.String"/>
+	<pageHeader>
+		<band height="9">
+			<staticText>
+				<reportElement  x="0" y="0" width="67" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tecnologia de Proteção]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  x="78" y="0" width="72" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descrição]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  x="208" y="0" width="70" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fabricante]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  x="337" y="0" width="41" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Número CA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  x="388" y="0" width="43" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Validade]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  x="453" y="0" width="65" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Atenuação (NRRsf)]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="32" splitType="Stretch">
+			<frame>
+				<reportElement  style="bordered" x="0" y="2" width="518" height="16"/>
+				<textField>
+					<reportElement  x="78" y="0" width="122" height="16"/>
+					<textElement textAlignment="Justified" verticalAlignment="Middle">
+						<font size="5" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement  x="208" y="0" width="120" height="16"/>
+					<textElement textAlignment="Justified" verticalAlignment="Middle">
+						<font size="5" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{fabricante}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement  x="1" y="2" width="36" height="14"/>
+					<textElement textAlignment="Justified" verticalAlignment="Middle">
+						<font size="5" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{controle}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<textField>
+				<reportElement  x="337" y="2" width="41" height="16"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(( $F{numero_ca})? $F{numero_ca} : '')]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement  x="388" y="2" width="65" height="16"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(($F{data_validade_ca})? $F{data_validade_ca} : '')]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement  x="453" y="2" width="65" height="16"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(($F{atenuacao})? $F{atenuacao} : '')]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

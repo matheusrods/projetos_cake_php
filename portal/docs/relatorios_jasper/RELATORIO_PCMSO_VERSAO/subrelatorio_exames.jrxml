@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subrelatorio_exames" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.7715610000000017"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_pcmso_versao"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository/"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/relatorio_pcmso_versao_files/subrelatorio_exames.jrxml"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="0"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="1000"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_SETOR" class="java.lang.Integer"/>
+	<parameter name="CODIGO_CARGO" class="java.lang.Integer"/>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String"/>
+	<parameter name="CODIGO_PCMSO_VERSAO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+	ex.codigo,
+	RHHealth.publico.Ufn_decode_utf8_string(ex.descricao) COLLATE SQL_Latin1_General_CP1_CI_AS AS descricao,
+	aev.exame_admissional,
+	aev.exame_retorno,
+	aev.exame_mudanca,
+	aev.exame_demissional,
+	aev.exame_periodico,
+    aev.exame_monitoracao,
+	(CASE WHEN aev.periodo_meses IS NOT NULL AND aev.periodo_meses != ''  THEN
+		CONCAT(aev.periodo_meses COLLATE SQL_Latin1_General_CP1_CI_AS, ' meses' COLLATE SQL_Latin1_General_CP1_CI_AS)
+	ELSE
+		'' COLLATE SQL_Latin1_General_CP1_CI_AS
+	END) COLLATE SQL_Latin1_General_CP1_CI_AS AS periodo_meses,
+	(CASE WHEN aev.periodo_apos_demissao IS NOT NULL AND aev.periodo_apos_demissao != '' THEN
+		CONCAT(aev.periodo_apos_demissao COLLATE SQL_Latin1_General_CP1_CI_AS, ' meses' COLLATE SQL_Latin1_General_CP1_CI_AS)
+	ELSE
+		'' COLLATE SQL_Latin1_General_CP1_CI_AS
+	END) COLLATE SQL_Latin1_General_CP1_CI_AS AS periodo_apos_demissao
+FROM RHHealth.dbo.aplicacao_exames_versoes aev
+	INNER JOIN RHHealth.dbo.exames ex ON (ex.codigo = aev.codigo_exame)
+	LEFT OUTER join RHHealth.dbo.grupos_homogeneos_exposicao_detalhes ghed ON (ghed.codigo_setor = aev.codigo_setor AND ghed.codigo_cargo = aev.codigo_cargo)
+	LEFT OUTER join  RHHealth.dbo.grupos_homogeneos_exposicao ghe ON (ghe.codigo_cliente = aev.codigo_cliente AND ghe.codigo = ghed.codigo_grupo_homogeneo)
+	INNER JOIN RHHealth.dbo.pcmso_versoes pv ON pv.codigo = aev.codigo_pcmso_versoes
+WHERE aev.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+	AND aev.codigo_setor = $P{CODIGO_SETOR}
+	AND aev.codigo_cargo = $P{CODIGO_CARGO}
+	AND pv.codigo = $P{CODIGO_PCMSO_VERSAO}]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="descricao" class="java.lang.String"/>
+	<field name="exame_admissional" class="java.lang.Integer"/>
+	<field name="exame_retorno" class="java.lang.Integer"/>
+	<field name="exame_mudanca" class="java.lang.Integer"/>
+	<field name="exame_demissional" class="java.lang.Integer"/>
+	<field name="exame_periodico" class="java.lang.Integer"/>
+	<field name="exame_monitoracao" class="java.lang.Integer"/>
+	<field name="periodo_meses" class="java.lang.String"/>
+	<field name="periodo_apos_demissao" class="java.lang.String"/>
+	<pageHeader>
+		<band height="17">
+			<frame>
+				<reportElement style="bordered" x="0" y="2" width="552" height="15"/>
+				<staticText>
+					<reportElement x="11" y="0" width="64" height="15"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Exames]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="194" y="0" width="46" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ADMISSAO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="241" y="0" width="46" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APÓS ADM.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="289" y="0" width="46" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PERIÓDICO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="337" y="0" width="46" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[RET. TRAB]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="385" y="0" width="48" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MUD. FUNÇ.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="435" y="0" width="46" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DEMISSÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="482" y="0" width="67" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MONITORAÇÃO]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="18" splitType="Stretch">
+			<frame>
+				<reportElement style="bordered" x="0" y="3" width="552" height="15" isPrintWhenDetailOverflows="true"/>
+				<textField>
+					<reportElement x="12" y="0" width="182" height="15" isPrintWhenDetailOverflows="true"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="195" y="0" width="46" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[($F{exame_admissional})? 'X' : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="289" y="0" width="46" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{periodo_meses}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="337" y="0" width="46" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[($F{exame_retorno})? 'X' : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="385" y="0" width="48" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[($F{exame_mudanca})? 'X' : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="435" y="0" width="46" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[($F{exame_demissional})? 'X' : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="241" y="1" width="46" height="14"/>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="241" y="0" width="46" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{periodo_apos_demissao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="482" y="0" width="67" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[($F{exame_monitoracao})? 'X' : '']]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

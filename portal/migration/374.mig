@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/ClienteImplantacao;gerar_nova_versao
+create;buonny/ClienteImplantacao;atualiza_status_ppra_concluido
+create;buonny/ClienteImplantacao;atualiza_status_ppra_versionamento

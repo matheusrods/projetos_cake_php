@@ -1,0 +1,35 @@
+<?php
+class SeguradoraEnderecoLog extends AppModel {
+    var $name = 'SeguradoraEnderecoLog';
+    var $tableSchema = 'dbo';
+    var $databaseTable = 'RHHealth';
+    var $useTable = 'seguradora_endereco_log';
+    var $primaryKey = 'codigo';
+    var $actsAs = array('Secure');
+    var $belongsTo = array(
+        'TipoContato' => array(
+            'className' => 'TipoContato',
+            'foreignKey' => 'codigo_tipo_contato'
+        ),
+    );
+    var $validate = array(
+        'codigo_seguradora' => array(
+            'rule' => 'notEmpty',
+            'message' => 'Seguradora não informada',
+            'required' => true
+        ),
+        'numero' => array(
+            'rule' => 'notEmpty',
+            'message' => 'Informe o numero'
+        ),
+        'codigo_tipo_contato' => array(
+            'rule' => 'notEmpty',
+            'message' => 'Informe o tipo de contato'
+        ),
+        'endereco_cep' => array(
+            'rule' => 'notEmpty',
+            'message' => 'Informe um CEP'
+        )
+    );       
+}
+?>

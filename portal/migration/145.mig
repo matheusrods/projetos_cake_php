@@ -1,0 +1,4 @@
+[ACO]
+create;buonny;ClientesImplantacao
+create;buonny/ClientesImplantacao;editar
+create;buonny/ClientesImplantacao;listagem

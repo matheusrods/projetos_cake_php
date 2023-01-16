@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/PedidosExames;pedidos_exames_emitidos
+create;buonny/PedidosExames;listagem_pedidos_exames_emitidos
+create;buonny/PedidosExames;get_item_pedido_emitido

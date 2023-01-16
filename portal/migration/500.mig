@@ -1,0 +1,7 @@
+[ACO]
+create;buonny/Painel;modulo_walk_talk
+create;buonny/Swt;editar_form
+create;buonny/Swt;confirma_titulo
+create;buonny/Swt;confirma_questao
+create;buonny/Swt;atualiza_status_titulo
+create;buonny/Swt;atualiza_status_questao

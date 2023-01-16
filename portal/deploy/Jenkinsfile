@@ -1,0 +1,44 @@
+#!/usr/bin/env groovy
+
+node('master') {
+
+	try {
+
+		stage('Build') {
+			checkout scm
+		}
+
+		stage('Config') {
+			sh "touch /var/lib/jenkins/workspace/TstRHHealth/app/config/.feedback"
+
+			sh "mkdir -p /var/lib/jenkins/workspace/TstRHHealth/app/tmp/cache/models/"
+
+        	sh "chmod 777 /var/lib/jenkins/workspace/TstRHHealth/cake/console/cake"
+        	sh "chmod -R 777 /var/lib/jenkins/workspace/TstRHHealth/app/webroot/files"
+        	sh "chmod -R 777 /var/lib/jenkins/workspace/TstRHHealth/app/tmp/"
+
+        	sh "cp /var/lib/jenkins/workspace/TstRHHealth/app/config/database.php.rhhealth /var/lib/jenkins/workspace/TstRHHealth/app/config/database.php"
+        }
+
+		stage('Rsync') {
+            sh "sshpass -p 'deploy' rsync -azvh -e ssh --progress --delete /var/lib/jenkins/workspace/TstRHHealth/* deploy@172.16.1.130:/home/sistemas/rhhealth/portal/"
+        }
+		
+		stage('Cache') {
+            sh "wget https://tstportal.rhhealth.com.br/portal/sistemas/limpa_cache"
+        }
+
+
+	} catch(error) {
+		currentBuild.result = 'FAILURE'
+        throw error
+    } finally {
+        if (currentBuild.result != 'FAILURE') {
+			sh "echo 'SUCCESS'"
+			slackSend color: "good", message: "Job: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} was successful"
+		} else {
+			sh "echo 'FAILED'"
+			slackSend color: "danger", message: "Job: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} its resulat was unclear"
+		}
+    }
+}

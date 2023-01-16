@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;ClientesSetoresCargos
+create;buonny/ClientesSetoresCargos;index
+create;buonny/ClientesSetoresCargos;listagem
+create;buonny/ClientesSetoresCargos;incluir
+create;buonny/ClientesSetoresCargos;editar
+create;buonny/ClientesSetoresCargos;excluir

@@ -1,0 +1,14 @@
+[ACO]
+create;buonny;Cbo
+create;buonny/Cbo;carrega_cbo
+create;buonny/Cbo;localiza_cbo
+create;buonny/Cbo;buscar_listagem
+create;buonny/ClientesFuncionarios;atualiza_status
+create;buonny;GruposExposicaoRiscos
+create;buonny/GruposExposicaoRiscos;excluir
+create;buonny/Produtos;editar_status_produtos
+create;buonny/ProdutosServicos;editar_status_produto_servico
+create;buonny/Funcionarios;excluir
+create;buonny/TiposDocumentos;verificaDocumentosFaltantes
+create;buonny/SMS;carrega_combos
+

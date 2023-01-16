@@ -1,0 +1,148 @@
+<?php
+class UperfilFixture extends CakeTestFixture {
+    var $name = 'Uperfil';
+    var $table = 'uperfis';
+    var $fields = array (
+        'codigo' => array ( 'type' => 'integer', 'null' => true, 'default' => '', 'length' => 11, 'key' => 'primary', ),
+        'codigo_usuario_inclusao' => array ( 'type' => 'integer', 'null' => true, 'default' => '', 'length' => 4, ),
+        'codigo_cliente' => array ( 'type' => 'integer', 'null' => true, 'default' => '', 'length' => 4, ),
+        'codigo_tipo_perfil' => array ( 'type' => 'integer', 'null' => true, 'default' => '', 'length' => 4, ),
+        'codigo_pai' => array ( 'type' => 'integer', 'null' => true, 'default' => '', 'length' => 4, ),
+        'data_inclusao' => array ( 'type' => 'datetime', 'null' => true, 'default' => '', 'length' => NULL, ),
+        'perfil_cliente' => array ( 'type' => 'boolean', 'null' => true, 'default' => '',),
+        'descricao' => array ( 'type' => 'string', 'null' => true, 'default' => '', 'length' => 128, ),
+    );
+    var $records = array(
+    	array(
+            'codigo' => 1,
+            'descricao' => 'Admin',
+            'data_inclusao' => '2012-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => NULL,
+            'codigo_tipo_perfil' => 5,
+            'codigo_pai' => NULL,
+        ),
+        array(
+            'codigo' => 2,
+            'descricao' => 'Usuário Financeiro',
+            'data_inclusao' => '2012-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => 19113,
+            'codigo_tipo_perfil' => 3,
+            'codigo_pai' => NULL,
+        ), 
+        array(
+            'codigo' => 3,
+            'descricao' => 'Cliente Financeiro',
+            'data_inclusao' => '2012-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => 7 ,
+            'perfil_cliente' => 1,
+            'codigo_pai' => NULL,
+        ),  
+        array(
+            'codigo' => 4,
+            'descricao' => 'Seguradora',
+            'data_inclusao' => '2012-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => 20000,
+            'codigo_tipo_perfil' => 2,
+            'codigo_pai' => NULL,
+        ), 
+        array(
+            'codigo' => 5,
+            'descricao' => 'Filial',
+            'data_inclusao' => '2012-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => 29671,
+            'codigo_tipo_perfil' => 4,
+            'codigo_pai' => NULL,
+        ),
+        array(
+            'codigo' => 6,
+            'descricao' => 'Gerente TI',
+            'data_inclusao' => '2012-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => NULL,
+            'codigo_tipo_perfil' => 5,
+            'codigo_pai' => NULL,
+        ),
+        array(
+            'codigo' => 7,
+            'descricao' => 'Gerente Pai de todos',
+            'data_inclusao' => '2012-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => NULL,
+            'codigo_tipo_perfil' => 5,
+            'codigo_pai' => NULL,
+        ),
+        array(
+            'codigo' => 8,
+            'descricao' => 'Supervisor filho do gerente',
+            'data_inclusao' => '2012-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => NULL,
+            'codigo_tipo_perfil' => 5,
+            'codigo_pai' => 7,
+        ),
+        array(
+            'codigo' => 9,
+            'descricao' => 'Operador 1 - Filho do Supervisor',
+            'data_inclusao' => '2012-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => NULL,
+            'codigo_tipo_perfil' => 5,
+            'codigo_pai' => 8,
+        ),
+        array(
+            'codigo' => 10,
+            'descricao' => 'Operador 2 - Filho do Supervisor',
+            'data_inclusao' => '2012-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => NULL,
+            'codigo_tipo_perfil' => 5,
+            'codigo_pai' => 1,
+        ),           
+
+        array(
+            'codigo' => 11,
+            'descricao' => 'Gerente BuonnySat',
+            'data_inclusao' => '2015-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => NULL,
+            'codigo_tipo_perfil' => 5,
+            'codigo_pai' => NULL,
+        ),
+        array(
+            'codigo' => 12,
+            'descricao' => 'Coordenador Buonny Sat',
+            'data_inclusao' => '2015-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => NULL,
+            'codigo_tipo_perfil' => 5,
+            'codigo_pai' => 11,
+        ),
+        array(
+            'codigo' => 13,
+            'descricao' => 'Supervisor Buonny Sat',
+            'data_inclusao' => '2015-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => NULL,
+            'codigo_tipo_perfil' => 5,
+            'codigo_pai' => 12,
+        ),
+        array(
+            'codigo' => 14,
+            'descricao' => 'Operador BuonnySat',
+            'data_inclusao' => '2015-04-16 00:00:00',
+            'codigo_usuario_inclusao' => 1,
+            'codigo_cliente' => NULL,
+            'codigo_tipo_perfil' => 5,
+            'codigo_pai' => 11,
+        ),
+
+
+
+    );
+}
+?>

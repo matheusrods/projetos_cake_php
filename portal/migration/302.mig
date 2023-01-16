@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;FuncionarioMatriculas
+create;buonny/FuncionarioMatriculas;salva_matricula
+create;buonny/FuncionarioMatriculas;listagem_matriculas
+create;buonny/FuncionarioMatriculas;edita_setor_cargo
+create;buonny/FuncionarioMatriculas;insere_setor_cargo
+create;buonny/FuncionarioMatriculas;edita_matricula

@@ -1,0 +1,2284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ficha_clinica" pageWidth="595" pageHeight="942" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.8150000000000082"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="4504"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ficha_clinica_1"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/ficha_clinica_files/ficha_clinica_jrxml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Buonny - TST"/>
+	<property name="com.jaspersoft.studio.report.unit.description" value="Ficha Clinica"/>
+	<property name="com.jaspersoft.studio.report.description" value="Ficha Clinica"/>
+	<style name="Detail 1" mode="Opaque" forecolor="#000000" backcolor="#F0F0F0">
+		<box>
+			<pen lineWidth="1.0"/>
+			<topPen lineWidth="1.0"/>
+			<leftPen lineWidth="1.0"/>
+			<bottomPen lineWidth="1.0"/>
+			<rightPen lineWidth="1.0"/>
+		</box>
+	</style>
+	<style name="Table" mode="Transparent" fill="Solid">
+		<pen lineWidth="1.0"/>
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+			<topPen lineWidth="1.0" lineColor="#000000"/>
+			<leftPen lineWidth="1.0" lineColor="#000000"/>
+			<bottomPen lineWidth="1.0" lineColor="#000000"/>
+			<rightPen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Bordered">
+		<box>
+			<pen lineWidth="1.0"/>
+			<topPen lineWidth="1.0"/>
+			<leftPen lineWidth="1.0"/>
+			<bottomPen lineWidth="1.0"/>
+			<rightPen lineWidth="1.0"/>
+		</box>
+	</style>
+	<subDataset name="Table Dataset 1"/>
+	<subDataset name="Table Dataset 2"/>
+	<subDataset name="dataset1"/>
+	<subDataset name="Table Dataset 3"/>
+	<subDataset name="Table Dataset 4"/>
+	<subDataset name="Table Dataset 5"/>
+	<parameter name="CODIGO_CLIENTE_FUNCIONARIO" class="java.lang.String"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String"/>
+	<parameter name="CODIGO_FUNC_SETOR_CARGO" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\Nova FICHA_CLINICA\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[DECLARE @codigo_cliente_funcionario VARCHAR(max);
+DECLARE @codigo_pedido_exame VARCHAR(max);
+DECLARE @codigo_func_setor_cargo VARCHAR(max);
+
+SET @codigo_cliente_funcionario = $P!{CODIGO_CLIENTE_FUNCIONARIO};
+SET @codigo_pedido_exame = $P!{CODIGO_PEDIDO_EXAME};
+SET @codigo_func_setor_cargo = $P!{CODIGO_FUNC_SETOR_CARGO};
+
+SELECT
+RHHealth.publico.Ufn_decode_utf8_string(cl.nome_fantasia) AS descricao_unidade,
+RHHealth.publico.Ufn_decode_utf8_string(cl.razao_social) AS descricao_empresa,
+RHHealth.publico.Ufn_decode_utf8_string(fu.nome) as nome,
+RHHealth.publico.Ufn_decode_utf8_string(fu.sexo) as sexo,
+CASE
+WHEN fu.sexo = 'F' THEN 'Feminino'
+WHEN fu.sexo = 'M' THEN 'Masculino'
+END AS sexo_case,
+RHHealth.publico.ufn_formata_cpf(fu.cpf) as cpf,
+fu.rg as rg,
+CONVERT(VARCHAR(10), fu.data_nascimento, 103) AS data_nascimento,
+RHHealth.publico.Ufn_decode_utf8_string((SELECT descricao FROM RHHealth.dbo.setores where codigo = fsc.codigo_setor )) AS setor_descricao,
+RHHealth.publico.Ufn_decode_utf8_string((SELECT descricao FROM RHHealth.dbo.cargos where codigo = fsc.codigo_cargo)) AS cargo_descricao,
+-- RHHealth.publico.Ufn_decode_utf8_string((SELECT descricao FROM RHHealth.dbo.setores where codigo = (SELECT TOP 1 codigo_setor FROM RHHealth.dbo.funcionario_setores_cargos WHERE codigo_cliente_funcionario = cf.codigo AND ((data_fim = '' OR data_fim IS NULL) OR (data_fim is not null )) ORDER BY 1 DESC))) AS setor_descricao,
+-- RHHealth.publico.Ufn_decode_utf8_string((SELECT descricao FROM RHHealth.dbo.cargos where codigo = (SELECT TOP 1 codigo_cargo FROM RHHealth.dbo.funcionario_setores_cargos WHERE codigo_cliente_funcionario = cf.codigo AND ((data_fim = '' OR data_fim IS NULL) OR (data_fim is not null )) ORDER BY 1 DESC))) AS cargo_descricao,
+CONVERT(VARCHAR(10), getdate(), 103) AS data,
+CASE
+WHEN pe.exame_admissional = '1' THEN 'Exame admissional'
+WHEN pe.exame_periodico = '1' THEN 'Exame periódico'
+WHEN pe.exame_demissional = '1' THEN 'Exame demissional'
+WHEN pe.exame_retorno = '1' THEN 'Retorno'
+WHEN pe.exame_mudanca = '1' THEN 'Mudança de setor'
+WHEN pe.qualidade_vida = '1' THEN 'Qualidade de vida'
+WHEN pe.exame_monitoracao = '1' THEN 'Monitoração'
+ELSE 'Pontual'
+END AS tipo_exame_ocupacional,
+    (SELECT TOP 1 ri.risco_caracterizado_por_altura
+FROM rhhealth.dbo.pedidos_exames ped
+    INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = ped.codigo_func_setor_cargo
+    INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = fsc.codigo_cliente_funcionario
+    INNER JOIN RHHealth.dbo.cliente c ON c.codigo = cf.codigo_cliente_matricula
+    INNER JOIN RHHealth.dbo.cargos cg ON cg.codigo = fsc.codigo_cargo
+    INNER JOIN RHHealth.dbo.setores st ON st.codigo = fsc.codigo_setor
+    INNER JOIN RHHealth.dbo.clientes_setores cs ON (cs.codigo_setor = st.codigo AND cs.codigo_cliente_alocacao = fsc.codigo_cliente_alocacao )
+	INNER JOIN RHHealth.dbo.grupo_exposicao ge  ON (ge.codigo_cargo = cg.codigo AND ge.codigo_cliente_setor = cs.codigo AND ((ge.codigo_funcionario = ped.codigo_funcionario) OR (ge.codigo_funcionario IS NULL)))
+    INNER JOIN RHHealth.dbo.grupos_exposicao_risco ger ON (ger.codigo_grupo_exposicao = ge.codigo)
+    INNER JOIN RHHealth.dbo.riscos ri ON (ri.codigo = ger.codigo_risco)
+WHERE ped.codigo = pe.codigo and ri.risco_caracterizado_por_altura is not null and ri.risco_caracterizado_por_altura <> 0) as risco_altura,
+
+    (SELECT TOP 1 ri.risco_caracterizado_por_trabalho_confinado
+FROM rhhealth.dbo.pedidos_exames ped
+    INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = ped.codigo_func_setor_cargo
+    INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = fsc.codigo_cliente_funcionario
+    INNER JOIN RHHealth.dbo.cliente c ON c.codigo = cf.codigo_cliente_matricula
+    INNER JOIN RHHealth.dbo.cargos cg ON cg.codigo = fsc.codigo_cargo
+    INNER JOIN RHHealth.dbo.setores st ON st.codigo = fsc.codigo_setor
+    INNER JOIN RHHealth.dbo.clientes_setores cs ON (cs.codigo_setor = st.codigo AND cs.codigo_cliente_alocacao = fsc.codigo_cliente_alocacao )
+	INNER JOIN RHHealth.dbo.grupo_exposicao ge  ON (ge.codigo_cargo = cg.codigo AND ge.codigo_cliente_setor = cs.codigo AND ((ge.codigo_funcionario = ped.codigo_funcionario) OR (ge.codigo_funcionario IS NULL)))
+	INNER JOIN RHHealth.dbo.grupos_exposicao_risco ger ON (ger.codigo_grupo_exposicao = ge.codigo)
+    INNER JOIN RHHealth.dbo.riscos ri ON (ri.codigo = ger.codigo_risco)
+WHERE ped.codigo = pe.codigo and ri.risco_caracterizado_por_trabalho_confinado is not null and ri.risco_caracterizado_por_trabalho_confinado <> 0) as risco_confinado
+
+FROM RHHealth.dbo.cliente_funcionario cf
+    INNER JOIN RHHealth.dbo.funcionarios fu ON(fu.codigo = cf.codigo_funcionario)
+    INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON (fsc.codigo_cliente_funcionario = cf.codigo
+	AND fsc.codigo = @codigo_func_setor_cargo)
+    INNER JOIN RHHealth.dbo.cliente cl ON(cl.codigo = fsc.codigo_cliente_alocacao)
+    LEFT JOIN RHHealth.dbo.pedidos_exames pe
+        ON(pe.codigo = @codigo_pedido_exame)
+WHERE cf.codigo = @codigo_cliente_funcionario]]>
+	</queryString>
+	<field name="descricao_unidade" class="java.lang.String"/>
+	<field name="descricao_empresa" class="java.lang.String"/>
+	<field name="nome" class="java.lang.String"/>
+	<field name="cpf" class="java.lang.String"/>
+	<field name="rg" class="java.lang.String"/>
+	<field name="sexo" class="java.lang.String"/>
+	<field name="sexo_case" class="java.lang.String"/>
+	<field name="data_nascimento" class="java.lang.String"/>
+	<field name="setor_descricao" class="java.lang.String"/>
+	<field name="cargo_descricao" class="java.lang.String"/>
+	<field name="data" class="java.lang.String"/>
+	<field name="tipo_exame_ocupacional" class="java.lang.String"/>
+	<field name="risco_altura" class="java.lang.Integer"/>
+	<field name="risco_confinado" class="java.lang.Integer"/>
+	<detail>
+		<band height="73">
+			<staticText>
+				<reportElement x="202" y="17" width="151" height="30" forecolor="#009999"/>
+				<textElement textAlignment="Center">
+					<font size="20" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[Ficha Médica]]></text>
+			</staticText>
+			<image>
+				<reportElement x="12" y="17" width="104" height="34"/>
+				<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="450" y="14" width="100" height="40">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+		</band>
+		<band height="145">
+			<rectangle>
+				<reportElement x="0" y="1" width="555" height="142"/>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="17" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="34" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="52" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="70" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="138" y="1" width="1" height="142"/>
+			</line>
+			<line>
+				<reportElement x="0" y="88" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="106" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="5" y="36" width="100" height="15"/>
+				<text><![CDATA[Setor:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="2" width="100" height="15"/>
+				<text><![CDATA[Empresa:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="19" width="100" height="15"/>
+				<text><![CDATA[Nome:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="54" width="100" height="15"/>
+				<text><![CDATA[Funçao:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="72" width="100" height="15"/>
+				<text><![CDATA[Sexo:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="90" width="100" height="15"/>
+				<text><![CDATA[RG:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="108" width="125" height="15"/>
+				<text><![CDATA[Data de Nascimento:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="124" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="5" y="126" width="100" height="15"/>
+				<text><![CDATA[Data do Exame:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="145" y="2" width="412" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descricao_empresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="145" y="19" width="374" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="145" y="36" width="412" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{setor_descricao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="145" y="90" width="138" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rg}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="145" y="126" width="202" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="144" y="107" width="411" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data_nascimento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="145" y="73" width="412" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sexo_case}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="144" y="54" width="412" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cargo_descricao}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="313" y="89" width="1" height="17"/>
+			</line>
+			<staticText>
+				<reportElement x="319" y="91" width="100" height="15"/>
+				<text><![CDATA[CPF:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="437" y="89" width="1" height="17"/>
+			</line>
+			<textField>
+				<reportElement x="445" y="90" width="138" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cpf}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="94">
+			<rectangle>
+				<reportElement x="0" y="4" width="555" height="35"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="46" width="555" height="44"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="236" y="11" width="79" height="23"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MEDIÇÕES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="7" y="48" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRESSÃO ARTERIAL:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="7" y="63" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PULSO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="7" y="77" width="148" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CIRCUNFERÊNCIA ABDOMINAL:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="60" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="75" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="315" y="46" width="1" height="44"/>
+			</line>
+			<line>
+				<reportElement x="437" y="46" width="1" height="44"/>
+			</line>
+			<line>
+				<reportElement x="137" y="46" width="1" height="44"/>
+			</line>
+			<staticText>
+				<reportElement x="323" y="48" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PESO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="323" y="63" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ALTURA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="323" y="77" width="125" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CIRCUNFERÊNCIA QUADRIL:]]></text>
+			</staticText>
+		</band>
+		<band height="208">
+			<rectangle>
+				<reportElement x="0" y="3" width="555" height="35"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="206" y="11" width="160" height="23"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HISTÓRICO FAMILIAR]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="44" width="555" height="160"/>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="59" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="138" y="44" width="1" height="44"/>
+			</line>
+			<staticText>
+				<reportElement x="50" y="46" width="68" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DOENÇAS]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="73" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="87" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="6" y="61" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DIABETES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="75" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRESSÃO ALTA]]></text>
+			</staticText>
+			<line>
+				<reportElement x="315" y="44" width="1" height="44"/>
+			</line>
+			<line>
+				<reportElement x="225" y="44" width="1" height="44"/>
+			</line>
+			<staticText>
+				<reportElement x="174" y="46" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SIM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="264" y="46" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NÃO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="171" y="61" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="171" y="75" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="61" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="75" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="391" y="46" width="80" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PARENTESCO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="258" y="90" width="46" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CÂNCER]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="101" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="115" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="129" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="144" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="157" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="171" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="185" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="6" y="103" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRÓSTATA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="117" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MAMA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="132" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[COLO DO ÚTERO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="146" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INTESTINO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="159" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OUTROS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="173" width="133" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DOENÇAS DO CORAÇÃO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="188" width="100" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OUTRAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="171" y="103" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="171" y="117" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="171" y="131" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="171" y="146" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="171" y="159" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="171" y="173" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="171" y="187" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<line>
+				<reportElement x="138" y="101" width="1" height="103"/>
+			</line>
+			<line>
+				<reportElement x="225" y="101" width="1" height="103"/>
+			</line>
+			<line>
+				<reportElement x="315" y="101" width="1" height="103"/>
+			</line>
+			<staticText>
+				<reportElement x="262" y="104" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="117" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="131" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="146" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="159" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="173" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="187" width="31" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(        )]]></text>
+			</staticText>
+		</band>
+		<band height="336">
+			<frame>
+				<reportElement x="0" y="1" width="555" height="329"/>
+				<rectangle>
+					<reportElement x="0" y="2" width="555" height="35"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="193" y="10" width="212" height="20"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[HISTÓRICO PESSOAL (HPP)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="0" y="44" width="555" height="282"/>
+				</rectangle>
+				<line>
+					<reportElement x="0" y="58" width="555" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="6" y="46" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PRESSAO ALTA ?]]></text>
+				</staticText>
+				<line>
+					<reportElement x="226" y="44" width="1" height="282"/>
+				</line>
+				<line>
+					<reportElement x="0" y="72" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="86" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="100" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="114" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="128" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="142" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="156" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="170" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="184" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="198" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="212" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="226" width="555" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="6" y="60" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS DO CORAÇÃO ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="74" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROBLEMAS RESPIRATÓRIOS ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="88" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS NOS RINS ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="102" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS NO FÍGADO ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="116" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[EPILEPSIA, CONVULSÃO ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="130" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS NO ESTÔMAGO ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="144" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROBLEMAS DE VISÃO ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="158" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROBLEMAS DE AUDIÇÃO ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="172" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS PSIQUIÁTRICAS ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="186" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CÂNCER ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="200" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DIABETES ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="214" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS NA COLUNA ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="228" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[HÉRNIAS INGUINAL OU UMBILICAL ?]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="240" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="254" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="268" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="282" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="296" width="555" height="1"/>
+				</line>
+				<line>
+					<reportElement x="0" y="310" width="555" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="6" y="242" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[LESÕES NAS ARTICULAÇÕES ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="256" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS NA TIREÓIDE ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="270" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALGUMA DEFICIÊNCIA FÍSICA ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="284" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALGUMA DOENÇA NÃO MENCIONADA ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="298" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[JÁ SOFREU ALGUMA INTERNAÇÃO ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="312" width="214" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[JÁ SOFREU ALGUMA CIRURGIA ?]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="46" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="46" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<line>
+					<reportElement x="382" y="44" width="1" height="282"/>
+				</line>
+				<staticText>
+					<reportElement x="283" y="60" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="74" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="88" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="102" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="116" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="130" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="145" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="158" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="172" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="187" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="200" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="214" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="228" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="243" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="257" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="270" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="284" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="298" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="283" y="313" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SIM (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="60" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="74" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="88" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="102" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="116" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="130" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="144" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="158" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="172" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="186" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="200" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="214" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="228" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="242" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="256" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="270" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="284" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="299" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="443" y="313" width="67" height="11"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NÃO (       )]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="84">
+			<printWhenExpression><![CDATA[$F{sexo}.equals( "F" )]]></printWhenExpression>
+			<rectangle>
+				<reportElement mode="Opaque" x="-1" y="2" width="555" height="35"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="107" y="11" width="425" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HISTÓRICO GESTACIONAL (EXCLUSIVO DE MULHERES)]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="1" y="48" width="554" height="30"/>
+			</rectangle>
+			<line>
+				<reportElement x="1" y="63" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="6" y="51" width="119" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[GESTAÇÕES :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="65" width="119" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PARTOS :]]></text>
+			</staticText>
+			<line>
+				<reportElement x="138" y="48" width="1" height="30"/>
+			</line>
+			<line>
+				<reportElement x="314" y="48" width="1" height="30"/>
+			</line>
+			<line>
+				<reportElement x="436" y="48" width="1" height="30"/>
+			</line>
+			<staticText>
+				<reportElement x="322" y="65" width="119" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ÚLTIMA MENSTRUAÇAO :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="322" y="51" width="119" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ABORTOS :]]></text>
+			</staticText>
+		</band>
+		<band height="139">
+			<rectangle>
+				<reportElement mode="Opaque" x="-1" y="4" width="555" height="35"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="197" y="14" width="231" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EXAMES PREVENTIVOS]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="47" width="554" height="60"/>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="61" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="75" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="89" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="5" y="49" width="256" height="11">
+					<printWhenExpression><![CDATA[$F{sexo}.equals( "M" )]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DOSOU PSA A MENOS DE 1 ANO ?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="63" width="250" height="11">
+					<printWhenExpression><![CDATA[$F{sexo}.equals( "M" )]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REALIZOU EXAME DE TOQUE A MENOS DE 1 ANO ?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="49" width="290" height="11">
+					<printWhenExpression><![CDATA[$F{sexo}.equals( "F" )]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REALIZOU PREVENTIVO GINECOLOGICO A MENOS DE 1 ANO ?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="63" width="251" height="11">
+					<printWhenExpression><![CDATA[$F{sexo}.equals( "F" )]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REALIZOU MAMOGRAFIA A MENOS DE 1 ANO ?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="77" width="252" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REALIZOU COLONOSCOPIA HÁ MENOS DE 5 ANOS ?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="91" width="257" height="11">
+					<printWhenExpression><![CDATA[$F{sexo}.equals( "F" )]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[É VACINADA CONTRA HPV ?]]></text>
+			</staticText>
+			<line>
+				<reportElement x="437" y="47" width="1" height="43"/>
+			</line>
+			<line>
+				<reportElement x="339" y="47" width="1" height="43"/>
+			</line>
+			<staticText>
+				<reportElement x="449" y="49" width="103" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NÃO REALIZOU (       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="449" y="63" width="103" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NÃO REALIZOU (       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="449" y="77" width="101" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NÃO REALIZOU (       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="356" y="78" width="81" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ALTERADO (       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="356" y="64" width="82" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ALTERADO (       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="356" y="49" width="82" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ALTERADO (       )]]></text>
+			</staticText>
+			<line>
+				<reportElement x="259" y="47" width="1" height="60"/>
+			</line>
+			<staticText>
+				<reportElement x="275" y="77" width="69" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NORMAL (       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="274" y="63" width="70" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NORMAL (       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="274" y="49" width="70" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NORMAL (       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="325" y="92" width="67" height="11">
+					<printWhenExpression><![CDATA[$F{sexo}.equals( "F" )]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SIM (       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="93" width="50" height="11">
+					<printWhenExpression><![CDATA[$F{sexo}.equals( "F" )]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NÃO (       )]]></text>
+			</staticText>
+		</band>
+		<band height="131">
+			<rectangle>
+				<reportElement x="0" y="0" width="555" height="30"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="217" y="7" width="188" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HÁBITOS DE VIDA]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="37" width="555" height="86"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="6" y="39" width="124" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ATIVIDADE FÍSICA :]]></text>
+			</staticText>
+			<line>
+				<reportElement x="137" y="37" width="1" height="86"/>
+			</line>
+			<line>
+				<reportElement x="0" y="51" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="65" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="79" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="93" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="108" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="6" y="53" width="124" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TABAGISMO :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="67" width="124" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FUMANTE PASSIVO :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="81" width="150" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SE CONSIDERA ESTRESSADO ?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="96" width="124" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BEBIDAS ALCOÓLICAS :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="110" width="124" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FRUTAS E LEGUMES :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="142" y="53" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) NEGA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="142" y="39" width="103" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) SEDENTÁRIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="142" y="67" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) SIM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="142" y="95" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) NEGA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="142" y="110" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) NUNCA]]></text>
+			</staticText>
+			<line>
+				<reportElement x="223" y="37" width="1" height="29"/>
+			</line>
+			<line>
+				<reportElement x="314" y="37" width="1" height="86"/>
+			</line>
+			<line>
+				<reportElement x="445" y="37" width="1" height="86"/>
+			</line>
+			<staticText>
+				<reportElement x="228" y="39" width="102" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) DIARIAMENTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="319" y="39" width="124" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) 3 DIAS NA SEMANA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="451" y="39" width="121" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) 2 DIAS NA SEMANA]]></text>
+			</staticText>
+			<line>
+				<reportElement x="223" y="80" width="1" height="43"/>
+			</line>
+			<staticText>
+				<reportElement x="228" y="54" width="102" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) EX-FUMANTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="228" y="95" width="102" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) DIARIAMENTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="228" y="110" width="102" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) DIARIAMENTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="319" y="53" width="126" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) N CIGARROS / DIA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="320" y="67" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) NÃO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="320" y="81" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) NÃO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="318" y="96" width="145" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[QTOS DIAS BEBE / SEMANA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="319" y="110" width="152" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[QTOS DIAS COME / SEMANA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="142" y="81" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) SIM]]></text>
+			</staticText>
+		</band>
+		<band height="306">
+			<rectangle>
+				<reportElement x="0" y="1" width="554" height="30"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="199" y="6" width="188" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HISTÓRICO OCUPACIONAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="15" y="38" width="230" height="16"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[JÁ TRABALHOU EM QUAIS FUNÇÕES ?  ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="226" y="38" width="230" height="16"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       ) NUNCA TRABALHOU]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="57" width="555" height="64"/>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="77" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="155" y="60" width="124" height="14"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FUNÇÃO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="1" y="97" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="344" y="60" width="66" height="14"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INÍCIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="452" y="60" width="76" height="14"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TÉRMINO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="339" y="57" width="1" height="64"/>
+			</line>
+			<line>
+				<reportElement x="438" y="57" width="1" height="64"/>
+			</line>
+			<staticText>
+				<reportElement x="14" y="127" width="352" height="16"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NOS LOCAIS ONDE TRABALHOU, VOCÊ FAZIA USO DO EPI ? (       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="333" y="127" width="239" height="16"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NUNCA TRABALHOU  (     ) SIM   (     ) NÃO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="15" y="146" width="338" height="16"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[JÁ FICOU AFASTADO PELO INSS ?  (     ) SIM   (     ) NÃO]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="-1" y="166" width="555" height="64"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="160" y="169" width="124" height="14"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MOTIVO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="338" y="166" width="1" height="64"/>
+			</line>
+			<line>
+				<reportElement x="-1" y="206" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="451" y="169" width="76" height="14"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TÉRMINO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="437" y="166" width="1" height="64"/>
+			</line>
+			<staticText>
+				<reportElement x="343" y="169" width="66" height="14"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INÍCIO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="-1" y="186" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="15" y="236" width="395" height="16"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[JÁ SOFREU ALGUM ACIDENTE DE TRABALHO ?  (     ) SIM   (     ) NÃO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="277" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="344" y="260" width="66" height="14"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INÍCIO]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="257" width="555" height="44"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="452" y="260" width="76" height="14"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ANO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="278" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="438" y="257" width="1" height="44"/>
+			</line>
+			<staticText>
+				<reportElement x="191" y="260" width="124" height="14"/>
+				<textElement>
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LESÃO]]></text>
+			</staticText>
+		</band>
+		<band height="298">
+			<rectangle>
+				<reportElement x="0" y="5" width="554" height="30"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="214" y="10" width="188" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AVALIAÇÃO PCD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="7" y="43" width="543" height="16"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[O EXAMINADO APRESENTA CARACTERÍSTICAS QUE O ENQUADREM NA CONDIÇÃO ?  (     ) SIM   (     ) NÃO]]></text>
+			</staticText>
+		</band>
+		<band height="239">
+			<rectangle>
+				<reportElement x="0" y="5" width="554" height="30"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="222" y="12" width="188" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EXAME FÍSICO]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="42" width="555" height="190"/>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="60" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="76" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="91" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="105" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="119" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="133" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="147" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="161" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="175" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="115" y="46" width="83" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SEGMENTO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="326" y="46" width="42" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NORMAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="463" y="46" width="83" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ALTERADO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="417" y="43" width="1" height="189"/>
+			</line>
+			<line>
+				<reportElement x="276" y="42" width="1" height="190"/>
+			</line>
+			<staticText>
+				<reportElement x="334" y="63" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="334" y="78" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="334" y="93" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="334" y="107" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="334" y="121" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="334" y="135" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="334" y="149" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="334" y="163" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="189" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="203" width="555" height="1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="217" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="334" y="177" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="334" y="191" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="334" y="205" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="334" y="219" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="62" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CABEÇA E PESCOÇO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="78" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AUSCULTA CARDÍACA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="93" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AUSCULTA PULMONAR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="107" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PELE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="121" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MUCOSAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="135" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ABDOME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="149" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MEMBROS SUPERIORES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="163" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MEMBROS INFERIORES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="177" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[COLUNA VERTEBRAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="191" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[VISÃO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="205" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ORIENTAÇÃO NO TEMPO E ESPAÇO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="219" width="169" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TESTE DE ROMBERG]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="190" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="218" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="77" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="120" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="176" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="162" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="92" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="134" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="62" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="204" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="148" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="106" width="67" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(       )]]></text>
+			</staticText>
+		</band>
+		<band height="484">
+			<rectangle>
+				<reportElement x="0" y="6" width="554" height="30"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="231" y="12" width="188" height="20"/>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ANAMNESE]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="47" width="553" height="410"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="-2" y="460" width="574" height="16"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[* CAMPO DESTINADO A DESCRIÇÃO DE ALTERAÇÕES, NOTAS COMPLEMENTARES E RELATORIA DE MEDICAMENTOS DE USO REGULAR]]></text>
+			</staticText>
+			<break>
+				<reportElement x="0" y="480" width="550" height="1"/>
+			</break>
+		</band>
+		<band height="108">
+			<rectangle>
+				<reportElement x="0" y="7" width="554" height="30"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="218" y="13" width="188" height="20"/>
+				<textElement verticalAlignment="Top">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RESULTADO DO EXAME]]></text>
+			</staticText>
+			<frame>
+				<reportElement x="0" y="43" width="555" height="23"/>
+				<rectangle>
+					<reportElement x="459" y="1" width="96" height="22"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement x="363" y="1" width="96" height="22"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement x="0" y="1" width="363" height="22"/>
+					<graphicElement>
+						<pen lineWidth="1.0"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="114" y="1" width="100" height="22"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[EXAME]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="363" y="1" width="96" height="22"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NORMAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="459" y="1" width="96" height="22"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERADO]]></text>
+				</staticText>
+			</frame>
+			<subreport>
+				<reportElement x="0" y="66" width="555" height="42"/>
+				<subreportParameter name="CODIGO_PEDIDO_EXAME">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_exames_pcmso.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="207">
+			<line>
+				<reportElement x="58" y="178" width="182" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="94" y="178" width="100" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[MÉDICO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="323" y="178" width="182" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="360" y="177" width="100" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[FUNCIONÁRIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="12" y="105" width="285" height="25"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data:            _________/___________/___________]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="19" width="188" height="20"/>
+				<textElement verticalAlignment="Top">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PARECER MÉDICO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="48" width="395" height="16"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[APTO  (      )            INAPTO  (      )]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement mode="Transparent" x="0" y="13" width="555" height="30"/>
+			</rectangle>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="39">
+			<textField>
+				<reportElement x="422" y="8" width="80" height="10"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="502" y="8" width="40" height="10"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="8" y="16" width="164" height="10"/>
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Código do Pedido: " + $P{CODIGO_PEDIDO_EXAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="7" y="5" width="90" height="12"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

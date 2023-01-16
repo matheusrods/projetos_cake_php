@@ -1,0 +1,6 @@
+[ACO]	
+create;buonny/Importar;manutencao_pedido_exame
+create;buonny/Importar;manutencao_pedido_exame_listagem
+create;buonny/Importar;modal_manutencao_pedido_exame
+create;buonny/Importar;manutencao_salvar
+create;buonny/Importar;manutencao_excluir_pedido

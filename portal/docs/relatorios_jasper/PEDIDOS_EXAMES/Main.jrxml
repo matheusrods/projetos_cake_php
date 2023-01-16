@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Pedido Exame" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6e864bbe-f697-4929-96be-ab07e0145ce2">
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/pedidos_exame"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.zoom" value="3.3000000000000065"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="432"/>
+	<style name="relatorio_pcmso" mode="Opaque" forecolor="#000000" backcolor="#F0F0F0" fill="Solid" pattern="">
+		<pen lineWidth="1.0"/>
+		<box topPadding="5" leftPadding="0">
+			<pen lineWidth="1.0"/>
+			<topPen lineWidth="1.0"/>
+			<leftPen lineWidth="1.0"/>
+			<bottomPen lineWidth="1.0"/>
+			<rightPen lineWidth="1.0"/>
+		</box>
+	</style>
+	<style name="assinaturas" mode="Opaque" vAlign="Bottom"/>
+	<style name="qualidade_de_vida" mode="Transparent" backcolor="#F0F0F0">
+		<box>
+			<pen lineWidth="1.0"/>
+			<topPen lineWidth="1.0"/>
+			<leftPen lineWidth="1.0"/>
+			<bottomPen lineWidth="1.0"/>
+			<rightPen lineWidth="1.0"/>
+		</box>
+	</style>
+	<style name="monitoramento_pontual" backcolor="#F0F0F0">
+		<box>
+			<pen lineWidth="1.0"/>
+			<topPen lineWidth="1.0"/>
+			<leftPen lineWidth="1.0"/>
+			<bottomPen lineWidth="1.0"/>
+			<rightPen lineWidth="1.0"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FORNECEDOR" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE_FUNCIONARIO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\PEDIDOS_EXAMES\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+	TOP 1 -- esta sendo usado pq pode existir mais de um exame
+	pe.codigo as pedido_exame,
+CASE
+        WHEN age.codigo IS NOT NULL THEN 'Hora Marcada'
+        ELSE 'Ordem de Chegada'
+    END AS tipo_agendamento,
+CASE
+        WHEN pe.exame_admissional > 0 THEN 'Exame admissional'
+        WHEN pe.exame_periodico > 0 THEN 'Exame períodico'
+        WHEN pe.exame_demissional > 0 THEN 'Exame demissional'
+        WHEN pe.exame_retorno > 0 THEN 'Retorno ao trabalho'
+        WHEN pe.exame_mudanca > 0 THEN 'Mudança de cargo'
+        WHEN pe.exame_monitoracao > 0 THEN 'Monitoração Pontual'
+        WHEN pe.pontual > 0 THEN 'Pontual'
+    ELSE '' END AS tipo_exame,
+	RHHealth.publico.Ufn_decode_utf8_string(f.nome) AS nome,
+    RHHealth.publico.Ufn_decode_utf8_string(fe.logradouro) as endereco,
+    convert(NVARCHAR, fe.numero)AS numero,
+    ISNULL(fe.complemento, '')   AS complemento,
+	RHHealth.publico.Ufn_decode_utf8_string(fe.bairro) as bairro,
+	RHHealth.publico.Ufn_decode_utf8_string(fe.cidade) as cidade,
+	(SELECT TOP 1 CONCAT ('(',SUBSTRING(replace(REPLACE(descricao, '(',''),')',''),1,2),') ',substring(replace(REPLACE(descricao, '(',''),')',''),3,99)) AS descricao FROM RHHealth.dbo.fornecedores_contato WHERE fornecedores_contato.codigo_fornecedor = f.codigo AND codigo_tipo_retorno IN (1,3,4,7)) as telefone,
+	RHHealth.publico.Ufn_decode_utf8_string(fun.nome) AS funcionario_nome,
+	fun.cpf AS funcionario_cpf,
+	FLOOR(DATEDIFF(DAY, fun.data_nascimento, GETDATE()) / 365.25) AS funcionario_idade,
+	convert(NVARCHAR, cf.admissao , 103) AS funcionario_admissao,
+	convert(NVARCHAR, fun.data_nascimento, 103) AS funcionario_data_nascimento,
+	RHHealth.publico.Ufn_decode_utf8_string(c.razao_social)                AS filial_razao_social,
+    RHHealth.publico.Ufn_decode_utf8_string(c.nome_fantasia)                AS nome_fantasia,
+    RHHealth.publico.Ufn_decode_utf8_string(matriz.razao_social)                 AS matriz_razao_social,
+    CASE
+     WHEN c.codigo_documento_real IS NULL THEN RHHealth.publico.ufn_formata_cnpj(c.codigo_documento)
+     WHEN c.codigo_documento_real = '' THEN RHHealth.publico.ufn_formata_cnpj(c.codigo_documento)
+     ELSE RHHealth.publico.ufn_formata_cnpj(c.codigo_documento_real)
+    END AS cnpj,
+    RHHealth.publico.Ufn_decode_utf8_string(setor.descricao)                   AS setor,
+    RHHealth.publico.Ufn_decode_utf8_string(cargo.descricao)                    AS cargo,
+    ISNULL(RHHealth.publico.Ufn_decode_utf8_string(mpcmso.nome),'')                AS medico_coordenador,
+	ISNULL(RHHealth.publico.Ufn_decode_utf8_string(m.nome), '')                                        AS medico_nome,
+	ISNULL(RHHealth.publico.Ufn_decode_utf8_string(cp.descricao), '')                     AS medico_conselho_descricao,
+	ISNULL(m.numero_conselho, '')                             AS medico_conselho,
+	cf.matricula as matricula
+FROM RHHealth.dbo.pedidos_exames pe WITH (NOLOCK)
+	inner join RHHealth.dbo.cliente_funcionario cf WITH (NOLOCK) ON pe.codigo_cliente_funcionario = cf.codigo
+	inner join RHHealth.dbo.funcionarios fun WITH (NOLOCK) ON cf.codigo_funcionario = fun.codigo
+	inner join RHHealth.dbo.funcionario_setores_cargos fsc WITH (NOLOCK) ON (fsc.codigo_cliente_funcionario = cf.codigo AND fsc.codigo = pe.codigo_func_setor_cargo)
+	inner join RHHealth.dbo.setores setor WITH (NOLOCK) ON fsc.codigo_setor = setor.codigo
+	inner join RHHealth.dbo.cargos cargo WITH (NOLOCK) ON fsc.codigo_cargo = cargo.codigo
+	inner join RHHealth.dbo.itens_pedidos_exames ipe WITH (NOLOCK) ON pe.codigo = ipe.codigo_pedidos_exames
+	inner join RHHealth.dbo.fornecedores f WITH (NOLOCK) on ipe.codigo_fornecedor = f.codigo
+	INNER JOIN RHHealth.dbo.fornecedores_endereco fe WITH (NOLOCK) ON (fe.codigo_fornecedor = f.codigo)
+	LEFT JOIN  RHHealth.dbo.fornecedores_medicos fm WITH (NOLOCK) ON (fm.codigo_fornecedor = f.codigo)
+	LEFT JOIN  RHHealth.dbo.medicos m WITH (NOLOCK) ON (m.codigo = fm.codigo_medico)
+	LEFT JOIN  RHHealth.dbo.conselho_profissional cp WITH (NOLOCK)  ON (cp.codigo = m.codigo_conselho_profissional)
+	INNER JOIN RHHealth.dbo.cliente c WITH (NOLOCK) ON (c.codigo = fsc.codigo_cliente_alocacao)
+	INNER JOIN RHHealth.dbo.grupos_economicos_clientes gec WITH (NOLOCK) ON (gec.codigo_cliente = cf.codigo_cliente_matricula)
+	INNER JOIN RHHealth.dbo.grupos_economicos ge WITH (NOLOCK) ON (ge.codigo = gec.codigo_grupo_economico)
+	INNER JOIN RHHealth.dbo.cliente matriz WITH (NOLOCK) ON (matriz.codigo = ge.codigo_cliente)
+	LEFT JOIN  RHHealth.dbo.medicos mpcmso WITH (NOLOCK) ON (mpcmso.codigo = c.codigo_medico_pcmso)
+LEFT JOIN RHHealth.dbo.agendamento_exames age WITH (NOLOCK) ON (ipe.codigo = age.codigo_itens_pedidos_exames)
+WHERE pe.codigo = ($P{CODIGO_PEDIDO_EXAME})
+	AND f.codigo = ($P{CODIGO_FORNECEDOR});]]>
+	</queryString>
+	<field name="pedido_exame" class="java.lang.Integer"/>
+	<field name="tipo_agendamento" class="java.lang.String"/>
+	<field name="tipo_exame" class="java.lang.String"/>
+	<field name="nome" class="java.lang.String"/>
+	<field name="endereco" class="java.lang.String"/>
+	<field name="numero" class="java.lang.String"/>
+	<field name="complemento" class="java.lang.String"/>
+	<field name="bairro" class="java.lang.String"/>
+	<field name="cidade" class="java.lang.String"/>
+	<field name="telefone" class="java.lang.String"/>
+	<field name="funcionario_nome" class="java.lang.String"/>
+	<field name="funcionario_cpf" class="java.lang.String"/>
+	<field name="funcionario_idade" class="java.math.BigDecimal"/>
+	<field name="funcionario_admissao" class="java.lang.String"/>
+	<field name="funcionario_data_nascimento" class="java.lang.String"/>
+	<field name="filial_razao_social" class="java.lang.String"/>
+	<field name="nome_fantasia" class="java.lang.String"/>
+	<field name="matriz_razao_social" class="java.lang.String"/>
+	<field name="cnpj" class="java.lang.String"/>
+	<field name="setor" class="java.lang.String"/>
+	<field name="cargo" class="java.lang.String"/>
+	<field name="medico_coordenador" class="java.lang.String"/>
+	<field name="medico_nome" class="java.lang.String"/>
+	<field name="medico_conselho_descricao" class="java.lang.String"/>
+	<field name="medico_conselho" class="java.lang.String"/>
+	<field name="matricula" class="java.lang.String"/>
+	<detail>
+		<band height="73">
+			<staticText>
+				<reportElement x="197" y="0" width="151" height="30" forecolor="#009999" uuid="857ddca3-b642-4266-b485-3fa2ca6bcc82"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Pedido de Exames]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="448" y="53" width="100" height="20" uuid="d8ecefa9-51a9-4cb3-970d-01aa645b63f6"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="92" y="53" width="356" height="20" uuid="e2feea75-c47d-41b2-a170-46143994bc97"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{filial_razao_social}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="6" y="5" width="76" height="26" uuid="4905e1e9-d07f-46d8-b64d-2222c7cd5772">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="450" y="5" width="100" height="40" uuid="392c3e90-002c-4218-b2c7-04947a01da73">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="3" y="53" width="79" height="15" uuid="43ab245d-e44c-493d-bb3b-eb55e4db3c0a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cod. Pedido:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="57" y="53" width="100" height="15" uuid="d32a6f28-bfda-400b-8340-ae0567388e1f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pedido_exame}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="157">
+			<rectangle>
+				<reportElement x="0" y="20" width="555" height="137" forecolor="#000000" backcolor="#F0F0F0" uuid="7fae7312-0d55-45dd-8ad1-27ae2c20c8ea"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="3" y="58" width="100" height="15" uuid="e1575020-1eb7-4519-b51a-03984d181b7a"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Complemento:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="248" y="5" width="58" height="20" uuid="41d33313-54f0-4d18-a6c2-fd8152084dd1"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Prestador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="305" y="26" width="126" height="15" uuid="8778411a-3e73-463f-b35e-083e29203b10"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Telefone:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="42" width="52" height="15" uuid="1aac6675-a1b0-4fe5-aa10-7443147bc4d1"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Endereço:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="a5532a40-ab76-4760-9b23-818a949fbf90"/>
+			</line>
+			<staticText>
+				<reportElement x="3" y="74" width="126" height="15" uuid="44a06988-2906-41c6-9352-aa1399e073c2"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de Atendimento:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="305" y="42" width="100" height="15" uuid="0a0e4223-d7e9-4404-9ca5-40cfc1ac1cca"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bairro:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="305" y="58" width="100" height="15" uuid="17ed4bc2-64dd-4104-bbea-c12758eae927"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cidade:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="51" y="24" width="238" height="15" uuid="b73bdc8b-a68f-40eb-b2e0-497bed507299"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="26" width="100" height="15" uuid="d3b060f4-51a9-45e0-99f2-71726a248abc"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Prestador:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="67" y="56" width="222" height="15" uuid="4d02db78-f2d4-40cb-8640-b1a6e7bbf6e1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{complemento}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="348" y="24" width="203" height="15" uuid="e48f3999-9723-44f1-8a58-7305fea16a8d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{telefone}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="348" y="40" width="203" height="15" uuid="3ecf134e-1c68-4e04-8514-6ee5d82c5c7d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bairro}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="348" y="56" width="203" height="15" uuid="47d59d7a-5532-4ee7-b20f-337474434e74"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cidade}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="52" y="40" width="237" height="15" uuid="25c20b9d-b430-42eb-8251-0228cda80405"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{endereco} + " " + $F{numero}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="90" y="72" width="154" height="15" uuid="46609f25-731c-47dc-a74b-234f7a82e5df"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo_agendamento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="305" y="72" width="141" height="15" uuid="bcecf91f-8802-4687-8921-1caa883806b7"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tipo de exame ocupacional:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="414" y="72" width="137" height="15" uuid="f29e23bd-daac-40db-821f-bea31b61506e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo_exame}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="89" width="154" height="15" uuid="43a772d5-f36f-40c7-b149-3e876c2cec7e"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Horário de Atendimento:]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="3" y="99" width="551" height="48" uuid="c0d43786-8fc5-486c-b87f-17d18684e871"/>
+				<subreportParameter name="CODIGO_FORNECEDOR">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FORNECEDOR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:fornecedor_horarios.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="131">
+			<staticText>
+				<reportElement x="244" y="6" width="67" height="20" uuid="7a761f46-2e48-45e4-afdd-7ac0283860ec"/>
+				<textElement>
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Funcionário]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="75a71e93-a112-4261-9bab-6d62e8b3dada"/>
+			</line>
+			<rectangle>
+				<reportElement x="0" y="22" width="555" height="109" forecolor="#000000" backcolor="#F0F0F0" uuid="179f5af2-04f7-4551-acdd-d6243456e0b1"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="32" width="100" height="15" uuid="a2018ac5-e7d9-4d38-9cd2-2909db7f3759"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Funcionário:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="216" y="32" width="100" height="15" uuid="beb81d35-85c9-41c2-849a-0effa0ce5b42"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Matrícula:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="396" y="32" width="100" height="15" uuid="81c1c5bc-aaa7-491b-b2d8-f82c3cbc42f9"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CPF:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="48" width="125" height="15" uuid="7a8b46c1-73eb-478b-966a-5c2dda91e596"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data de Nascimento:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="64" width="125" height="15" uuid="43b42f37-417f-4144-8554-dced586b0962"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Razão Social:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="80" width="125" height="15" uuid="fa1e803b-0566-4624-ad6d-8a2bbc15e638"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Setor:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="216" y="48" width="114" height="15" uuid="e40007ff-c5ae-40f5-a894-aab61936b4aa"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data de Admissão:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="216" y="64" width="114" height="15" uuid="abfba5fb-63c2-4a6b-9a8e-0c05b505fe08"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nome Fantasia:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="96" width="114" height="15" uuid="d836732c-b22b-48df-9d2d-bb9a05a87420"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cargo:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="396" y="48" width="100" height="15" uuid="f116a01d-7fdc-4f86-8d48-e04fb928a5d6"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Idade:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="396" y="64" width="100" height="15" uuid="bbea3183-8394-4c01-b578-71b0c4fc1791"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CNPJ:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="112" width="126" height="15" uuid="b0ec5b06-8b4d-427c-b17d-1efd13dba669"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Médico Coord.]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="60" y="32" width="149" height="13" uuid="6b634494-9268-40c0-93e5-0b288502ebab"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_nome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="418" y="30" width="134" height="15" uuid="fa87478b-dc0d-47b4-b244-919758f89984"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_cpf}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="93" y="46" width="116" height="15" uuid="6fc1fe73-1c90-4875-aeb4-4c3248c0993b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_data_nascimento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="62" width="149" height="15" uuid="4c0e6fdb-670d-4470-8c7b-9ff514596e54"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{filial_razao_social}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="279" y="62" width="115" height="15" uuid="a093daeb-122a-4d5b-bfb7-cc188b365119"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome_fantasia}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="294" y="46" width="100" height="15" uuid="8d053833-d423-4f80-a25b-159f7c45a422">
+					<printWhenExpression><![CDATA[($F{funcionario_admissao} != null)]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_admissao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="425" y="46" width="127" height="15" uuid="2342bec5-90c6-4c1d-9a6c-1dcc3ff02b7f"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_idade}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="424" y="62" width="128" height="15" uuid="45686e76-b909-4c2e-b278-dd6346546919"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cnpj}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="34" y="78" width="518" height="15" uuid="d6e4acaa-ab92-45af-b29a-3ba8937ac30e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{setor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="36" y="94" width="516" height="15" uuid="76f1bda1-e285-49b3-89b0-76510b60e116"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cargo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="73" y="110" width="258" height="15" uuid="9fc18847-2bab-41f0-af63-e39f805aa6f4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_coordenador}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="259" y="29" width="100" height="15" uuid="12868502-4554-41bb-a053-da85b992d6f4">
+					<printWhenExpression><![CDATA[$F{matricula} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{matricula}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="85">
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="c617a2ea-28f7-464b-a598-2684f8240cad"/>
+			</line>
+			<staticText>
+				<reportElement x="185" y="7" width="184" height="23" uuid="8add5f4c-0535-49b6-9792-9b4915697ea9"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Grade de Exames - PCMSO]]></text>
+			</staticText>
+			<frame>
+				<reportElement style="relatorio_pcmso" x="0" y="22" width="555" height="63" uuid="15e60240-06e2-4f5f-aa7a-a13345cdd38f"/>
+				<staticText>
+					<reportElement positionType="FixRelativeToBottom" x="8" y="41" width="518" height="17" uuid="30ae61f2-3291-4949-bf5d-f76ceab4b8bd"/>
+					<textElement>
+						<font size="8" isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA["O ASO (Atestado de Sáude Ocupacional) apenas será concluído e entregue após a liberação dos exames complementares."]]></text>
+				</staticText>
+				<subreport>
+					<reportElement x="1" y="0" width="553" height="41" uuid="9a65285e-9b9f-47bb-ab08-dc47841e3bc9"/>
+					<subreportParameter name="CODIGO_PEDIDO_EXAME">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_FORNECEDOR">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_FORNECEDOR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:grade_pcmso.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="100">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="100" uuid="5e0999e8-a751-4102-a921-3202433b5e88"/>
+				<line>
+					<reportElement x="0" y="0" width="555" height="1" uuid="a63a4d37-5be2-4c66-acd1-db087c0972aa"/>
+				</line>
+				<staticText>
+					<reportElement x="34" y="7" width="488" height="23" uuid="d3a0fc5b-6eeb-4f67-88d3-42039813207b"/>
+					<textElement textAlignment="Center">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Grade de Exames - Qualidade de Vida / Monitoramento Pontual]]></text>
+				</staticText>
+				<frame>
+					<reportElement style="qualidade_de_vida" mode="Opaque" x="0" y="30" width="555" height="63" uuid="8488c50b-09f2-4246-9931-73a8a29f48c8"/>
+					<subreport>
+						<reportElement x="1" y="2" width="553" height="41" uuid="17d1c365-7f40-405c-8f84-ba00e3558664"/>
+						<subreportParameter name="CODIGO_PEDIDO_EXAME">
+							<subreportParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></subreportParameterExpression>
+						</subreportParameter>
+						<subreportParameter name="CODIGO_FORNECEDOR">
+							<subreportParameterExpression><![CDATA[$P{CODIGO_FORNECEDOR}]]></subreportParameterExpression>
+						</subreportParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						<subreportExpression><![CDATA["repo:qualidade_de_vida.jrxml"]]></subreportExpression>
+					</subreport>
+				</frame>
+			</frame>
+		</band>
+	</detail>
+	<lastPageFooter>
+		<band height="112">
+			<frame>
+				<reportElement style="assinaturas" positionType="FixRelativeToBottom" stretchType="RelativeToBandHeight" x="1" y="1" width="552" height="72" backcolor="#FFFFFF" uuid="2ed47905-97e0-4f7b-9691-cd026dce13f8"/>
+				<textField>
+					<reportElement x="408" y="54" width="124" height="15" uuid="6c9a8695-d857-4fb6-8127-84ebb8994f00"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{funcionario_cpf}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="334" y="33" width="198" height="15" uuid="f7d83b88-82fb-428e-ab97-606d0f38b879"/>
+					<textElement textAlignment="Center">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{funcionario_nome}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="385" y="54" width="22" height="15" uuid="0dce2b8f-a089-43a0-bb1c-da73ca1ff003"/>
+					<textElement textAlignment="Center">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[CPF: ]]></text>
+				</staticText>
+				<line>
+					<reportElement x="333" y="29" width="199" height="1" uuid="c0dcea2c-14d6-45d4-82ab-6684555fb426"/>
+				</line>
+				<line>
+					<reportElement x="23" y="29" width="199" height="1" uuid="f814795b-b851-4c76-a36c-a266bdba1aaf"/>
+				</line>
+				<staticText>
+					<reportElement x="28" y="33" width="194" height="15" uuid="00c6137e-552c-4853-9d2f-80ec92641cd3"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Médico Examinador]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="1" y="76" width="554" height="36" uuid="38e7234f-f010-4a11-a79a-16dd324bef4a"/>
+				<staticText>
+					<reportElement x="2" y="0" width="551" height="16" uuid="ea22be10-8c2e-4778-8a1d-59b6eaf5ab44">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Center">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Em caso de dúvidas, entre em contato com nossa central de agendamentos:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="20" width="551" height="16" forecolor="#FF0703" uuid="57ebf491-d275-49c1-881f-55fc6405c48d"/>
+					<textElement textAlignment="Center" markup="none">
+						<font fontName="SansSerif" size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[0800.014.2659]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</lastPageFooter>
+</jasperReport>

@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="audiometria" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/audiometria_1"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="fundo" mode="Opaque" backcolor="#CCCCCC"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.Integer"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select RHHealth.publico.Ufn_decode_utf8_string(cli.razao_social)    as Cliente,
+       RHHealth.publico.Ufn_decode_utf8_string(fun.nome)            as Funcionario,
+       RHHealth.publico.Ufn_decode_utf8_string(ge.descricao)        as Unidade,
+RHHealth.publico.Ufn_decode_utf8_string((SELECT descricao FROM RHHealth.dbo.setores WHERE codigo = fsc.codigo_setor)) as Setor,
+RHHealth.publico.Ufn_decode_utf8_string((SELECT descricao FROM RHHealth.dbo.cargos WHERE codigo = fsc.codigo_cargo)) as Cargo,
+       "Situacao" =
+       CASE
+          WHEN cf.ativo = 1 THEN 'Ativo'
+          WHEN cf.ativo != 1 THEN 'Inativo'
+       END,
+       fun.rg              as RG,
+       CONVERT(VARCHAR(10),fun.data_nascimento,103) as Nascimento,
+       isnull(CONVERT(VARCHAR(10),cf.admissao,103),'-') as Admissao,
+       isnull(CONVERT(VARCHAR(10),cf.data_demissao,103),'-') as Demissao,
+       FLOOR(DATEDIFF( DAY, CONVERT(VARCHAR(10),fun.data_nascimento,21), CONVERT(VARCHAR(10),getDate(),21) ) / 365.25) as Idade,
+       "Sexo" =
+       CASE
+          WHEN fun.sexo = 'F' THEN 'Feminino'
+          WHEN fun.sexo = 'M' THEN 'Masculino'
+       END,
+       "Tipo" =
+       CASE
+          WHEN exame_admissional = 1 THEN 'Admissional'
+          WHEN exame_demissional = 1 THEN 'Demissional'
+          WHEN exame_periodico   = 1 THEN 'Periódico'
+          WHEN exame_retorno     = 1 THEN 'Retorno'
+          WHEN exame_mudanca     = 1 THEN 'Mudança de Função'
+          WHEN pontual           = 1 THEN 'Pontual'
+          WHEN exame_monitoracao = 1 THEN 'Monitoração'
+       END
+from RHHealth.dbo.pedidos_exames pe
+LEFT JOIN RHHealth.dbo.cliente_funcionario cf
+ON(pe.codigo_cliente_funcionario=cf.codigo)
+LEFT JOIN RHHealth.dbo.funcionario_setores_cargos fsc
+ON(fsc.codigo = pe.codigo_func_setor_cargo)
+LEFT JOIN RHHealth.dbo.cliente cli
+ON(fsc.codigo_cliente_alocacao = cli.codigo)
+LEFT JOIN RHHealth.dbo.funcionarios fun
+ON(cf.codigo_funcionario=fun.codigo)
+INNER JOIN RHHealth.dbo.grupos_economicos_clientes gec
+ON(fsc.codigo_cliente_alocacao=gec.codigo_cliente)
+INNER JOIN RHHealth.dbo.grupos_economicos ge
+ON(gec.codigo_grupo_economico = ge.codigo)
+where pe.codigo = $P{CODIGO_PEDIDO_EXAME}]]>
+	</queryString>
+	<field name="Cliente" class="java.lang.String"/>
+	<field name="Funcionario" class="java.lang.String"/>
+	<field name="Unidade" class="java.lang.String"/>
+	<field name="Setor" class="java.lang.String"/>
+	<field name="Cargo" class="java.lang.String"/>
+	<field name="Situacao" class="java.lang.String"/>
+	<field name="RG" class="java.lang.String"/>
+	<field name="Nascimento" class="java.lang.String"/>
+	<field name="Admissao" class="java.lang.String"/>
+	<field name="Demissao" class="java.lang.String"/>
+	<field name="Idade" class="java.math.BigDecimal"/>
+	<field name="Sexo" class="java.lang.String"/>
+	<field name="Tipo" class="java.lang.String"/>
+	<columnHeader>
+		<band height="80" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="50" width="555" height="25" backcolor="#CCCCCC"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5" lineColor="#999999"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5" lineColor="#999999"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<staticText>
+					<reportElement x="1" y="4" width="227" height="16" forecolor="#999999"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Resultado de Exames]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="249" y="5" width="193" height="20" forecolor="#999999"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Audiometria]]></text>
+				</staticText>
+			</frame>
+			<textField>
+				<reportElement x="123" y="16" width="307" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{Cliente}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="450" y="5" width="100" height="40">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="674" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="1" y="124" width="555" height="85" backcolor="#FFFFFF"/>
+				<staticText>
+					<reportElement x="1" y="10" width="64" height="13"/>
+					<textElement/>
+					<text><![CDATA[Resultado:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="24" width="64" height="15"/>
+					<textElement/>
+					<text><![CDATA[Ref./Seq.:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="52" width="64" height="15"/>
+					<textElement/>
+					<text><![CDATA[Aparelho:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="66" width="64" height="15"/>
+					<textElement/>
+					<text><![CDATA[Fabricante:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="270" y="53" width="64" height="15"/>
+					<textElement/>
+					<text><![CDATA[Calibração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="270" y="67" width="88" height="15"/>
+					<textElement/>
+					<text><![CDATA[Repouso Auditivo:]]></text>
+				</staticText>
+			</frame>
+			<rectangle>
+				<reportElement x="0" y="215" width="555" height="14" backcolor="#999999"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="202" y="217" width="150" height="12"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Limiares Tonais - Orelha Direita]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="229" width="555" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="243" width="555" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="257" width="555" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="229" width="102" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="229" width="60" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="229" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="229" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="229" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="229" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="229" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="229" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="229" width="57" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="243" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="243" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="243" width="102" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="243" width="60" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="243" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="243" width="57" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="243" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="243" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="243" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="257" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="257" width="60" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="257" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="257" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="257" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="257" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="257" width="102" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="257" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="257" width="57" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="43" y="230" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[kHz]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="43" y="245" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[V.A.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="43" y="259" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[V.O.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="125" y="230" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[.25]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="183" y="230" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[.50]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="244" y="230" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="230" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="357" y="230" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="413" y="230" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[4]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="469" y="230" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[6]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="525" y="230" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[8]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="282" width="555" height="14" backcolor="#999999"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="195" y="283" width="168" height="12"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Limiares Tonais - Orelha Esquerda]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="442" y="296" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="296" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="296" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="296" width="102" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="296" width="60" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="296" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="296" width="57" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="296" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="296" width="56" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="310" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="310" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="310" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="324" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="324" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="324" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="310" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="310" width="60" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="324" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="324" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="324" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="324" width="57" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="324" width="60" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="310" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="310" width="102" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="310" width="56" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="310" width="57" height="14" backcolor="#EFEFEF"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="324" width="102" height="14" backcolor="#CCCCCC"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="43" y="312" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[V.A.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="43" y="297" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[kHz]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="43" y="326" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[V.O.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="469" y="297" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[6]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="297" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="183" y="297" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[.50]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="244" y="297" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="125" y="297" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[.25]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="525" y="297" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[8]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="413" y="297" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[4]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="357" y="297" width="24" height="14"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[3]]></text>
+			</staticText>
+			<frame>
+				<reportElement mode="Opaque" x="2" y="-4" width="555" height="127" backcolor="#FFFFFF"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.0" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5" lineColor="#999999"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<staticText>
+					<reportElement x="1" y="12" width="84" height="16"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Funcionário: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="436" y="12" width="104" height="16"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Data do Exame:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="31" width="49" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Unidade:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="45" width="36" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Setor:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="59" width="36" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Cargo:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="73" width="50" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Situação:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="87" width="20" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[RG:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="436" y="59" width="50" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Demissão:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="436" y="31" width="63" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Nascimento:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="436" y="73" width="30" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Idade:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="436" y="45" width="55" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Admissão:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="436" y="87" width="30" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Sexo:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="436" y="102" width="30" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Tipo:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="64" y="12" width="376" height="16"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Funcionario}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="43" y="31" width="397" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Unidade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="31" y="45" width="409" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Setor}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="34" y="59" width="406" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Cargo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="21" y="87" width="419" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{RG}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="496" y="31" width="57" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Nascimento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="487" y="45" width="66" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Admissao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="487" y="59" width="66" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Demissao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="467" y="73" width="86" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Idade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="466" y="87" width="87" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Sexo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="464" y="102" width="89" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Tipo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="46" y="73" width="394" height="13"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{Situacao}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<line>
+				<reportElement x="73" y="640" width="191" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="114" y="654" width="93" height="14"/>
+				<textElement/>
+				<text><![CDATA[(Funcionário)]]></text>
+			</staticText>
+			<line>
+				<reportElement x="334" y="640" width="142" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="367" y="641" width="91" height="20"/>
+				<textElement/>
+				<text><![CDATA[Fonoaudiólogo (a)]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="87" y="641" width="177" height="16"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{Funcionario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="46" splitType="Stretch"/>
+	</columnFooter>
+</jasperReport>

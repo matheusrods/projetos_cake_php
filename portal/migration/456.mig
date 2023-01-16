@@ -1,0 +1,8 @@
+[ACO]
+create;buonny/FichasAssistenciais;editar
+create;buonny/FichasAssistenciais;imprimir_relatorio
+create;buonny/FichasAssistenciais;calcula_imc
+create;buonny/FichasAssistenciais;imprimir_ficha_assistencial
+create;buonny/FichasAssistenciais;imprimir_receita_medica
+create;buonny/FichasAssistenciais;imprimir_atestado_medico
+create;buonny/FichasAssistenciais;incluir

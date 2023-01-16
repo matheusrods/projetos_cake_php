@@ -1,0 +1,10 @@
+[ACO]
+create;buonny/Clientes;regras_acao
+create;buonny/Clientes;listagem_regras_acao
+create;buonny/Clientes;incluir_regras_acao
+create;buonny/Clientes;config_criticidade
+create;buonny/Clientes;listagem_config_criticidade
+create;buonny/Clientes;incluir_config_criticidade
+create;buonny/Clientes;editar_config_criticidade
+create;buonny/Clientes;config_criticidade_cliente
+create;buonny/Clientes;listagem_config_criticidade_cliente

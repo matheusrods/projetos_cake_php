@@ -1,0 +1,7 @@
+[ACO]
+create;buonny/InspecoesAssessment;relatorio_cliente
+create;buonny/InspecoesAssessment;listagem_relatorio_cliente
+create;buonny/InspecoesAssessment;relatorio_inspecao
+create;buonny/InspecoesAssessment;listagem_relatorio_inspecao
+create;buonny/InspecoesAssessment;relatorio_por_email
+create;buonny/InspecoesAssessment;export_listagem_relatorio_inspecao_email

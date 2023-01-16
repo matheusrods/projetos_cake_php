@@ -1,0 +1,11 @@
+[ACO]
+create;buonny;InspecoesAssessment
+create;buonny/InspecoesAssessment;index
+create;buonny/InspecoesAssessment;listagem
+create;buonny/InspecoesAssessment;incluir
+create;buonny/InspecoesAssessment;editar
+create;buonny/InspecoesAssessment;listagem_form_questao
+create;buonny/InspecoesAssessment;confirma_titulo
+create;buonny/InspecoesAssessment;confirma_questao
+create;buonny/InspecoesAssessment;atualiza_status_titulo
+create;buonny/InspecoesAssessment;atualiza_status_questao

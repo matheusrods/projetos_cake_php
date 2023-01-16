@@ -1,0 +1,67 @@
+#perguntas .criterio{
+	min-height: 60px;
+}
+
+#perguntas .criterio .select{
+	width: 65%;
+	float: left;
+}
+
+#perguntas h5{
+	float: left;
+}
+
+#perguntas .obrigatorio,
+#perguntas .automatico{
+	margin: 11px 0 0 3px;
+	display: block;
+	float: left;
+}
+
+#perguntas p{
+	clear: both;
+}
+
+div.observacao label{
+	font-weight: bold;
+}
+
+#perguntas .observacao-container{
+	margin-top: -46px;
+	padding-right: 33px;
+}
+
+#perguntas .exibe-observacao{
+	float: right;
+	display: block;
+	clear: right;
+	padding: 32px 35px 0 0;
+}
+
+#perguntas .observacao-criterio{
+	display:none;
+	clear: both;
+}
+
+section {
+	padding-top: 0;
+	margin-bottom: 0;
+}
+
+.detaque-classificacao {
+	color: #F00;
+}
+
+.score-pneu-dourado {
+	background-image: url('../img/pneu_dourado.png');
+	width: 32px;
+	height: 32px;
+	display: inline-block;
+}
+
+.score-pneu-cinza {
+	background-image: url('../img/pneu_cinza.png');
+	width: 32px;
+	height: 32px;
+	display: inline-block;
+}

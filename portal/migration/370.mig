@@ -1,0 +1,5 @@
+[ACO]
+create;buonny;FichasPcd
+create;buonny/FichasPcd;index
+create;buonny/FichasPcd;listagem
+create;buonny/FichasPcd;imprimir_relatorio

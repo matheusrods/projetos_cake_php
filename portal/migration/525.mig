@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/Clientes;configuracao_obs
+create;buonny/Clientes;listagem_configuracao_obs
+create;buonny/Clientes;incluir_configuracao_obs

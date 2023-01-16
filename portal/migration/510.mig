@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/Clientes;acoes_cadastradas
+create;buonny/Clientes;listagem_acoes_cadastradas
+create;buonny/Clientes;acoes_cadastradas_visualizar
+create;buonny/Clientes;listagem_acoes_cadastradas_visualizar

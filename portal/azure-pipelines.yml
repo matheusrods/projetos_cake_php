@@ -1,0 +1,20 @@
+
+# test3
+variables:
+- group: GitCredentialsURL
+- name: PROJECT_PATH
+  value: '/home/sistemas/rhhealth/c-care/c-care/'
+- name: GIT_URL
+  value: 'https://$(devOpsPipelineUserName):$(devOpsPipelineUserPasswd)@dev.azure.com/IT-HEALTH/c-care/_git/c-care'
+
+trigger:
+- feedback
+
+
+steps:
+- task: Bash@3
+  inputs:
+    filePath: '/home/sistemas/rhhealth/pipeline-devops/scripts/devops.sh'
+    arguments: '$(PROJECT_PATH) $(GIT_URL)' 
+    #gitUser vem das variaveis de grupo. 
+    

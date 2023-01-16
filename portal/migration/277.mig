@@ -1,0 +1,5 @@
+[ACO]
+create;buonny;ResultadosExames
+create;buonny/ResultadosExames;index
+create;buonny/ResultadosExames;listagem
+create;buonny/ResultadosExames;__comboStatus

@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/TiposServicos;editar
+create;buonny/TiposServicos;incluir
+create;buonny/TiposServicos;excluir
+create;buonny/TiposServicos;listagem

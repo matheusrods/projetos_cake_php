@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_materiais_pronto_socorro.jrxml" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+    <property name="ireport.zoom" value="1.6105100000000008"/>
+    <property name="ireport.x" value="22"/>
+    <property name="ireport.y" value="0"/>
+    <property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_pcmso"/>
+    <property name="ireport.jasperserver.url" value="http:// jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+    <style name="BORDERED">
+        <box>
+            <pen lineWidth="0.5"/>
+            <bottomPen lineWidth="0.5" lineStyle="Solid"/>
+        </box>
+    </style>
+    <style name="bordas-baixo">
+        <box>
+            <leftPen lineWidth="0.5"/>
+            <bottomPen lineWidth="0.5"/>
+            <rightPen lineWidth="0.5"/>
+        </box>
+    </style>
+    <parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+        <defaultValueExpression><![CDATA["C:\\Users\\fabio.potame\\Documents\\iReport\\"]]></defaultValueExpression>
+    </parameter>
+    <parameter name="CODIGO_CLIENTE" class="java.lang.String">
+        <defaultValueExpression><![CDATA[]]></defaultValueExpression>
+    </parameter>
+    <queryString>
+        <![CDATA[DECLARE @codigo_cliente_unidade INTEGER = CONVERT(INTEGER, $P{CODIGO_CLIENTE});
+DECLARE @descricao NVARCHAR(MAX);
+DECLARE @texto_padrao NVARCHAR(MAX) = N'ÁLCOOL 70% - Frasco de 100 ml
+ ALGODÃO - Bolas individuais
+ ATADURA - 2 Rolos (20cm); 1 Rolo (15cm)
+ BAND­AID - Caixa com 10 unidades
+ ESPARADRAPO  - Fita Hipoalergênica (Rolo de 5cm X 4,5m) 
+ TERMÔMETRO Coluna de Hg
+ TESOURA Sem Ponta
+ SORO FISIOLÓGICO - Frasco de 500ml (Solução Fisiológica NaCl 0,9%)
+ ÁGUA OXIGENADA 10 volumes - Frasco de 100ml';
+SELECT TOP(1) @descricao = pmps.descricao
+FROM pcmso_materiais_pronto_socorro pmps
+WHERE pmps.codigo_cliente_unidade = @codigo_cliente_unidade AND pmps.codigo_cliente_matriz = (SELECT TOP(1)
+    ge.codigo_cliente
+FROM grupos_economicos ge
+INNER JOIN grupos_economicos_clientes gec
+ON gec.codigo_grupo_economico = ge.codigo
+WHERE gec.codigo_cliente = @codigo_cliente_unidade);
+SELECT ISNULL(@descricao, @texto_padrao);]]>
+    </queryString>
+    <field name="medico" class="java.lang.String"/>
+    <field name="conselho_uf" class="java.lang.String"/>
+    <field name="conselho_numero" class="java.lang.String"/>
+    <field name="data_inclusao" class="java.sql.Timestamp"/>
+    <field name="conselho_profissional" class="java.lang.String"/>
+    <pageHeader>
+        <band height="24">
+            <frame>
+                <reportElement style="BORDERED" mode="Opaque" x="0" y="0" width="555" height="23" backcolor="#F0F0F0"/>
+                <staticText>
+                    <reportElement x="0" y="0" width="275" height="23"/>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font size="8"/>
+                    </textElement>
+                    <text><![CDATA[Médico]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="276" y="0" width="56" height="23"/>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font size="8"/>
+                    </textElement>
+                    <text><![CDATA[Conselho]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="333" y="0" width="76" height="23"/>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font size="8"/>
+                    </textElement>
+                    <text><![CDATA[Conselho Nº]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="409" y="0" width="56" height="23"/>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font size="8"/>
+                    </textElement>
+                    <text><![CDATA[Conselho UF]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="466" y="0" width="89" height="23"/>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font size="8"/>
+                    </textElement>
+                    <text><![CDATA[Data Inclusão]]></text>
+                </staticText>
+            </frame>
+        </band>
+    </pageHeader>
+    <detail>
+        <band height="10" splitType="Stretch">
+            <frame>
+                <reportElement x="0" y="0" width="555" height="10"/>
+                <textField>
+                    <reportElement x="10" y="0" width="265" height="10" isPrintWhenDetailOverflows="true"/>
+                    <textElement>
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{medico}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="276" y="0" width="56" height="10" isPrintWhenDetailOverflows="true"/>
+                    <textElement textAlignment="Center">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{conselho_profissional}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="333" y="0" width="76" height="10" isPrintWhenDetailOverflows="true"/>
+                    <textElement textAlignment="Center">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{conselho_numero}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="409" y="0" width="56" height="10" isPrintWhenDetailOverflows="true"/>
+                    <textElement textAlignment="Center">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{conselho_uf}]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="466" y="0" width="89" height="10" isPrintWhenDetailOverflows="true"/>
+                    <textElement textAlignment="Center">
+                        <font size="8"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA[$F{data_inclusao}]]></textFieldExpression>
+                </textField>
+            </frame>
+        </band>
+    </detail>
+</jasperReport>

@@ -1,0 +1,10 @@
+[ACO]
+create;buonny;AuditoriaProgramacao
+create;buonny/AuditoriaProgramacao;relatorio_auditorias_ncs
+create;buonny/AuditoriaProgramacao;imprimir_relatorio
+create;buonny/AuditoriaProgramacao;listagem_relatorio_auditorias_ncs
+create;buonny/AuditoriaProgramacao;jwt
+create;buonny/AuditoriaProgramacao;export_listagem_relatorio_auditorias
+create;buonny/AuditoriaProgramacao;modal_assinaturas
+create;buonny/AuditoriaProgramacao;modal_temas_auditados
+create;buonny/AuditoriaProgramacao;modal_requisitos_auditados

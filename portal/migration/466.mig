@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;PerigosAspectos
+create;buonny/PerigosAspectos;index
+create;buonny/PerigosAspectos;listagem
+create;buonny/PerigosAspectos;incluir
+create;buonny/PerigosAspectos;editar
+create;buonny/PerigosAspectos;editar_status
+create;buonny/PerigosAspectos;comboRiscosTipo
+create;buonny/PerigosAspectos;comboPerigosAspectosTipo

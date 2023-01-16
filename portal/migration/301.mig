@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;Cnae
+create;buonny/Cnae;index
+create;buonny/Cnae;listagem
+create;buonny/Cnae;incluir
+create;buonny/Cnae;editar
+create;buonny/Cnae;excluir
+create;buonny/Cnae;buscar_cnae

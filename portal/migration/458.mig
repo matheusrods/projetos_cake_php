@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;ItemPedidoExameBaixa
+create;buonny/ItemPedidoExameBaixa;baixa
+create;buonny/ItemPedidoExameBaixa;listagem
+create;buonny/ItemPedidoExameBaixa;editar
+create;buonny/ItemPedidoExameBaixa;reverte_baixa
+create;buonny/ItemPedidoExameBaixa;modal_reverte_baixa
+create;buonny/ItemPedidoExameBaixa;__comboStatus

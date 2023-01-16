@@ -1,0 +1,11 @@
+[ACO]
+create;buonny;GruposHomogeneosExames
+create;buonny/GruposHomogeneosExames;retorna_dados_cliente
+create;buonny/GruposHomogeneosExames;retorna_dados
+create;buonny/GruposHomogeneosExames;index
+create;buonny/GruposHomogeneosExames;listagem
+create;buonny/GruposHomogeneosExames;incluir
+create;buonny/GruposHomogeneosExames;editar
+create;buonny/GruposHomogeneosExames;atualiza_status
+create;buonny/GruposHomogeneosExames;retornaGrupoHomogeneo
+create;buonny/GruposHomogeneosExames;retornaDetalhesGrupoHomogeneo

@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;ConsultasAgendas
+create;buonny/ConsultasAgendas;index2
+create;buonny/ConsultasAgendas;listagem2
+create;buonny/ConsultasAgendas;modal_pedido_realizacao
+create;buonny/ConsultasAgendas;salvar_realizacao

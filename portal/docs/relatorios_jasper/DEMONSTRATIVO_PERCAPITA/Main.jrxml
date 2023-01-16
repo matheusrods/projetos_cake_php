@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Demonstrativo de Serviços" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="237de0f1-c67a-4c73-addc-b244c5e546a2">
+	<property name="ireport.zoom" value="1.2100000000000004"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/demonstrativo_percapita"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="CODIGO_CLIENTE_PAGADOR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[7308]]></defaultValueExpression>
+	</parameter>
+	<parameter name="MES_REFERENCIA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[9]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ANO_REFERENCIA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[2017]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\DEMONSTRATIVO_PERCAPITA\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EXIBIR_CENTRO_CUSTO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+	COUNT(itempedidoalocacao.codigo) AS [quantidade_empresa],
+	sum(itempedidoalocacao.valor) AS [total_empresa],
+	itempedidoalocacao.codigo_cliente_pagador AS [codigo_pagador],
+	ISNULL(cliprodesconto.valor,'0') as valor_desconto,
+	ISNULL((sum(itempedidoalocacao.valor)-cliprodesconto.valor),sum(itempedidoalocacao.valor)) as total_liquido,
+	clientepagador.razao_social AS [descricao_pagador]
+FROM
+	RHHealth.dbo.itens_pedidos_alocacao itempedidoalocacao
+INNER JOIN
+	RHHealth.dbo.cliente clientepagador ON itempedidoalocacao.codigo_cliente_pagador = clientepagador.codigo
+LEFT JOIN RHHealth.dbo.cliente_produto_desconto cliprodesconto ON (clientepagador.codigo = cliprodesconto.codigo_cliente
+	and cliprodesconto.codigo_produto = 117 AND MONTH(cliprodesconto.mes_ano) = $P{MES_REFERENCIA} AND YEAR(cliprodesconto.mes_ano) = $P{ANO_REFERENCIA})
+INNER JOIN
+	RHHealth.dbo.pedidos pedido ON pedido.codigo = itempedidoalocacao.codigo_pedido
+WHERE
+	itempedidoalocacao.codigo_cliente_pagador = $P{CODIGO_CLIENTE_PAGADOR}
+	AND
+	pedido.mes_referencia = $P{MES_REFERENCIA}
+	AND
+	pedido.ano_referencia = $P{ANO_REFERENCIA}
+GROUP BY
+	itempedidoalocacao.codigo_cliente_pagador,
+	clientepagador.razao_social,
+	cliprodesconto.valor]]>
+	</queryString>
+	<field name="quantidade_empresa" class="java.lang.Integer"/>
+	<field name="total_empresa" class="java.math.BigDecimal"/>
+	<field name="codigo_pagador" class="java.lang.Integer"/>
+	<field name="valor_desconto" class="java.lang.Double"/>
+	<field name="total_liquido" class="java.lang.Double"/>
+	<field name="descricao_pagador" class="java.lang.String"/>
+	<group name="grp_codigo_pagador" isStartNewPage="true">
+		<groupExpression><![CDATA[$F{codigo_pagador}]]></groupExpression>
+		<groupHeader>
+			<band height="14">
+				<textField>
+					<reportElement x="65" y="0" width="737" height="14" uuid="754eff7d-62ec-407d-85a7-85e1a4c59a19"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="12" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{codigo_pagador}.toString() + " - " + $F{descricao_pagador}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="4" width="65" height="10" forecolor="#646464" uuid="ae560025-bdfb-4c07-8b29-d0ff8a868c9c"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="8" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Cliente Pagador]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="179">
+				<staticText>
+					<reportElement x="0" y="39" width="301" height="12" forecolor="#000000" uuid="cf0608b6-be61-4bed-8e38-c13d855f2f27"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Demonstrativo para simples conferência]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="55" width="802" height="1" uuid="006c0164-fc61-4581-89f6-a84142bea521"/>
+				</line>
+				<staticText>
+					<reportElement x="565" y="15" width="150" height="12" forecolor="#000000" uuid="e430b991-8e2c-40a9-bcec-0fe75ab63f18"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Total Serviços]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="715" y="15" width="85" height="12" uuid="7df35473-d217-4ea4-9d14-ba3b04c410ac"/>
+					<textElement textAlignment="Right">
+						<font isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{total_empresa}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="565" y="3" width="150" height="12" forecolor="#000000" uuid="7a91da21-fbfc-4d56-bee0-44470c21060c"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Quantidade Total]]></text>
+				</staticText>
+				<textField pattern="">
+					<reportElement x="715" y="3" width="85" height="12" uuid="87cd4b5f-5f0b-4173-a788-2e614afc2e57"/>
+					<textElement textAlignment="Right">
+						<font isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{quantidade_empresa}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="565" y="27" width="150" height="12" forecolor="#000000" uuid="7d519e45-1a2d-45d8-bf8a-1e092c3c3462"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Desconto]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="565" y="39" width="150" height="12" forecolor="#000000" uuid="782debc7-400e-4efb-8d0f-2b4d5726bf8a"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Total A Pagar]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="715" y="27" width="85" height="12" uuid="6e768466-80ac-42d4-b1cc-46173e543bdc"/>
+					<textElement textAlignment="Right">
+						<font isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{valor_desconto}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="715" y="39" width="85" height="12" uuid="61bce1d9-b58e-471e-8d67-6abcf2fe7102"/>
+					<textElement textAlignment="Right">
+						<font isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{total_liquido}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="grp_usuario_solicitacao" isStartNewPage="true">
+		<groupExpression><![CDATA[]]></groupExpression>
+		<groupHeader>
+			<band height="15">
+				<line>
+					<reportElement x="0" y="3" width="802" height="1" forecolor="#646464" uuid="d5ff5c71-120c-4d4e-86f3-b6dce2c8235a"/>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<group name="grp_produto">
+		<groupExpression><![CDATA[]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band/>
+	</title>
+	<pageHeader>
+		<band height="36">
+			<staticText>
+				<reportElement x="0" y="0" width="802" height="21" uuid="d89fe259-2262-4aa9-96a4-c5b547b52cf6"/>
+				<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="18" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Demonstrativo Faturamento Per Capita]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="21" width="802" height="1" uuid="dcca17d8-6623-493e-8e72-c6ec49e381b7"/>
+			</line>
+			<textField>
+				<reportElement x="702" y="11" width="100" height="10" forecolor="#646464" uuid="2d90024f-1bfa-47af-a8ce-9fc2293f926a"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isItalic="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band/>
+	</columnHeader>
+	<detail>
+		<band height="47">
+			<subreport>
+				<reportElement x="2" y="0" width="800" height="47" uuid="d3fd02a2-fd12-427d-b0b7-2c1bcab69b87"/>
+				<subreportParameter name="MES_REFERENCIA">
+					<subreportParameterExpression><![CDATA[$P{MES_REFERENCIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ANO_REFERENCIA">
+					<subreportParameterExpression><![CDATA[$P{ANO_REFERENCIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE_PAGADOR">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE_PAGADOR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="EXIBIR_CENTRO_CUSTO">
+					<subreportParameterExpression><![CDATA[$P{EXIBIR_CENTRO_CUSTO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:unidade_detalhe.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="50"/>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="11">
+			<textField>
+				<reportElement x="700" y="1" width="100" height="10" uuid="5420e152-0efa-4922-b5a6-3ae0863fcc69"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}.toString()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="802" height="1" uuid="86b88002-3c4b-481c-b081-7b0a97a74b88"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="1" width="229" height="10" uuid="e7d848f4-5288-4367-8b34-b5fc0e4027ef"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[RH HEALTH]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>

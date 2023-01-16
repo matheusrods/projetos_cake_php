@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;Ghe
+create;buonny/Ghe;index
+create;buonny/Ghe;listagem
+create;buonny/Ghe;incluir
+create;buonny/Ghe;editar
+create;buonny/Ghe;trocar_status
+create;buonny/Ghe;combo_riscos_impactos

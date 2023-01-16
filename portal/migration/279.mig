@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Agendamento
+create;buonny/Agendamento;index
+create;buonny/Agendamento;listagem
+create;buonny/Agendamento;busca_agenda
+create;buonny/Agendamento;grava_agenda
+create;buonny/Agendamento;muda_status_pedido

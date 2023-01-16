@@ -1,0 +1,1 @@
+<?php echo $this->element('fichas_scorecard/historico_ocorrencia'); ?>

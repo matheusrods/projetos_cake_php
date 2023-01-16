@@ -1,0 +1,12 @@
+[ACO]
+create;buonny/NotasFiscais;faturamento_anual_cliente_produto
+create;buonny/NotasFiscais;faturamento_anual_cliente_produto_export
+create;buonny/NotasFiscais;comparativo_faturamento_cliente
+create;buonny/NotasFiscais;ranking_gestores
+create;buonny/NotasFiscais;ranking_corretora
+create;buonny/NotasFiscais;ranking_seguradora
+create;buonny/NotasFiscais;por_banco
+create;buonny/NotasFiscais;por_banco_listagem
+create;buonny/NotasFiscais;consulta_envio_faturamento
+create;buonny/NotasFiscais;faturamento_e_impostos_por_empresa
+create;buonny/NotasFiscais;clientes_por_gestor

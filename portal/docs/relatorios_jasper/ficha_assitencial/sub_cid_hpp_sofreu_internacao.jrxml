@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 4.5.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_cancer" language="groovy" pageWidth="555" pageHeight="33" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.7715610000000035"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1">
+		<box>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FICHA_ASSISTENCIAL" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT * FROM RHHealth.dbo.fichas_assistenciais_farmacos fcf
+WHERE fcf.codigo_ficha_assistencial = $P{CODIGO_FICHA_ASSISTENCIAL} and fcf.codigo_ficha_assistencial_questao = 148]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="codigo_ficha_assistencial" class="java.lang.Integer"/>
+	<field name="codigo_ficha_assistencial_resposta" class="java.lang.Integer"/>
+	<field name="doenca" class="java.lang.String"/>
+	<field name="farmaco" class="java.lang.String"/>
+	<field name="posologia" class="java.lang.String"/>
+	<field name="dose_diaria" class="java.lang.String"/>
+	<field name="data_inclusao" class="java.lang.String"/>
+	<field name="codigo_usuario_inclusao" class="java.lang.Integer"/>
+	<field name="codigo_ficha_assistencial_questao" class="java.lang.Integer"/>
+	<pageHeader>
+		<band height="1">
+			<line>
+				<reportElement x="0" y="0" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<frame>
+				<reportElement style="style1" x="0" y="-1" width="555" height="21"/>
+				<staticText>
+					<reportElement x="5" y="1" width="26" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CID10: ]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="31" y="1" width="109" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{doenca}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="145" y="1" width="40" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FARMACO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="185" y="1" width="96" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{farmaco}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="286" y="1" width="45" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[POSOLOGIA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="331" y="1" width="99" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{posologia}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="434" y="1" width="46" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOSE DIÁRIA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="480" y="1" width="75" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{dose_diaria}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="140" y="1" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="281" y="1" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="431" y="1" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

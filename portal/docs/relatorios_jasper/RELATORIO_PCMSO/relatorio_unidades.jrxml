@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_unidades" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.4641000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_pcmso"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\relatorio pcmso\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMP_SETOR_CARGO_VAZIO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select
+	DISTINCT(se.codigo),
+	RHHealth.publico.Ufn_decode_utf8_string(se.descricao) as descricao
+from RHHealth.dbo.aplicacao_exames ae
+	inner join RHHealth.dbo.setores se on ae.codigo_setor = se.codigo
+where ae.codigo_cliente_alocacao  = $P{CODIGO_CLIENTE}
+AND se.ativo = 1
+AND (SELECT COUNT(scf.codigo) AS count
+     FROM RHHealth.dbo.cliente_funcionario scf
+      INNER JOIN RHHealth.dbo.funcionario_setores_cargos fscc ON (fscc.codigo_cliente_funcionario = scf.codigo
+         AND fscc.codigo = (SELECT TOP 1 codigo
+		FROM RHHealth.dbo.funcionario_setores_cargos
+		WHERE codigo_cliente_funcionario = scf.codigo
+		ORDER BY 1 DESC))
+       WHERE fscc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+		AND fscc.codigo_setor = ae.codigo_setor
+        AND fscc.codigo_cargo = ae.codigo_cargo
+		AND scf.ativo <> 0) >= $P{IMP_SETOR_CARGO_VAZIO};]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="descricao" class="java.lang.String"/>
+	<detail>
+		<band height="178" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="37" width="555" height="140"/>
+				<subreportParameter name="IMP_SETOR_CARGO_VAZIO">
+					<subreportParameterExpression><![CDATA[$P{IMP_SETOR_CARGO_VAZIO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_SETOR">
+					<subreportParameterExpression><![CDATA[$F{codigo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR"/>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:subrelatorio_cargos.jrxml"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement x="5" y="10" width="39" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Setor:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="45" y="10" width="510" height="15"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

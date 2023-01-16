@@ -1,0 +1,1364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_pcmso" pageWidth="595" pageHeight="940" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.3310000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="768"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_pcmso"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="0"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="1000"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="back-gray-border" mode="Opaque" backcolor="#F0F0F0">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="background-gray" mode="Opaque" backcolor="#F0F0F0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\RELATORIO_PCMSO\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[80053]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMP_SETOR_CARGO_VAZIO" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<parameter name="URL_LOGO_MULTI_EMPRESA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[-- pcmso
+
+SELECT TOP(1)
+    RHHealth.publico.Ufn_decode_utf8_string(cnae.descricao) COLLATE SQL_Latin1_General_CP1_CI_AS AS ramo_atividade,
+    ISNULL(cnae.grau_risco, '') COLLATE SQL_Latin1_General_CP1_CI_AS AS grau_risco,
+    CONVERT(VARCHAR(10), os.inicio_vigencia_pcmso, 103) COLLATE SQL_Latin1_General_CP1_CI_AS AS inicio_vigencia_pcmso,
+    CONVERT(VARCHAR(10), DATEADD(DAY, -1,DATEADD(MONTH, CONVERT(INT, os.vigencia_em_meses), os.inicio_vigencia_pcmso)), 103) COLLATE SQL_Latin1_General_CP1_CI_AS AS fim_vigencia_pcmso,
+    os.vigencia_em_meses,
+    me.nome as nome_medico,
+    me.numero_conselho as numero_conselho,
+    me.conselho_uf as conselho_uf,
+	-- dados matriz
+	(case when clm.razao_social is null then RHHealth.publico.Ufn_decode_utf8_string(clf.razao_social) else RHHealth.publico.Ufn_decode_utf8_string(clm.razao_social) end) as matriz_razao_social,
+	(case when clm.codigo_documento is null then isnull(clf.codigo_documento_real,clf.codigo_documento) else isnull(clm.codigo_documento_real,clm.codigo_documento)  end) as matriz_codigo_documento,
+
+	(case when cmef.logradouro is null then RHHealth.publico.Ufn_decode_utf8_string(clef.logradouro) else RHHealth.publico.Ufn_decode_utf8_string(cmef.logradouro) end) as matriz_endereco,
+    (case when cmef.numero is null then clef.numero else cmef.numero end) as matriz_numero,
+    (case when cmef.complemento is null then RHHealth.publico.Ufn_decode_utf8_string(clef.complemento) else RHHealth.publico.Ufn_decode_utf8_string(cmef.complemento) end) as matriz_complemento,
+    (case when cmef.cep is null then clef.cep else cmef.cep end) as matriz_cep,
+    (case when cmef.cidade is null then RHHealth.publico.Ufn_decode_utf8_string(clef.cidade) else RHHealth.publico.Ufn_decode_utf8_string(cmef.cidade) end) as matriz_cidade,
+    (case when cmef.bairro is null then RHHealth.publico.Ufn_decode_utf8_string(clef.bairro) else RHHealth.publico.Ufn_decode_utf8_string(cmef.bairro) end) as matriz_bairro,
+    (case when cmef.estado_abreviacao is null then clef.estado_abreviacao else cmef.estado_abreviacao end) as matriz_estado,
+	(case when clm.cnae is null then clf.cnae else cnaem.cnae end) as matriz_cnae,
+	(case when cnaem.grau_risco is null then ISNULL(cnae.grau_risco, '') else ISNULL(cnaem.grau_risco, '') end) as matriz_cnae_grau_risco,
+    (case when cnaem.descricao is null then RHHealth.publico.Ufn_decode_utf8_string(cnae.descricao) else RHHealth.publico.Ufn_decode_utf8_string(cnaem.descricao) end) as matriz_cnae_descricao,
+	-- filial se é tomador
+    clf.e_tomador as filial_e_tomador,
+    -- endereco da matriz
+    RHHealth.publico.Ufn_decode_utf8_string(clf.razao_social) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_razao_social,
+    RHHealth.publico.Ufn_decode_utf8_string(clf.nome_fantasia) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_nome_fantasia,
+    RHHealth.publico.ufn_formata_cnpj(CASE WHEN(clf.codigo_documento_real IS NOT NULL AND clf.codigo_documento_real <> '' ) THEN
+                                        clf.codigo_documento_real COLLATE SQL_Latin1_General_CP1_CI_AS
+                                      ELSE
+                                        clf.codigo_documento COLLATE SQL_Latin1_General_CP1_CI_AS
+                                      END) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_codigo_documento,
+    clf.cnae COLLATE SQL_Latin1_General_CP1_CI_AS AS cnae,
+    -- endereco da filial
+    RHHealth.publico.Ufn_decode_utf8_string(clef.logradouro) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_endereco,
+    ISNULL(RHHealth.publico.Ufn_decode_utf8_string(clef.complemento),'') COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_complemento,
+    clef.numero AS filial_numero,
+    RHHealth.publico.Ufn_decode_utf8_string(clef.bairro) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_bairro,
+    RHHealth.publico.Ufn_decode_utf8_string(clef.cidade) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_cidade,
+    CONCAT(' ' COLLATE SQL_Latin1_General_CP1_CI_AS, RHHealth.publico.Ufn_decode_utf8_string(clef.estado_descricao) COLLATE SQL_Latin1_General_CP1_CI_AS) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_estado,
+    clef.cep COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_cep,
+    -----------------
+    (
+        SELECT count(sfu.codigo) AS count
+        FROM RHHealth.dbo.cliente_funcionario scf
+        INNER JOIN RHHealth.dbo.funcionarios sfu ON (sfu.codigo = scf.codigo_funcionario)
+        INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = (Select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_funcionario = scf.codigo order by 1 desc )
+        WHERE fsc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+        AND (FLOOR(DATEDIFF(DAY, sfu.data_nascimento, getdate()) / 365.25) < 18)
+		AND scf.ativo NOT IN (0)
+    ) AS quant_menor_idade,
+    (
+        SELECT count(sfu.codigo) AS count
+        FROM RHHealth.dbo.cliente_funcionario scf
+        INNER JOIN RHHealth.dbo.funcionarios sfu ON (sfu.codigo = scf.codigo_funcionario)
+        INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = (Select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_funcionario = scf.codigo order by 1 desc )
+        WHERE fsc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+        AND sfu.sexo = 'F'
+        AND scf.ativo NOT IN (0)
+    ) AS quant_funcionario_feminino,
+    (
+        SELECT count(sfu.codigo) AS count
+        FROM RHHealth.dbo.cliente_funcionario scf
+        INNER JOIN RHHealth.dbo.funcionarios sfu ON (sfu.codigo = scf.codigo_funcionario)
+        INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = (Select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_funcionario = scf.codigo order by 1 desc )
+        WHERE fsc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+        AND sfu.sexo = 'M'
+        AND scf.ativo NOT IN (0)
+    ) AS quant_funcionario_masculino
+-----------------
+FROM RHHealth.dbo.grupos_economicos_clientes gec
+INNER JOIN RHHealth.dbo.grupos_economicos ge ON (ge.codigo = gec.codigo_grupo_economico)
+
+left join RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo = (select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_alocacao = gec.codigo_cliente order by codigo desc)
+
+    --cliente matriz
+left JOIN RHHealth.dbo.cliente clm ON (clm.codigo = fsc.codigo_cliente_referencia ) -- ge.codigo_cliente)
+    -- cliente filial
+INNER JOIN RHHealth.dbo.cliente clf ON (clf.codigo = gec.codigo_cliente)
+LEFT JOIN RHHealth.dbo.cnae ON (cnae.cnae = clf.cnae)
+    -- obtem o endereco da filial
+LEFT JOIN RHHealth.dbo.cliente_endereco clef ON (clef.codigo_cliente = clf.codigo)
+-- obtem enderedo da matriz
+LEFT JOIN RHHealth.dbo.cliente_endereco cmef ON (cmef.codigo_cliente = clm.codigo)
+-- obtem cnae matriz
+LEFT JOIN RHHealth.dbo.cnae cnaem ON(cnaem.cnae = clm.cnae)
+LEFT JOIN RHHealth.dbo.medicos me ON (me.codigo = ISNULL(clf.codigo_medico_pcmso,clm.codigo_medico_pcmso))
+LEFT JOIN RHHealth.dbo.ordem_servico os ON(os.codigo_grupo_economico = ge.codigo AND os.codigo_cliente = gec.codigo_cliente AND os.codigo IN (SELECT codigo_ordem_servico FROM RHHealth.dbo.ordem_servico_item WHERE codigo_servico=2340))
+WHERE gec.codigo_cliente = $P{CODIGO_CLIENTE}]]>
+	</queryString>
+	<field name="ramo_atividade" class="java.lang.String"/>
+	<field name="grau_risco" class="java.lang.String"/>
+	<field name="inicio_vigencia_pcmso" class="java.lang.String"/>
+	<field name="fim_vigencia_pcmso" class="java.lang.String"/>
+	<field name="vigencia_em_meses" class="java.lang.Integer"/>
+	<field name="nome_medico" class="java.lang.String"/>
+	<field name="numero_conselho" class="java.lang.String"/>
+	<field name="conselho_uf" class="java.lang.String"/>
+	<field name="matriz_razao_social" class="java.lang.String"/>
+	<field name="matriz_codigo_documento" class="java.lang.String"/>
+	<field name="matriz_endereco" class="java.lang.String"/>
+	<field name="matriz_numero" class="java.lang.Integer"/>
+	<field name="matriz_complemento" class="java.lang.String"/>
+	<field name="matriz_cep" class="java.lang.String"/>
+	<field name="matriz_cidade" class="java.lang.String"/>
+	<field name="matriz_bairro" class="java.lang.String"/>
+	<field name="matriz_estado" class="java.lang.String"/>
+	<field name="matriz_cnae" class="java.lang.String"/>
+	<field name="matriz_cnae_grau_risco" class="java.lang.String"/>
+	<field name="matriz_cnae_descricao" class="java.lang.String"/>
+	<field name="filial_e_tomador" class="java.lang.Boolean"/>
+	<field name="filial_razao_social" class="java.lang.String"/>
+	<field name="filial_nome_fantasia" class="java.lang.String"/>
+	<field name="filial_codigo_documento" class="java.lang.String"/>
+	<field name="cnae" class="java.lang.String"/>
+	<field name="filial_endereco" class="java.lang.String"/>
+	<field name="filial_complemento" class="java.lang.String"/>
+	<field name="filial_numero" class="java.lang.Integer"/>
+	<field name="filial_bairro" class="java.lang.String"/>
+	<field name="filial_cidade" class="java.lang.String"/>
+	<field name="filial_estado" class="java.lang.String"/>
+	<field name="filial_cep" class="java.lang.String"/>
+	<field name="quant_menor_idade" class="java.lang.Integer"/>
+	<field name="quant_funcionario_feminino" class="java.lang.Integer"/>
+	<field name="quant_funcionario_masculino" class="java.lang.Integer"/>
+	<detail>
+		<band height="861" splitType="Stretch">
+			<staticText>
+				<reportElement x="160" y="118" width="234" height="47"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PCMSO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="209" width="555" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="271" width="555" height="56"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{filial_razao_social}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="358" width="555" height="45"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["UNIDADE: " + $F{filial_nome_fantasia}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="614" width="555" height="42"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{filial_endereco} +", "+ $F{filial_numero} + "\n" +
+$F{filial_bairro} +" - "+ $F{filial_cidade} +"/"+ $F{filial_estado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="418" width="555" height="45"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Vigência: " + $F{inicio_vigencia_pcmso} + " a " +  $F{fim_vigencia_pcmso}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="206" y="678" width="143" height="46">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_LOGO_MULTI_EMPRESA}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_LOGO_MULTI_EMPRESA}]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="461" y="13" width="100" height="30">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+		</band>
+		<band height="857">
+			<frame>
+				<reportElement style="bordered" x="0" y="1" width="555" height="52"/>
+				<staticText>
+					<reportElement x="75" y="0" width="369" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[PCMSO
+Programa de controle Médico de Saúde Ocupacional]]></text>
+				</staticText>
+				<textField pattern="dd/MM/yyyy">
+					<reportElement x="450" y="31" width="100" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+				<image>
+					<reportElement x="451" y="3" width="100" height="30">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+					</reportElement>
+					<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+				</image>
+				<image>
+					<reportElement x="4" y="14" width="67" height="23">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[(!$P{URL_LOGO_MULTI_EMPRESA}.isEmpty())]]></printWhenExpression>
+					</reportElement>
+					<imageExpression><![CDATA[$P{URL_LOGO_MULTI_EMPRESA}]]></imageExpression>
+				</image>
+			</frame>
+			<line>
+				<reportElement x="74" y="1" width="1" height="52"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="444" y="1" width="1" height="52"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<frame>
+				<reportElement style="bordered" x="0" y="64" width="555" height="15"/>
+				<staticText>
+					<reportElement x="6" y="0" width="118" height="15"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Vigência do PCMSO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="129" y="0" width="100" height="15"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[12 meses]]></text>
+				</staticText>
+			</frame>
+			<line>
+				<reportElement x="124" y="64" width="1" height="15"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<frame>
+				<reportElement style="bordered" x="0" y="89" width="555" height="101" isRemoveLineWhenBlank="true"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="124" height="15"/>
+						<textElement verticalAlignment="Middle">
+							<font size="8" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Identificação da Empresa]]></text>
+					</staticText>
+				</frame>
+				<staticText>
+					<reportElement x="5" y="15" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Razão Social]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="37" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="58" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="38" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Endereço]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="38" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="38" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Complemento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="429" y="38" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNPJ]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="38" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="59" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Bairro]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="59" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="79" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="429" y="59" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[UF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="59" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CEP]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="59" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="59" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="129" y="59" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Cidade]]></text>
+				</staticText>
+				<line>
+					<reportElement x="232" y="80" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="80" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="80" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNAE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="129" y="80" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Grau de Risco]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="237" y="80" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Descrição CNAE]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="5" y="25" width="550" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="68" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cidade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="68" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_bairro}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="68" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_estado}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="89" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cnae}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="238" y="89" width="312" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cnae_descricao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="89" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cnae_grau_risco}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="47" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_codigo_documento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="6" y="47" width="287" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_endereco} +", "+ $F{matriz_numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="47" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_complemento}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="313" width="555" height="103"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[1. INTRODUÇÃO]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="82"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Passaremos a descrever em seguida o Programa de Controle Médico e Saúde Ocupacional, que orientará nossas atividades na Medicina do Trabalho, no decorrer dos próximos 12 meses, cuja finalidade é promover e preservar a saúde dos trabalhadores, conforme o previsto na NR-07 da Portaria 3.214 de 1978.
+
+O Programa é desenvolvido em concordância com os dispositivos legais do capítulo V do título II da CLT e demais normas que compõem o ordenamento jurídico e Normas Regulamentadoras aprovadas pela Portaria 3.214 de 08 de junho de 1978, considerando sua última atualização.
+
+O Programa está em permanente manutenção, identificando e estabelecendo as ações necessárias para corrigir as deficiências constatadas e indicar alterações nas ações previstas, inclusive àquelas provocadas por mudanças no processo produtivo, na legislação e introdução de novas tecnologias.
+
+Na viabilização do PCMSO, estão envolvidos os profissionais da área de Segurança e Saúde, Gerências de todos os setores, Diretorias, CIPA e demais empregados. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="426" width="555" height="116"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[2. OBJETIVOS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="95"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[O PROGRAMA DE CONTROLE MÉDICO E SAÚDE OCUPACIONAL - PCMSO tem como objetivo promover,  prevenir e conservar a saúde dos trabalhadores; estabelecer diretrizes e parâmetros mínimos para avaliação e acompanhamento das diversas exposições a agentes com potencial nocivo.
+
+Esse acompanhamento é realizado através da sistematização de exames de monitoração biológica, estabelecendo a uniformização de critérios e de procedimentos nas atividades médicas de saúde ocupacional, possibilitando a realização de estudos epidemiológicos.
+
+O programa tem ainda inteira consonância com o PPRA - Programa de Prevenção de Riscos Ambientais, seu Planejamento Anual e as metas estabelecidas, visando à adoção de medidas para eliminação e/ou a minimização e o controle dos riscos ambientais.
+
+Essas medidas são adotadas considerando as viabilidades técnicas de implantação, através da busca em suas múltiplas causas e as consequentes ações coletivas de intervenção sobre as fontes emissoras, associadas à modalidade de atenuação dos agentes, avaliando em seguida cada uma das medidas adotadas e implantadas, através de nova realização de análises quantitativas dos agentes presentes, comparando-os aos resultados anteriores. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="552" width="555" height="57"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[3. DIRETRIZES GERAIS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="36"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[1. DESENVOLVIMENTO DO PCMSO
+
+Um profundo conhecimento das atividades desenvolvidas por cada trabalhador e dos riscos a que estão expostos é fundamental para o desenvolvimento do PCMSO. Portanto, é de grande importância um estudo da descrição das atividades e um levantamento das exigências das funções, podendo assim compreender a relação de cada atividade ou ambiente de trabalho com a saúde do trabalhador. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="619" width="555" height="238"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[4. EXAMES MEDICOS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="217"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Os exames complementares designados nesse Programa estão divididos em três categorias, conforme os seus objetivos, a saber:
+
+Exames de Benefício: Exames que a empresa oferece a todos os seus funcionários com a intenção de proporcionar melhor qualidade de vida, detecção preventiva de doenças crônicas, redução do absenteísmo, diminuição da sinistralidade dos planos de saúde e direcionamento das campanhas programadas. São exames de realização recomendável, não devendo estar vinculados à liberação do Atestado de Saúde Ocupacional.
+
+Exames de capacitação: Exames que tem o objetivo de seletividade para a função, de forma a comprovar a capacitação para uma determinada tarefa. São exames de realização obrigatória por exigência legal. Devem estar discriminados no A.S.O. com suas respectivas datas de realização.
+
+Exames ocupacionais propriamente ditos: Exames para o monitoramento biológico dos agentes de risco de cada setor / atividade. São exames de realização obrigatória por exigência legal, devendo estar discriminados no A.S.O. com suas respectivas datas de realização.
+
+a. Exame Pré Admissional
+
+Será realizado em todos os novos funcionários antes que os mesmos iniciem suas atividades. É de responsabilidade do RH enviar os candidatos a novas vagas para a realização dos exames que fazem parte da avaliação admissional.
+
+b. Exame Periódico
+
+Será realizado em intervalos de tempo estabelecidos pela lei e definido no cronograma de avaliação nos exames ocupacionais. Mensalmente, o Serviço Médico enviará ao responsável da área de Recursos Humanos, listagem contendo os nomes dos funcionários que deverão ser avaliados no mês seguinte.
+
+c. Retorno ao Trabalho
+
+Realizado obrigatoriamente no primeiro dia de volta ao trabalho, afastado por período igual ou superior a 30 (trinta) dias, por motivo de doença ou acidente, de natureza ocupacional ou não, ou parto. É de responsabilidade do RH encaminhar estes funcionários para o Serviço Médico.
+
+]]></text>
+				</staticText>
+			</frame>
+			<textField>
+				<reportElement x="75" y="27" width="369" height="25"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{filial_razao_social}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="6" y="157" width="100" height="10"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{matriz_cep}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement style="bordered" x="0" y="200" width="555" height="101" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{filial_e_tomador}]]></printWhenExpression>
+				</reportElement>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="171" height="15"/>
+						<textElement verticalAlignment="Middle">
+							<font size="8" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Identificação do Posto de Trabalho]]></text>
+					</staticText>
+				</frame>
+				<staticText>
+					<reportElement x="5" y="15" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Razão Social]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="37" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="58" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="38" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Endereço]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="38" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="38" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Complemento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="429" y="38" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNPJ]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="38" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="59" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Bairro]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="59" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="79" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="429" y="59" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[UF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="59" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CEP]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="59" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="59" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="129" y="59" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Cidade]]></text>
+				</staticText>
+				<line>
+					<reportElement x="232" y="80" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="80" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="80" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNAE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="129" y="80" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Grau de Risco]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="237" y="80" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Descrição CNAE]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="5" y="25" width="550" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="68" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_cidade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="68" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_bairro}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="68" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_estado}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="89" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cnae}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="238" y="89" width="312" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ramo_atividade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="89" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{grau_risco}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="47" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_codigo_documento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="6" y="47" width="287" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_endereco} +", "+ $F{filial_numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="47" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_complemento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="69" width="100" height="10"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_cep}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="856">
+			<frame>
+				<reportElement style="bordered" x="0" y="0" width="555" height="108"/>
+				<staticText>
+					<reportElement x="6" y="0" width="549" height="107"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[d. Mudança de Função
+
+Realizado em funcionários que têm alteração em sua atividade, posto de trabalho ou setor, que implique em exposição a risco diferente daquele a que estava exposto anteriormente. Deve ser realizado antes da data da mudança. Os exames complementares e o direcionamento do exame clínico terão como referência a antiga e a nova função.
+
+e. Exame Demissional
+
+Será realizado até a data da homologação, desde que o último exame médico ocupacional tenha sido realizado há mais de 135 dias, para empresas de grau de risco 1 ou 2 e 90 dias para empresas de risco 3 ou 4.
+
+f. Exame Monitoração Pontual
+
+Será realizado em intervalos de tempo estabelecidos pela lei e definido no cronograma de avaliação nos exames ocupacionais. Mensalmente, o Serviço Médico enviará ao responsável da área de Recursos Humanos, listagem contendo os nomes dos funcionários que deverão ser avaliados no mês seguinte. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="116" width="555" height="133"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[5. ATESTADO DE SAÚDE OCUPACIONAL]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="112"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Será emitido após a realização de cada exame médico, em três vias, ficando a primeira com o funcionário, a segunda junto ao dossiê do empregado no Departamento de Pessoal, e a terceira, como cópia de segurança, com o Serviço Médico. O ASO devera conter, no mínimo:
+
+a. Nome do trabalhador, o número do CPF, sua função e setor;
+
+b. Os riscos ocupacionais existentes ou declarada a ausência deles;
+
+c. Os procedimentos médicos a que foi submetido o trabalhador, incluindo os exames complementares e a data em que foram realizados;
+
+d. Nome do médico coordenador com o respectivo CRM;
+
+e. Definição de apto ou inapto para a função específica que o trabalhador irá exercer, estiver exercendo ou exerceu;
+
+f. Nome do médico encarregado do exame e endereço ou forma de contato. Data, assinatura e CRM do médico encarregado do exame. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="258" width="555" height="42"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[6. PRONTUÁRIO CLÍNICO INDIVIDUAL]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="21"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Os dados obtidos nos exames médicos e complementares deverão ser registrados em prontuário clínico individual que ficará sob a responsabilidade do médico coordenador. Deverão ser mantidos por um período de 20 anos ou transferidos para o novo coordenador, no caso de substituição.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="309" width="555" height="42"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[7. PRIMEIROS SOCORROS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="21"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[A NR 7 estabelece que "todo estabelecimento deverá estar equipado com material necessário a prestação de primeiros socorros, considerando-se as características das atividades desenvolvidas". Determina ainda a guarda desse material em local adequado e a existência de pessoal treinado para esse fim.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" stretchType="RelativeToTallestObject" x="0" y="360" width="555" height="97"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[ MATERIAIS PARA A CAIXA DE PRIMEIROS SOCORROS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+			<subreport isUsingCache="true">
+				<reportElement isPrintRepeatedValues="false" x="0" y="375" width="555" height="82"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_materiais_pronto_socorro.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="72">
+			<frame>
+				<reportElement style="bordered" x="1" y="6" width="554" height="14"/>
+				<textField>
+					<reportElement x="57" y="0" width="492" height="14"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{filial_nome_fantasia}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="6" y="0" width="61" height="14"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Unidade:]]></text>
+				</staticText>
+			</frame>
+			<subreport>
+				<reportElement x="0" y="30" width="555" height="41"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMP_SETOR_CARGO_VAZIO">
+					<subreportParameterExpression><![CDATA[$P{IMP_SETOR_CARGO_VAZIO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:relatorio_unidades.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="344">
+			<frame>
+				<reportElement style="bordered" x="0" y="18" width="555" height="56"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[OBSERVAÇÃO]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="35"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Todos os funcionários com idade entre 18 e 45 anos poderão realizar o exame periódico a cada dois anos, desde que não estejam expostos a riscos no ambiente de trabalho e que não sejam portadores de doenças crônicas.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="79" width="555" height="192"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[ATIVIDADES E PROGRAMAS SUPLEMENTARES]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="33" width="549" height="35"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[A medicina do trabalho ministra, palestras sobre temas atuais relacionados à saúde e o bem estar pessoal, com a finalidade de orientar os trabalhadores sobre os riscos à sua saúde existentes em seu local de trabalho. Estas palestras visam conscientizar a população trabalhadora a respeito das regras de Saúde e Segurança no trabalho, prevenindo assim possíveis danos a sua saúde.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="23" width="170" height="8"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE PALESTRAS EDUCATIVAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="93" width="549" height="35"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Os funcionários portadores dessas doenças passam a ter uma ficha de acompanhamento clínico em separado, sendo examinados no Serviço Médico, para verificação. Esses funcionários são encaminhados para seus médicos clínicos assistentes para avaliação, tratamento e acompanhamento. Os resultados das avaliações, assim como as alterações / trocas de medicamentos serão informadas ao Serviço Médico e inseridas nas fichas de acompanhamento.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="83" width="287" height="8"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE ACOMPANHAMENTO DE DOENÇAS CRÔNICAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="145" width="287" height="8"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE PREVENÇÃO DE D.O.R.T]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="155" width="549" height="35"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Serão realizadas vistorias nos postos de trabalho com riscos ergonômicos (movimentos repetitivos, posições forçadas etc.). Para orientação geral dos trabalhadores, serão realizados palestras e treinamentos com orientações específicas para neutralizar ou reduzir os efeitos mórbidos dos constrangimentos posturais.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="277" width="555" height="56"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[TOTAL DE FUNCIONARIOS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<frame>
+					<reportElement style="bordered" x="155" y="15" width="100" height="41"/>
+					<staticText>
+						<reportElement x="0" y="10" width="100" height="10"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Masculino]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="21" y="26" width="62" height="10"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{quant_funcionario_masculino}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="bordered" x="355" y="15" width="100" height="41"/>
+					<staticText>
+						<reportElement x="0" y="10" width="100" height="10"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Menor]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="20" y="26" width="62" height="10"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{quant_menor_idade}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="bordered" x="455" y="15" width="100" height="41"/>
+					<staticText>
+						<reportElement x="0" y="10" width="100" height="10"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Total]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="20" y="26" width="62" height="10"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[($F{quant_funcionario_masculino} + $F{quant_funcionario_feminino} + $F{quant_menor_idade})]]></textFieldExpression>
+					</textField>
+				</frame>
+				<staticText>
+					<reportElement x="40" y="41" width="100" height="10"/>
+					<textElement textAlignment="Center">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Funcionarios]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="255" y="292" width="100" height="41"/>
+				<staticText>
+					<reportElement x="0" y="10" width="100" height="10"/>
+					<textElement textAlignment="Center">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Feminino]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="20" y="26" width="62" height="10"/>
+					<textElement textAlignment="Center">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{quant_funcionario_feminino}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="44">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="44"/>
+				<subreport isUsingCache="false">
+					<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="44" isRemoveLineWhenBlank="true"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_hospitais_emergencia.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="90">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="90"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="217" y="73" width="121" height="11"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA["CRM/UF:"+$F{numero_conselho}+"/"+$F{conselho_uf}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="216" y="62" width="122" height="11"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome_medico}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="215" y="50" width="124" height="10"/>
+					<textElement textAlignment="Center">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Médico Coordenador do PCMSO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="216" y="47" width="122" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+			<break>
+				<reportElement x="0" y="89" width="555" height="1"/>
+			</break>
+		</band>
+		<band height="49">
+			<subreport isUsingCache="false">
+				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="41"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cronogramas_acoes.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="44">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="44"/>
+				<subreport isUsingCache="false">
+					<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="44" isRemoveLineWhenBlank="true"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_corpo_clinico.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="38">
+			<textField>
+				<reportElement x="455" y="9" width="100" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="unidade_detalhe" language="groovy" pageWidth="802" pageHeight="555" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.1269722013523673"/>
+	<property name="ireport.x" value="23"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/demonstrativo_percapita"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/demonstrativo_percapita_files/unidade_detalhe.jrxml"/>
+	<parameter name="MES_REFERENCIA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[9]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ANO_REFERENCIA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[2017]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE_PAGADOR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[20]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EXIBIR_CENTRO_CUSTO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+		itempedidoalocacao.codigo_cliente_pagador AS [codigo_pagador],
+       dbBuonny.publico.ufn_decode_utf8_string(clientepagador.nome_fantasia) AS [descricao_pagador],
+       clientealocacao.codigo AS [unidade],
+       dbBuonny.publico.ufn_decode_utf8_string(clientealocacao.nome_fantasia) AS [descricao_unidade],
+       COUNT(itempedidoalocacao.codigo) AS qtd_unidade,
+       ISNULL(SUM(itempedidoalocacao.valor), '0') AS total_unidade,
+       itempedidoalocacao.valor_assinatura AS valor_assinatura,
+       (SELECT TOP 1 CONVERT(VARCHAR(10), data_ativacao_produto, 103)
+            FROM RHHealth.dbo.itens_pedidos_alocacao
+			WHERE codigo_cliente_pagador = $P{CODIGO_CLIENTE_PAGADOR}
+				AND  mes_referencia = $P{MES_REFERENCIA}
+				AND ano_referencia = $P{ANO_REFERENCIA}
+				AND data_ativacao_produto IS NOT NULL
+		) AS data_ativacao,
+	   (SELECT TOP 1 CONVERT(VARCHAR(10), data_inativacao_produto, 103)
+        FROM RHHealth.dbo.itens_pedidos_alocacao
+			WHERE codigo_cliente_pagador = $P{CODIGO_CLIENTE_PAGADOR}
+				AND  mes_referencia = $P{MES_REFERENCIA}
+				AND ano_referencia = $P{ANO_REFERENCIA}
+				AND data_inativacao_produto IS NOT NULL
+		) AS data_inativacao
+FROM RHHealth.dbo.itens_pedidos_alocacao itempedidoalocacao
+INNER JOIN RHHealth.dbo.pedidos pedido ON itempedidoalocacao.codigo_pedido = pedido.codigo
+INNER JOIN RHHealth.dbo.cliente clientepagador ON itempedidoalocacao.codigo_cliente_pagador = clientepagador.codigo
+INNER JOIN RHHealth.dbo.cliente clientealocacao ON itempedidoalocacao.codigo_cliente_alocacao = clientealocacao.codigo
+WHERE clientepagador.codigo = $P{CODIGO_CLIENTE_PAGADOR}
+  AND pedido.mes_referencia = $P{MES_REFERENCIA}
+  AND pedido.ano_referencia = $P{ANO_REFERENCIA}
+GROUP BY itempedidoalocacao.codigo_cliente_pagador,
+         dbBuonny.publico.ufn_decode_utf8_string(clientepagador.nome_fantasia),
+         clientealocacao.codigo,
+         dbBuonny.publico.ufn_decode_utf8_string(clientealocacao.nome_fantasia),
+         itempedidoalocacao.valor_assinatura
+ORDER BY clientealocacao.codigo]]>
+	</queryString>
+	<field name="codigo_pagador" class="java.lang.Integer"/>
+	<field name="descricao_pagador" class="java.lang.String"/>
+	<field name="unidade" class="java.lang.Integer"/>
+	<field name="descricao_unidade" class="java.lang.String"/>
+	<field name="qtd_unidade" class="java.lang.Integer"/>
+	<field name="total_unidade" class="java.math.BigDecimal"/>
+	<field name="data_ativacao" class="java.lang.String"/>
+	<field name="data_inativacao" class="java.lang.String"/>
+	<field name="valor_assinatura" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="802" height="29"/>
+				<staticText>
+					<reportElement x="12" y="8" width="56" height="17" forecolor="#646464"/>
+					<textElement verticalAlignment="Top">
+						<font fontName="Arial" size="10" isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Unidade]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="68" y="8" width="440" height="17" forecolor="#646464"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{unidade}.toString() +" - "+$F{descricao_unidade}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="2" y="25" width="798" height="1"/>
+				</line>
+				<frame>
+					<reportElement x="592" y="16" width="105" height="13">
+						<printWhenExpression><![CDATA[$F{data_inativacao} != null]]></printWhenExpression>
+					</reportElement>
+					<textField>
+						<reportElement x="47" y="0" width="58" height="13"/>
+						<textElement>
+							<font size="8"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{data_inativacao}]]></textFieldExpression>
+					</textField>
+					<staticText>
+						<reportElement x="8" y="0" width="63" height="13"/>
+						<textElement>
+							<font size="8" isBold="false"/>
+						</textElement>
+						<text><![CDATA[Inativação:]]></text>
+					</staticText>
+				</frame>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="542" y="16" width="58" height="13"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_ativacao}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="728" y="16" width="48" height="13"/>
+					<textElement>
+						<font size="8" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Per Capita:]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="755" y="16" width="46" height="13"/>
+					<textElement textAlignment="Right">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{valor_assinatura}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<staticText>
+				<reportElement x="509" y="16" width="51" height="13"/>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Ativação:]]></text>
+			</staticText>
+		</band>
+		<band height="46">
+			<subreport>
+				<reportElement x="0" y="2" width="802" height="40"/>
+				<subreportParameter name="CODIGO_UNIDADE">
+					<subreportParameterExpression><![CDATA[$F{unidade}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MES_REFERENCIA">
+					<subreportParameterExpression><![CDATA[$P{MES_REFERENCIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ANO_REFERENCIA">
+					<subreportParameterExpression><![CDATA[$P{ANO_REFERENCIA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE_PAGADOR">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE_PAGADOR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="EXIBIR_CENTRO_CUSTO">
+					<subreportParameterExpression><![CDATA[$P{EXIBIR_CENTRO_CUSTO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:unidade_percapita.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="26">
+			<frame>
+				<reportElement x="508" y="0" width="293" height="15"/>
+				<textField>
+					<reportElement x="99" y="0" width="58" height="14"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{qtd_unidade}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="30" y="0" width="69" height="14"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Quantidade]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="167" y="0" width="52" height="14"/>
+					<textElement>
+						<font size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Subtotal]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="219" y="0" width="73" height="14"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression><![CDATA[$F{total_unidade}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+</jasperReport>

@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/Exames;posicao_exames_sintetico
+create;buonny/Exames;posicao_exames_sintetico_listagem
+create;buonny/Exames;posicao_exames_analitico
+create;buonny/Exames;posicao_exames_analitico_listagem

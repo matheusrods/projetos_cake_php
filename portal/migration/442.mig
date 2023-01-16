@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/TipoDigitalizacao;operacao_digitalizacao_terceiros
+create;buonny/TipoDigitalizacao;lista_digitalizacao_terceiros
+create;buonny/TipoDigitalizacao;carrega_combos_grupo_economico
+create;buonny/TipoDigitalizacao;incluir_digitalizacao

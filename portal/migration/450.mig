@@ -1,0 +1,5 @@
+[ACO]
+create;buonny;CronogramasAcoes
+create;buonny/CronogramasAcoes;index
+create;buonny/CronogramasAcoes;listagem
+create;buonny/CronogramasAcoes;editar

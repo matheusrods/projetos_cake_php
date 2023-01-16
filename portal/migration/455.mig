@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;UsuarioGrupoCovid
+create;buonny/UsuarioGrupoCovid;index
+create;buonny/UsuarioGrupoCovid;usuario_grupo_covid_filtros
+create;buonny/UsuarioGrupoCovid;editar
+create;buonny/UsuarioGrupoCovid;listagem
+create;buonny/UsuarioGrupoCovid;exportar

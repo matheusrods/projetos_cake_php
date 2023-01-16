@@ -1,0 +1,1276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 4.5.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_historico_pessoal" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.9487171000000025"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ficha_assitencial"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository/"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/ficha_assitencial_files/sub_historico_pessoal.jrxml"/>
+	<style name="style1">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="style2">
+		<box>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FICHA_ASSISTENCIAL" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\fabio.potame\\Documents\\ficha_clinica\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[DECLARE @MaxCount INT;
+DECLARE @Cod INT;
+SELECT @MaxCount = max(cnt)
+FROM (
+    SELECT
+        count(codigo) AS cnt
+    FROM RHHealth.dbo.fichas_assistenciais_questoes fcq
+    ) X;
+DECLARE @SQL NVARCHAR(max)
+    ,@i INT;
+SET @i = 0;
+WHILE @i < @MaxCount
+BEGIN
+    SET @i = @i + 1;
+    SELECT @Cod = codigo from (
+    SELECT codigo, CAST(row_number() OVER (ORDER BY codigo) AS Varchar(10)) AS RowNo FROM RHHealth.dbo.fichas_assistenciais_questoes
+    ) pv WHERE RowNo = @i
+    SET @SQL = COALESCE(@Sql + ', ', '') + 'questao_' + CONVERT(VARCHAR(10), @Cod);
+END
+;SET @SQL = N';WITH CTE AS (
+        SELECT
+        CONCAT(fichas_assistenciais_respostas.resposta COLLATE SQL_Latin1_General_CP1_CI_AS , ''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+                ISNULL(CASE fichas_assistenciais_respostas.parentesco
+                WHEN '''' THEN '' ''
+                    ELSE dbBuonny.publico.ufn_decode_utf8_string(fichas_assistenciais_respostas.parentesco)
+                END, '' '') COLLATE SQL_Latin1_General_CP1_CI_AS,
+        ''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+        dbBuonny.publico.ufn_decode_utf8_string(fichas_assistenciais_respostas.campo_livre)) COLLATE SQL_Latin1_General_CP1_CI_AS AS resposta,
+        ''questao_'' +  CONVERT(VARCHAR(10), fichas_assistenciais_questoes.codigo) COLLATE SQL_Latin1_General_CP1_CI_AS AS RowNo
+        FROM RHHealth.dbo.fichas_assistenciais_questoes
+        LEFT JOIN RHHealth.dbo.fichas_assistenciais_respostas ON (fichas_assistenciais_respostas.codigo_ficha_assistencial_questao = fichas_assistenciais_questoes.codigo)
+        WHERE fichas_assistenciais_questoes.codigo_ficha_assistencial_grupo_questao = 3
+            AND fichas_assistenciais_respostas.codigo_ficha_assistencial = '+$P{CODIGO_FICHA_ASSISTENCIAL}+' )
+SELECT *
+FROM   CTE
+PIVOT (MAX(resposta) FOR RowNo IN (' + @SQL + N')) pvt';
+EXECUTE (@SQL)]]>
+	</queryString>
+	<field name="questao_7" class="java.lang.String"/>
+	<field name="questao_8" class="java.lang.String"/>
+	<field name="questao_9" class="java.lang.String"/>
+	<field name="questao_15" class="java.lang.String"/>
+	<field name="questao_16" class="java.lang.String"/>
+	<field name="questao_17" class="java.lang.String"/>
+	<field name="questao_18" class="java.lang.String"/>
+	<field name="questao_19" class="java.lang.String"/>
+	<field name="questao_20" class="java.lang.String"/>
+	<field name="questao_21" class="java.lang.String"/>
+	<field name="questao_22" class="java.lang.String"/>
+	<field name="questao_23" class="java.lang.String"/>
+	<field name="questao_24" class="java.lang.String"/>
+	<field name="questao_25" class="java.lang.String"/>
+	<field name="questao_26" class="java.lang.String"/>
+	<field name="questao_31" class="java.lang.String"/>
+	<field name="questao_35" class="java.lang.String"/>
+	<field name="questao_36" class="java.lang.String"/>
+	<field name="questao_37" class="java.lang.String"/>
+	<field name="questao_38" class="java.lang.String"/>
+	<field name="questao_39" class="java.lang.String"/>
+	<field name="questao_40" class="java.lang.String"/>
+	<field name="questao_41" class="java.lang.String"/>
+	<field name="questao_42" class="java.lang.String"/>
+	<field name="questao_43" class="java.lang.String"/>
+	<field name="questao_44" class="java.lang.String"/>
+	<field name="questao_49" class="java.lang.String"/>
+	<field name="questao_50" class="java.lang.String"/>
+	<field name="questao_53" class="java.lang.String"/>
+	<field name="questao_54" class="java.lang.String"/>
+	<field name="questao_55" class="java.lang.String"/>
+	<field name="questao_56" class="java.lang.String"/>
+	<field name="questao_61" class="java.lang.String"/>
+	<field name="questao_62" class="java.lang.String"/>
+	<field name="questao_63" class="java.lang.String"/>
+	<field name="questao_64" class="java.lang.String"/>
+	<field name="questao_65" class="java.lang.String"/>
+	<field name="questao_70" class="java.lang.String"/>
+	<field name="questao_71" class="java.lang.String"/>
+	<field name="questao_72" class="java.lang.String"/>
+	<field name="questao_73" class="java.lang.String"/>
+	<field name="questao_74" class="java.lang.String"/>
+	<field name="questao_75" class="java.lang.String"/>
+	<field name="questao_76" class="java.lang.String"/>
+	<field name="questao_81" class="java.lang.String"/>
+	<field name="questao_82" class="java.lang.String"/>
+	<field name="questao_83" class="java.lang.String"/>
+	<field name="questao_84" class="java.lang.String"/>
+	<field name="questao_109" class="java.lang.String"/>
+	<field name="questao_110" class="java.lang.String"/>
+	<field name="questao_111" class="java.lang.String"/>
+	<field name="questao_112" class="java.lang.String"/>
+	<field name="questao_117" class="java.lang.String"/>
+	<field name="questao_118" class="java.lang.String"/>
+	<field name="questao_119" class="java.lang.String"/>
+	<field name="questao_120" class="java.lang.String"/>
+	<field name="questao_122" class="java.lang.String"/>
+	<field name="questao_123" class="java.lang.String"/>
+	<field name="questao_124" class="java.lang.String"/>
+	<field name="questao_126" class="java.lang.String"/>
+	<field name="questao_127" class="java.lang.String"/>
+	<field name="questao_128" class="java.lang.String"/>
+	<field name="questao_129" class="java.lang.String"/>
+	<field name="questao_130" class="java.lang.String"/>
+	<field name="questao_131" class="java.lang.String"/>
+	<field name="questao_132" class="java.lang.String"/>
+	<field name="questao_137" class="java.lang.String"/>
+	<field name="questao_138" class="java.lang.String"/>
+	<field name="questao_139" class="java.lang.String"/>
+	<field name="questao_140" class="java.lang.String"/>
+	<field name="questao_141" class="java.lang.String"/>
+	<field name="questao_143" class="java.lang.String"/>
+	<field name="questao_148" class="java.lang.String"/>
+	<field name="questao_150" class="java.lang.String"/>
+	<field name="questao_152" class="java.lang.String"/>
+	<field name="questao_153" class="java.lang.String"/>
+	<field name="questao_154" class="java.lang.String"/>
+	<field name="questao_155" class="java.lang.String"/>
+	<field name="questao_156" class="java.lang.String"/>
+	<field name="questao_157" class="java.lang.String"/>
+	<field name="questao_158" class="java.lang.String"/>
+	<field name="questao_159" class="java.lang.String"/>
+	<field name="questao_160" class="java.lang.String"/>
+	<field name="questao_161" class="java.lang.String"/>
+	<field name="questao_162" class="java.lang.String"/>
+	<field name="questao_163" class="java.lang.String"/>
+	<field name="questao_164" class="java.lang.String"/>
+	<field name="questao_165" class="java.lang.String"/>
+	<field name="questao_166" class="java.lang.String"/>
+	<field name="questao_168" class="java.lang.String"/>
+	<field name="questao_169" class="java.lang.String"/>
+	<field name="questao_170" class="java.lang.String"/>
+	<field name="questao_171" class="java.lang.String"/>
+	<field name="questao_172" class="java.lang.String"/>
+	<field name="questao_173" class="java.lang.String"/>
+	<field name="questao_174" class="java.lang.String"/>
+	<field name="questao_175" class="java.lang.String"/>
+	<field name="questao_176" class="java.lang.String"/>
+	<field name="questao_177" class="java.lang.String"/>
+	<title>
+		<band height="20">
+			<staticText>
+				<reportElement x="207" y="0" width="140" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HISTÓRICO PESSOAL (HPP)]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="80" splitType="Stretch">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="555" height="12"/>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_26}.split('#')[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_26}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="90" y="0" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_26}.split('#')[0] == ' ' || $F{questao_26}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="85" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PRESSÃO ALTA:]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="style1" x="0" y="12" width="555" height="12"/>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_31}.split('#')[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_31}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="90" y="0" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_31}.split('#')[0] == ' ' || $F{questao_31}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="85" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DIABETES:]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="style2" x="0" y="24" width="555" height="56"/>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_35}.split('#')[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_35}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="90" y="0" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_35}.split('#')[0] == ' ' || $F{questao_35}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="85" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS DO CORAÇÃO:]]></text>
+				</staticText>
+				<subreport>
+					<reportElement x="0" y="13" width="555" height="43"/>
+					<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_40">
+						<subreportParameterExpression><![CDATA[$F{questao_40}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_39">
+						<subreportParameterExpression><![CDATA[$F{questao_39}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_38">
+						<subreportParameterExpression><![CDATA[$F{questao_38}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_42">
+						<subreportParameterExpression><![CDATA[$F{questao_42}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_37">
+						<subreportParameterExpression><![CDATA[$F{questao_37}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_41">
+						<subreportParameterExpression><![CDATA[$F{questao_41}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_36">
+						<subreportParameterExpression><![CDATA[$F{questao_36}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_44">
+						<subreportParameterExpression><![CDATA[$F{questao_44}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_43">
+						<subreportParameterExpression><![CDATA[$F{questao_43}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_hpp_doencas_coracao.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="19">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="19"/>
+				<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cid_hpp_doencas_coracao.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="53">
+			<frame>
+				<reportElement style="style2" x="0" y="0" width="555" height="53"/>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_49}.split('#')[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_49}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="103" y="0" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_49}.split('#')[0] == ' ' || $F{questao_49}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="98" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROBLEMAS RESPIRATÓRIOS:]]></text>
+				</staticText>
+				<subreport>
+					<reportElement x="0" y="13" width="555" height="39"/>
+					<subreportParameter name="questao_56">
+						<subreportParameterExpression><![CDATA[$F{questao_56}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_50">
+						<subreportParameterExpression><![CDATA[$F{questao_50}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_55">
+						<subreportParameterExpression><![CDATA[$F{questao_55}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_54">
+						<subreportParameterExpression><![CDATA[$F{questao_54}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_53">
+						<subreportParameterExpression><![CDATA[$F{questao_53}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_hpp_problemas_respiratorios.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="19">
+			<subreport>
+				<reportElement x="0" y="-1" width="555" height="20"/>
+				<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cid_hpp_problemas_respiratorios.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="52">
+			<frame>
+				<reportElement style="style2" x="0" y="0" width="555" height="52"/>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_61}.split('#')[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_61}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="83" y="0" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_61}.split('#')[0] == ' ' || $F{questao_61}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="78" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS NOS RINS:]]></text>
+				</staticText>
+				<subreport>
+					<reportElement x="1" y="13" width="554" height="39"/>
+					<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_64">
+						<subreportParameterExpression><![CDATA[$F{questao_64}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_63">
+						<subreportParameterExpression><![CDATA[$F{questao_63}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_65">
+						<subreportParameterExpression><![CDATA[$F{questao_65}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_62">
+						<subreportParameterExpression><![CDATA[$F{questao_62}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_hpp_doencas_nos_rins.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="20">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="20"/>
+				<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cid_hpp_doencas_nos_rins.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="53">
+			<frame>
+				<reportElement style="style2" x="0" y="0" width="555" height="53"/>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_70}.split('#')[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_70}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="83" y="0" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_70}.split('#')[0] == ' ' || $F{questao_70}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="78" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS NO FÍGADO:]]></text>
+				</staticText>
+				<subreport>
+					<reportElement x="0" y="12" width="555" height="41"/>
+					<subreportParameter name="questao_76">
+						<subreportParameterExpression><![CDATA[$F{questao_76}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_75">
+						<subreportParameterExpression><![CDATA[$F{questao_75}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_74">
+						<subreportParameterExpression><![CDATA[$F{questao_74}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_73">
+						<subreportParameterExpression><![CDATA[$F{questao_73}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_72">
+						<subreportParameterExpression><![CDATA[$F{questao_72}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_71">
+						<subreportParameterExpression><![CDATA[$F{questao_71}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_hpp_doencas_no_figado.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="19">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="19"/>
+				<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cid_hpp_doencas_no_figado.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="52">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="555" height="52"/>
+				<textField>
+					<reportElement x="274" y="14" width="169" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_82} != null)? $F{questao_82}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="100" y="14" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_82} != null && $F{questao_82}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="274" y="2" width="169" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_81}.split("#")[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="14" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_82}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="14" width="78" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NA INFÂNCIA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="2" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_81}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="93" y="2" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_81}.split('#')[0] == ' ' || $F{questao_81}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="2" width="88" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[EPILEPSIA, CONVULSÃO ?]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="274" y="27" width="169" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_83} != null)? $F{questao_83}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="100" y="27" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_83} != null && $F{questao_83}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="27" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_83}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="27" width="78" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[NA ADOLECÊNCIA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="274" y="39" width="169" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_84} != null)? $F{questao_84}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="39" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_84}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="39" width="78" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FASE ADULTA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="100" y="39" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_84} != null && $F{questao_84}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="50">
+			<frame>
+				<reportElement style="style2" x="0" y="0" width="555" height="50"/>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_109}.split('#')[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_109}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="93" y="0" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_109}.split('#')[0] == ' ' || $F{questao_109}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="88" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS NO ESTÔMAGO:]]></text>
+				</staticText>
+				<subreport>
+					<reportElement x="0" y="12" width="555" height="38"/>
+					<subreportParameter name="questao_110">
+						<subreportParameterExpression><![CDATA[$F{questao_110}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_111">
+						<subreportParameterExpression><![CDATA[$F{questao_111}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_112">
+						<subreportParameterExpression><![CDATA[$F{questao_112}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_hpp_doencas_no_estomago.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="20">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="20"/>
+				<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cid_hpp_doencas_no_estomago.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="52">
+			<frame>
+				<reportElement style="style2" x="0" y="0" width="555" height="52"/>
+				<textField>
+					<reportElement x="294" y="14" width="171" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_118} != null)? $F{questao_118}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="120" y="14" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_118} != null && $F{questao_118}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="274" y="2" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_117}.split("#")[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="221" y="14" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_118}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="14" width="98" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CEGUEIRA COMPLETA (H54.0):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="2" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_117}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="93" y="2" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_117}.split('#')[0] == ' ' || $F{questao_117}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="2" width="88" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROBLEMAS DE VISÃO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="294" y="27" width="171" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_119} != null)? $F{questao_119}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="120" y="27" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_119} != null && $F{questao_119}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="221" y="27" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_119}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="27" width="98" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VISÃO SUBNORMAL (H54.2):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="294" y="39" width="171" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_120} != null)? $F{questao_120}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="221" y="39" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_120}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="39" width="98" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VISÃO MONOCULAR (H54.4):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="120" y="39" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_120} != null && $F{questao_120}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="20">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="20"/>
+				<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cid_hpp_problemas_de_visao.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="40">
+			<frame>
+				<reportElement style="style2" x="0" y="0" width="555" height="40"/>
+				<textField>
+					<reportElement x="294" y="14" width="171" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_123} != null)? $F{questao_123}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="120" y="14" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_123} != null && $F{questao_123}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="274" y="2" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_122}.split("#")[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="221" y="14" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_123}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="14" width="98" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SURDEZ BILATERAL (H90.3):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="2" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_122}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="93" y="2" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_122}.split('#')[0] == ' ' || $F{questao_122}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="2" width="88" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROBLEMAS DE AUDIÇÃO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="294" y="27" width="171" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_124} != null)? $F{questao_124}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="120" y="27" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_124} != null && $F{questao_124}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="221" y="27" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_124}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="27" width="98" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SURDEZ UNILATERAL (H90.4):]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="20">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="20"/>
+				<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cid_hpp_problemas_de_audicao.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="51">
+			<frame>
+				<reportElement style="style2" x="0" y="0" width="555" height="51"/>
+				<textField>
+					<reportElement x="279" y="1" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_126}.split('#')[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="1" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_126}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="93" y="1" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_126}.split('#')[0] == ' ' || $F{questao_126}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="1" width="88" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS PSIQUIÁTRICAS:]]></text>
+				</staticText>
+				<subreport>
+					<reportElement x="0" y="13" width="555" height="38"/>
+					<subreportParameter name="questao_130">
+						<subreportParameterExpression><![CDATA[$F{questao_130}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_129">
+						<subreportParameterExpression><![CDATA[$F{questao_129}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_128">
+						<subreportParameterExpression><![CDATA[$F{questao_128}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_127">
+						<subreportParameterExpression><![CDATA[$F{questao_127}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_132">
+						<subreportParameterExpression><![CDATA[$F{questao_132}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="questao_131">
+						<subreportParameterExpression><![CDATA[$F{questao_131}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_hpp_doencas_psiquiatricas.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="20">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="20"/>
+				<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cid_hpp_doencas_psiquiatricas.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="65">
+			<frame>
+				<reportElement style="style2" x="0" y="0" width="555" height="65"/>
+				<textField>
+					<reportElement x="314" y="14" width="167" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_138} != null)? $F{questao_138}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="140" y="14" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_138} != null && $F{questao_138}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="274" y="2" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_137}.split("#")[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="241" y="14" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_138}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="14" width="108" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CÂNCER DE PRÓSTATA (C61.0):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="2" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_137}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="93" y="2" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_137}.split('#')[0] == ' ' || $F{questao_137}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="2" width="88" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CÂNCER:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="314" y="27" width="167" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_139} != null)? $F{questao_139}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="140" y="27" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_139} != null && $F{questao_139}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="241" y="27" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_139}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="27" width="108" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CÂNCER DE MAMA (C50.0):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="314" y="39" width="167" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_140} != null)? $F{questao_140}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="241" y="39" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_140}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="39" width="118" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CÂNCER DE COLO DO ÚTERO (C53.0):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="140" y="39" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_140} != null && $F{questao_140}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="140" y="52" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_141} != null && $F{questao_141}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="52" width="118" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CÂNCER DE INTESTINO (C17.0):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="314" y="52" width="167" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_141} != null)? $F{questao_141}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="241" y="52" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_141}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="20">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="20"/>
+				<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cid_hpp_cancer.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="12">
+			<frame>
+				<reportElement style="style2" x="0" y="0" width="555" height="12"/>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_148}.split('#')[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_148}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="120" y="0" width="68" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_148}.split('#')[0] == ' ' || $F{questao_148}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="115" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[JÁ SOFREU ALGUMA INTERNAÇÃO:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="21">
+			<printWhenExpression><![CDATA[!($F{questao_148}.split('#')[0] == ' ' || $F{questao_148}.split('#')[0] == '0')]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="21"/>
+				<subreportParameter name="CODIGO_FICHA_ASSISTENCIAL">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_ASSISTENCIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cid_hpp_sofreu_internacao.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="12">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="555" height="12"/>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_150}.split('#')[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12">
+						<printWhenExpression><![CDATA[$F{questao_148}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="120" y="0" width="68" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_150}.split('#')[0] == ' ' || $F{questao_150}.split('#')[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="115" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[JÁ SOFREU ALGUMA CIRURGIA:]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

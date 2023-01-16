@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_prevencao_riscos_ambientais" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.6105100000000008"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_pcmso_versao"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<style name="BORDERED">
+		<box>
+			<pen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+		</box>
+	</style>
+	<style name="bordas-baixo">
+		<box>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\fabio.potame\\Documents\\iReport\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[10110]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_PCMSO_VERSAO" class="java.lang.String">
+		<defaultValueExpression><![CDATA[4079]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[WITH validacao AS (
+    SELECT TOP(1)
+        os.inicio_vigencia_pcmso AS data_validacao_1,
+        DATEADD(MONTH, 1, os.inicio_vigencia_pcmso) AS data_validacao_2,
+        DATEADD(MONTH, 2, os.inicio_vigencia_pcmso) AS data_validacao_3,
+        DATEADD(MONTH, 3, os.inicio_vigencia_pcmso) AS data_validacao_4,
+        DATEADD(MONTH, 4, os.inicio_vigencia_pcmso) AS data_validacao_5,
+        DATEADD(MONTH, 5, os.inicio_vigencia_pcmso) AS data_validacao_6,
+        DATEADD(MONTH, 6, os.inicio_vigencia_pcmso) AS data_validacao_7,
+        DATEADD(MONTH, 7, os.inicio_vigencia_pcmso) AS data_validacao_8,
+        DATEADD(MONTH, 8, os.inicio_vigencia_pcmso) AS data_validacao_9,
+        DATEADD(MONTH, 9, os.inicio_vigencia_pcmso) AS data_validacao_10,
+        DATEADD(MONTH, 10, os.inicio_vigencia_pcmso) AS data_validacao_11,
+        DATEADD(MONTH, 11, os.inicio_vigencia_pcmso) AS data_validacao_12,
+        DATEADD(MONTH, 12, os.inicio_vigencia_pcmso) AS data_validacao_13,
+        CONCAT(MONTH(os.inicio_vigencia_pcmso), '/', RIGHT(YEAR(os.inicio_vigencia_pcmso), 2)) AS data_1,
+        CONCAT(MONTH(DATEADD(MONTH, 1, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 1, os.inicio_vigencia_pcmso)), 2)) AS data_2,
+        CONCAT(MONTH(DATEADD(MONTH, 2, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 2, os.inicio_vigencia_pcmso)), 2)) AS data_3,
+        CONCAT(MONTH(DATEADD(MONTH, 3, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 3, os.inicio_vigencia_pcmso)), 2)) AS data_4,
+        CONCAT(MONTH(DATEADD(MONTH, 4, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 4, os.inicio_vigencia_pcmso)), 2)) AS data_5,
+        CONCAT(MONTH(DATEADD(MONTH, 5, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 5, os.inicio_vigencia_pcmso)), 2)) AS data_6,
+        CONCAT(MONTH(DATEADD(MONTH, 6, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 6, os.inicio_vigencia_pcmso)), 2)) AS data_7,
+        CONCAT(MONTH(DATEADD(MONTH, 7, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 7, os.inicio_vigencia_pcmso)), 2)) AS data_8,
+        CONCAT(MONTH(DATEADD(MONTH, 8, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 8, os.inicio_vigencia_pcmso)), 2)) AS data_9,
+        CONCAT(MONTH(DATEADD(MONTH, 9, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 9, os.inicio_vigencia_pcmso)), 2)) AS data_10,
+        CONCAT(MONTH(DATEADD(MONTH, 10, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 10, os.inicio_vigencia_pcmso)), 2)) AS data_11,
+        CONCAT(MONTH(DATEADD(MONTH, 11, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 11, os.inicio_vigencia_pcmso)), 2)) AS data_12,
+        CONCAT(MONTH(DATEADD(MONTH, 12, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 12, os.inicio_vigencia_pcmso)), 2)) AS data_13
+    FROM RHHealth.dbo.pcmso_versoes pv
+    INNER JOIN RHHealth.dbo.cronogramas_acoes_versoes ca
+    ON ca.codigo_pcmso_versao = pv.codigo
+    INNER JOIN RHHealth.dbo.ordem_servico_versoes os
+    ON ca.codigo_cliente_unidade = os.codigo_cliente AND os.codigo_pcmso_versoes = pv.codigo
+    WHERE os.codigo = (SELECT TOP(1) MAX(codigo) FROM RHHealth.dbo.ordem_servico_versoes WHERE codigo_cliente = ca.codigo_cliente_unidade AND codigo_pcmso_versoes = pv.codigo)
+    AND ca.codigo_cliente_unidade = $P{CODIGO_CLIENTE} AND pv.codigo = $P{CODIGO_PCMSO_VERSAO} AND os.inicio_vigencia_pcmso IS NOT NULL
+)
+SELECT
+    ca.codigo,
+    CONCAT(YEAR(os.inicio_vigencia_pcmso), '/', YEAR(DATEADD(YEAR, 1, os.inicio_vigencia_pcmso))) AS vigencia,
+    ca.data_inicial,
+    ca.data_final,
+    s.descricao AS setor_descricao,
+    IIF(((SELECT TOP(1) data_validacao_1 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_1,
+    IIF(((SELECT TOP(1) data_validacao_2 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_2,
+    IIF(((SELECT TOP(1) data_validacao_3 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_3,
+    IIF(((SELECT TOP(1) data_validacao_4 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_4,
+    IIF(((SELECT TOP(1) data_validacao_5 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_5,
+    IIF(((SELECT TOP(1) data_validacao_6 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_6,
+    IIF(((SELECT TOP(1) data_validacao_7 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_7,
+    IIF(((SELECT TOP(1) data_validacao_8 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_8,
+    IIF(((SELECT TOP(1) data_validacao_9 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_9,
+    IIF(((SELECT TOP(1) data_validacao_10 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_10,
+    IIF(((SELECT TOP(1) data_validacao_11 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_11,
+    IIF(((SELECT TOP(1) data_validacao_12 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_12,
+    IIF(((SELECT TOP(1) data_validacao_13 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_13,
+    dbBuonny.publico.ufn_decode_utf8_string(s.descricao) AS descricao,
+    dbBuonny.publico.ufn_decode_utf8_string(tia.descricao) AS acao,
+    ca.responsavel,
+    IIF(ca.status = 1, 'Ativo', 'Inativo') AS status
+FROM RHHealth.dbo.pcmso_versoes pv
+INNER JOIN RHHealth.dbo.cronogramas_acoes_versoes ca
+ON ca.codigo_pcmso_versao = pv.codigo
+INNER JOIN RHHealth.dbo.ordem_servico_versoes os
+ON ca.codigo_cliente_unidade = os.codigo_cliente
+INNER JOIN RHHealth.dbo.setores s
+ON ca.codigo_setor = s.codigo
+INNER JOIN RHHealth.dbo.tipos_acoes tia
+ON ca.codigo_tipo_acao = tia.codigo
+WHERE ca.codigo_cliente_unidade = $P{CODIGO_CLIENTE} AND pv.codigo = $P{CODIGO_PCMSO_VERSAO} AND ca.[status] <> 0
+AND os.codigo = (SELECT TOP(1) MAX(codigo) FROM RHHealth.dbo.ordem_servico_versoes WHERE codigo_cliente = ca.codigo_cliente_unidade AND codigo_pcmso_versoes = pv.codigo)]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="vigencia" class="java.lang.String"/>
+	<field name="data_inicial" class="java.sql.Timestamp"/>
+	<field name="data_final" class="java.sql.Timestamp"/>
+	<field name="setor_descricao" class="java.lang.String"/>
+	<field name="data_1" class="java.lang.String"/>
+	<field name="data_2" class="java.lang.String"/>
+	<field name="data_3" class="java.lang.String"/>
+	<field name="data_4" class="java.lang.String"/>
+	<field name="data_5" class="java.lang.String"/>
+	<field name="data_6" class="java.lang.String"/>
+	<field name="data_7" class="java.lang.String"/>
+	<field name="data_8" class="java.lang.String"/>
+	<field name="data_9" class="java.lang.String"/>
+	<field name="data_10" class="java.lang.String"/>
+	<field name="data_11" class="java.lang.String"/>
+	<field name="data_12" class="java.lang.String"/>
+	<field name="data_13" class="java.lang.String"/>
+	<field name="descricao" class="java.lang.String"/>
+	<field name="acao" class="java.lang.String"/>
+	<field name="responsavel" class="java.lang.String"/>
+	<field name="status" class="java.lang.String"/>
+	<pageHeader>
+		<band height="53">
+			<frame>
+				<reportElement style="BORDERED" mode="Opaque" x="0" y="32" width="555" height="21" backcolor="#F0F0F0"/>
+				<staticText>
+					<reportElement x="0" y="1" width="57" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SETOR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="58" y="1" width="180" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[AÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="238" y="0" width="246" height="10"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DATA PREVISTA PARA A CONCLUSAO DA AÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="484" y="1" width="43" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[RESPONSÁVEL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="529" y="1" width="26" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[STATUS]]></text>
+				</staticText>
+				<line>
+					<reportElement x="57" y="1" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="238" y="1" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="484" y="1" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="528" y="1" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="238" y="10" width="247" height="1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<subreport>
+					<reportElement x="238" y="11" width="246" height="10"/>
+					<subreportParameter name="CODIGO_PCMSO_VERSAO">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PCMSO_VERSAO}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_cronogramas_acoes_data_header.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+			<frame>
+				<reportElement style="BORDERED" mode="Opaque" x="0" y="3" width="555" height="11" backcolor="#F0F0F0"/>
+				<staticText>
+					<reportElement x="0" y="0" width="555" height="10"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="BORDERED" mode="Opaque" x="0" y="17" width="555" height="11" backcolor="#F0F0F0"/>
+				<textField>
+					<reportElement x="0" y="1" width="555" height="9"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA['PLANO DE AÇÕES (' + $F{vigencia} + ')']]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="26" splitType="Stretch">
+			<frame>
+				<reportElement style="bordas-baixo" x="0" y="0" width="555" height="26"/>
+				<textField>
+					<reportElement x="0" y="0" width="57" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{setor_descricao}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="57" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<textField>
+					<reportElement x="59" y="0" width="179" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{acao}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="256" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="275" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="294" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="313" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="332" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="351" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="370" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="389" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="408" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="427" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="446" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="465" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="484" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="528" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<textField>
+					<reportElement x="484" y="0" width="43" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{responsavel}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="529" y="0" width="24" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="257" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_2}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="276" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_3}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="295" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_4}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="314" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_5}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="333" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_6}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="352" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_7}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="371" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_8}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="390" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_9}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="409" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_10}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="428" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_11}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="447" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_12}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="466" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_13}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="238" y="0" width="18" height="26"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_1}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="238" y="0" width="1" height="26"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

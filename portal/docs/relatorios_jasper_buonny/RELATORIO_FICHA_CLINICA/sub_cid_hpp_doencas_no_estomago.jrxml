@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_cancer" language="groovy" pageWidth="555" pageHeight="33" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.7715610000000035"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ficha_clinica"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<style name="style1">
+		<box>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FICHA_CLINICA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[12091]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+    dbBuonny.publico.ufn_decode_utf8_string(fcf.doenca) as doenca,
+    dbBuonny.publico.ufn_decode_utf8_string(fcf.farmaco) as farmaco,
+    dbBuonny.publico.ufn_decode_utf8_string(fcf.posologia) posologia,
+    fcf.aprazamento, fcf.dose_diaria
+FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao = 109]]>
+	</queryString>
+	<field name="doenca" class="java.lang.String"/>
+	<field name="farmaco" class="java.lang.String"/>
+	<field name="posologia" class="java.lang.String"/>
+	<field name="aprazamento" class="java.lang.String"/>
+	<field name="dose_diaria" class="java.lang.String"/>
+	<pageHeader>
+		<band height="1">
+			<line>
+				<reportElement x="0" y="0" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<frame>
+				<reportElement style="style1" x="0" y="-1" width="555" height="21"/>
+				<staticText>
+					<reportElement x="5" y="1" width="26" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CID10: ]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="31" y="1" width="70" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{doenca}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="101" y="1" width="38" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Farmaco:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="139" y="1" width="64" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{farmaco}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="203" y="0" width="40" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Posologia:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="243" y="0" width="67" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{posologia}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="455" y="0" width="46" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Dose Diária:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="501" y="1" width="54" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{dose_diaria}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="310" y="1" width="54" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Aprazamento:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="364" y="1" width="91" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{aprazamento}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

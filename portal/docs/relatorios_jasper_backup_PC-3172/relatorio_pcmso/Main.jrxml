@@ -1,0 +1,2241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_pcmso" pageWidth="595" pageHeight="940" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="70c084d7-b466-4c2a-98e9-f73d1d0cb054">
+	<property name="ireport.zoom" value="1.100000000000025"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="1435"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_pcmso"/>
+	<property name="ireport.jasperserver.url" value="http://jasperprd.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="TST"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="0"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="1000"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.report.description" value="Main jrxml"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/relatorio_pcmso_files/relatorio_pcmso_jrxml"/>
+	<style name="back-gray-border" mode="Opaque" backcolor="#F0F0F0">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="background-gray" mode="Opaque" backcolor="#F0F0F0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\RELATORIO_PCMSO\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[80053]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMP_SETOR_CARGO_VAZIO" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<parameter name="URL_LOGO_MULTI_EMPRESA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[-- pcmso
+
+SELECT TOP(1)
+    RHHealth.publico.Ufn_decode_utf8_string(cnae.descricao) COLLATE SQL_Latin1_General_CP1_CI_AS AS ramo_atividade,
+    ISNULL(cnae.grau_risco, '') COLLATE SQL_Latin1_General_CP1_CI_AS AS grau_risco,
+    CONVERT(VARCHAR(10), os.inicio_vigencia_pcmso, 103) COLLATE SQL_Latin1_General_CP1_CI_AS AS inicio_vigencia_pcmso,
+    CONVERT(VARCHAR(10), DATEADD(DAY, -1,DATEADD(MONTH, CONVERT(INT, os.vigencia_em_meses), os.inicio_vigencia_pcmso)), 103) COLLATE SQL_Latin1_General_CP1_CI_AS AS fim_vigencia_pcmso,
+    os.vigencia_em_meses,
+    me.nome as nome_medico,
+    me.numero_conselho as numero_conselho,
+    me.conselho_uf as conselho_uf,
+	-- dados matriz
+	(case when clm.razao_social is null then RHHealth.publico.Ufn_decode_utf8_string(clf.razao_social) else RHHealth.publico.Ufn_decode_utf8_string(clm.razao_social) end) as matriz_razao_social,
+	(case when clm.codigo_documento is null then isnull(clf.codigo_documento,clf.codigo_documento_real) else isnull(clm.codigo_documento_real,clm.codigo_documento)  end) as matriz_codigo_documento,
+
+	(case when cmef.logradouro is null then RHHealth.publico.Ufn_decode_utf8_string(clef.logradouro) else RHHealth.publico.Ufn_decode_utf8_string(cmef.logradouro) end) as matriz_endereco,
+    (case when cmef.numero is null then clef.numero else cmef.numero end) as matriz_numero,
+    (case when cmef.complemento is null then RHHealth.publico.Ufn_decode_utf8_string(clef.complemento) else RHHealth.publico.Ufn_decode_utf8_string(cmef.complemento) end) as matriz_complemento,
+    (case when cmef.cep is null then clef.cep else cmef.cep end) as matriz_cep,
+    (case when cmef.cidade is null then RHHealth.publico.Ufn_decode_utf8_string(clef.cidade) else RHHealth.publico.Ufn_decode_utf8_string(cmef.cidade) end) as matriz_cidade,
+    (case when cmef.bairro is null then RHHealth.publico.Ufn_decode_utf8_string(clef.bairro) else RHHealth.publico.Ufn_decode_utf8_string(cmef.bairro) end) as matriz_bairro,
+    (case when cmef.estado_abreviacao is null then clef.estado_abreviacao else cmef.estado_abreviacao end) as matriz_estado,
+	(case when clm.cnae is null then clf.cnae else cnaem.cnae end) as matriz_cnae,
+	(case when cnaem.grau_risco is null then ISNULL(cnae.grau_risco, '') else ISNULL(cnaem.grau_risco, '') end) as matriz_cnae_grau_risco,
+    (case when cnaem.descricao is null then RHHealth.publico.Ufn_decode_utf8_string(cnae.descricao) else RHHealth.publico.Ufn_decode_utf8_string(cnaem.descricao) end) as matriz_cnae_descricao,
+	-- filial se é tomador
+    clf.e_tomador as filial_e_tomador,
+    -- endereco da matriz
+    RHHealth.publico.Ufn_decode_utf8_string(clf.razao_social) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_razao_social,
+    RHHealth.publico.Ufn_decode_utf8_string(clf.nome_fantasia) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_nome_fantasia,
+    RHHealth.publico.ufn_formata_cnpj(CASE WHEN(clf.codigo_documento_real IS NOT NULL AND clf.codigo_documento_real <> '' ) THEN
+                                        clf.codigo_documento_real COLLATE SQL_Latin1_General_CP1_CI_AS
+                                      ELSE
+                                        clf.codigo_documento COLLATE SQL_Latin1_General_CP1_CI_AS
+                                      END) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_codigo_documento,
+    clf.cnae COLLATE SQL_Latin1_General_CP1_CI_AS AS cnae,
+    -- endereco da filial
+    RHHealth.publico.Ufn_decode_utf8_string(clef.logradouro) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_endereco,
+    ISNULL(RHHealth.publico.Ufn_decode_utf8_string(clef.complemento),'') COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_complemento,
+    clef.numero AS filial_numero,
+    RHHealth.publico.Ufn_decode_utf8_string(clef.bairro) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_bairro,
+    RHHealth.publico.Ufn_decode_utf8_string(clef.cidade) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_cidade,
+    CONCAT(' ' COLLATE SQL_Latin1_General_CP1_CI_AS, RHHealth.publico.Ufn_decode_utf8_string(clef.estado_descricao) COLLATE SQL_Latin1_General_CP1_CI_AS) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_estado,
+    clef.cep COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_cep,
+-----------------
+  (
+        SELECT count(sfu.codigo) AS count
+        FROM RHHealth.dbo.cliente_funcionario scf
+        INNER JOIN RHHealth.dbo.funcionarios sfu ON (sfu.codigo = scf.codigo_funcionario)
+        INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = (Select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_funcionario = scf.codigo order by 1 desc )
+        WHERE fsc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+        AND (FLOOR(DATEDIFF(DAY, sfu.data_nascimento, getdate()) / 365.25) < 18)
+		AND scf.ativo NOT IN (0)
+    ) AS quant_menor_idade,
+    (
+        SELECT count(sfu.codigo) AS count
+        FROM RHHealth.dbo.cliente_funcionario scf
+        INNER JOIN RHHealth.dbo.funcionarios sfu ON (sfu.codigo = scf.codigo_funcionario)
+        INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = (Select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_funcionario = scf.codigo order by 1 desc )
+        WHERE fsc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+        AND sfu.sexo = 'F'
+        AND scf.ativo NOT IN (0)
+    ) AS quant_funcionario_feminino,
+    (
+        SELECT count(sfu.codigo) AS count
+        FROM RHHealth.dbo.cliente_funcionario scf
+        INNER JOIN RHHealth.dbo.funcionarios sfu ON (sfu.codigo = scf.codigo_funcionario)
+        INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = (Select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_funcionario = scf.codigo order by 1 desc )
+        WHERE fsc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+        AND sfu.sexo = 'M'
+        AND scf.ativo NOT IN (0)
+    ) AS quant_funcionario_masculino
+FROM RHHealth.dbo.grupos_economicos_clientes gec
+INNER JOIN RHHealth.dbo.grupos_economicos ge ON (ge.codigo = gec.codigo_grupo_economico)
+
+left join RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo = (select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_alocacao = gec.codigo_cliente order by codigo desc)
+
+    --cliente matriz
+left JOIN RHHealth.dbo.cliente clm ON (clm.codigo = fsc.codigo_cliente_referencia ) -- ge.codigo_cliente)
+    -- cliente filial
+INNER JOIN RHHealth.dbo.cliente clf ON (clf.codigo = gec.codigo_cliente)
+LEFT JOIN RHHealth.dbo.cnae ON (cnae.cnae = clf.cnae)
+    -- obtem o endereco da filial
+LEFT JOIN RHHealth.dbo.cliente_endereco clef ON (clef.codigo_cliente = clf.codigo)
+-- obtem enderedo da matriz
+LEFT JOIN RHHealth.dbo.cliente_endereco cmef ON (cmef.codigo_cliente = clm.codigo)
+-- obtem cnae matriz
+LEFT JOIN RHHealth.dbo.cnae cnaem ON(cnaem.cnae = clm.cnae)
+LEFT JOIN RHHealth.dbo.medicos me ON (me.codigo = ISNULL(clf.codigo_medico_pcmso,clm.codigo_medico_pcmso))
+LEFT JOIN RHHealth.dbo.ordem_servico os ON(os.codigo_grupo_economico = ge.codigo AND os.codigo_cliente = gec.codigo_cliente AND os.codigo IN (SELECT codigo_ordem_servico FROM RHHealth.dbo.ordem_servico_item WHERE codigo_servico=2340))
+WHERE gec.codigo_cliente = $P{CODIGO_CLIENTE}]]>
+	</queryString>
+	<field name="ramo_atividade" class="java.lang.String"/>
+	<field name="grau_risco" class="java.lang.String"/>
+	<field name="inicio_vigencia_pcmso" class="java.lang.String"/>
+	<field name="fim_vigencia_pcmso" class="java.lang.String"/>
+	<field name="vigencia_em_meses" class="java.lang.Integer"/>
+	<field name="nome_medico" class="java.lang.String"/>
+	<field name="numero_conselho" class="java.lang.String"/>
+	<field name="conselho_uf" class="java.lang.String"/>
+	<field name="matriz_razao_social" class="java.lang.String"/>
+	<field name="matriz_codigo_documento" class="java.lang.String"/>
+	<field name="matriz_endereco" class="java.lang.String"/>
+	<field name="matriz_numero" class="java.lang.Integer"/>
+	<field name="matriz_complemento" class="java.lang.String"/>
+	<field name="matriz_cep" class="java.lang.String"/>
+	<field name="matriz_cidade" class="java.lang.String"/>
+	<field name="matriz_bairro" class="java.lang.String"/>
+	<field name="matriz_estado" class="java.lang.String"/>
+	<field name="matriz_cnae" class="java.lang.String"/>
+	<field name="matriz_cnae_grau_risco" class="java.lang.String"/>
+	<field name="matriz_cnae_descricao" class="java.lang.String"/>
+	<field name="filial_e_tomador" class="java.lang.Boolean"/>
+	<field name="filial_razao_social" class="java.lang.String"/>
+	<field name="filial_nome_fantasia" class="java.lang.String"/>
+	<field name="filial_codigo_documento" class="java.lang.String"/>
+	<field name="cnae" class="java.lang.String"/>
+	<field name="filial_endereco" class="java.lang.String"/>
+	<field name="filial_complemento" class="java.lang.String"/>
+	<field name="filial_numero" class="java.lang.Integer"/>
+	<field name="filial_bairro" class="java.lang.String"/>
+	<field name="filial_cidade" class="java.lang.String"/>
+	<field name="filial_estado" class="java.lang.String"/>
+	<field name="filial_cep" class="java.lang.String"/>
+	<field name="quant_menor_idade" class="java.lang.Integer"/>
+	<field name="quant_funcionario_feminino" class="java.lang.Integer"/>
+	<field name="quant_funcionario_masculino" class="java.lang.Integer"/>
+	<detail>
+		<band height="861" splitType="Stretch">
+			<staticText>
+				<reportElement x="160" y="118" width="234" height="47" uuid="db46c206-8706-4718-8914-b1a6f41d9fca"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PCMSO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="209" width="555" height="20" uuid="f173c173-65da-41a2-8cae-5c38267e9ef2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="271" width="555" height="56" uuid="4fcad384-3fea-442b-ac85-46d4f4d36729"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{matriz_razao_social}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="358" width="555" height="45" uuid="a28e8727-9ce7-4220-8045-cf0ed822c0d9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["UNIDADE: " + $F{filial_nome_fantasia}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="614" width="555" height="42" uuid="163f085e-67ab-412c-8125-d251cf3f4b1c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{filial_endereco} +", "+ $F{filial_numero} + "\n" +
+$F{filial_bairro} +" - "+ $F{filial_cidade} +"/"+ $F{filial_estado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="418" width="555" height="45" uuid="dbe2f3f8-c478-4afe-bded-42535dee4d42"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Vigência: " + $F{inicio_vigencia_pcmso} + " a " +  $F{fim_vigencia_pcmso}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="206" y="678" width="143" height="46" uuid="3f905884-54be-48ea-a05f-694a5a93be72">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_LOGO_MULTI_EMPRESA}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_LOGO_MULTI_EMPRESA}]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="461" y="13" width="100" height="30" uuid="0483bf87-c153-492c-ba2a-c8785492bd6e">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+		</band>
+		<band height="857">
+			<frame>
+				<reportElement style="bordered" x="0" y="1" width="555" height="52" uuid="24438086-e304-422e-9a14-3119f70b61a0"/>
+				<staticText>
+					<reportElement x="75" y="0" width="369" height="26" uuid="99cbffd1-d5a8-4ee9-9e6f-f3577d28b7cf"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[PCMSO
+Programa de controle Médico de Saúde Ocupacional]]></text>
+				</staticText>
+				<image>
+					<reportElement x="451" y="3" width="100" height="30" uuid="b200538e-e3fc-4c40-8ef5-c2c452abb311">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+					</reportElement>
+					<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+				</image>
+				<image>
+					<reportElement x="4" y="14" width="67" height="23" uuid="bdff4697-b709-40ad-82d5-9e5b32e745aa">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[(!$P{URL_LOGO_MULTI_EMPRESA}.isEmpty())]]></printWhenExpression>
+					</reportElement>
+					<imageExpression><![CDATA[$P{URL_LOGO_MULTI_EMPRESA}]]></imageExpression>
+				</image>
+			</frame>
+			<line>
+				<reportElement x="74" y="1" width="1" height="52" uuid="bf03bbb5-94ef-48cc-b86f-64b265091806"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<frame>
+				<reportElement style="bordered" x="0" y="64" width="555" height="15" uuid="bd334e85-0934-496b-9b8a-84d8f3c79cef"/>
+				<staticText>
+					<reportElement x="6" y="0" width="118" height="15" uuid="3ac172c9-c170-4d11-b270-7b5a6947779f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Vigência do PCMSO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="129" y="0" width="100" height="15" uuid="2140c6cb-25ca-4377-803a-eec6cc63ac60"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[12 meses]]></text>
+				</staticText>
+			</frame>
+			<line>
+				<reportElement x="124" y="64" width="1" height="15" uuid="b149ca52-2f2d-4c4c-b524-e08953c7fd7a"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<frame>
+				<reportElement style="bordered" x="0" y="89" width="555" height="101" isRemoveLineWhenBlank="true" uuid="3b27707f-1202-4561-8056-2c46f73050dd"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="0f55731b-0403-4aaa-a433-02c4754037ad"/>
+					<staticText>
+						<reportElement x="5" y="0" width="124" height="15" uuid="3e3a8620-844f-4241-beb7-e441a27ad63d"/>
+						<textElement verticalAlignment="Middle">
+							<font size="8" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Identificação da Empresa]]></text>
+					</staticText>
+				</frame>
+				<staticText>
+					<reportElement x="5" y="15" width="100" height="10" uuid="acd9f7c2-070b-4314-bbaf-2f5a9dd91735"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Razão Social]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="37" width="555" height="1" uuid="b7c0c397-fa79-4068-a638-da091ab05d4f"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="f715ca74-0bf0-4db9-8914-631e67d3666e"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="58" width="555" height="1" uuid="01b6c8a0-ad37-4dc7-9e90-957ad54fc4da"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="38" width="100" height="10" uuid="859d5ba3-9a5c-4edf-adea-fafe359e0696"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Endereço]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="38" width="1" height="21" uuid="4ee4b07e-0077-4349-b28a-5eaadc726ff3"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="38" width="100" height="10" uuid="5f4635fe-de65-4d4a-89e1-ec5d6112b72e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Complemento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="429" y="38" width="100" height="10" uuid="d7ad9d0e-6ebc-493b-8bcf-c051f125898f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNPJ]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="38" width="1" height="21" uuid="2d5db4b8-24d6-4966-9660-0ce6442e44fd"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="59" width="100" height="10" uuid="b27ff02c-30f0-48de-9ebe-ac958cb73cef"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Bairro]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="59" width="1" height="20" uuid="80111a82-89b7-4eb7-b5b6-1824b835c933"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="79" width="555" height="1" uuid="ab55819f-5c88-4df2-b9cc-ed843bce6f84"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="429" y="59" width="100" height="10" uuid="1304cbfc-aadf-4fad-aa19-7a36ca5ff1d6"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[UF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="59" width="100" height="10" uuid="a667e339-3714-4013-9690-28645d01c1ca"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CEP]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="59" width="1" height="20" uuid="1d153c30-aee4-4fd2-9463-1c1c7618d6dd"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="59" width="1" height="21" uuid="d02fcae3-6a4a-4bc8-b61a-ed69bd869534"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="129" y="59" width="100" height="10" uuid="4b1471ae-82b2-4b7c-91e0-73cb8c63a798"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Cidade]]></text>
+				</staticText>
+				<line>
+					<reportElement x="232" y="80" width="1" height="21" uuid="5b435618-aa0d-4e56-9986-0b6a062c8cd2"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="80" width="1" height="21" uuid="9548f8ad-4867-4f4e-ab9e-ac038f8526ee"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="80" width="100" height="10" uuid="37730e9a-0250-4a85-8325-a9d81538b928"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNAE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="129" y="80" width="100" height="10" uuid="95a97387-ed97-47ef-823a-bc20b5a2c8c5"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Grau de Risco]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="237" y="80" width="100" height="10" uuid="a93efbfa-4cb5-40dd-a174-482fcdfebc5c"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Descrição CNAE]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="5" y="25" width="550" height="10" uuid="7d1a8209-5ed7-479a-93db-2ea6dea6091c"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="68" width="100" height="10" uuid="e1e9b8d7-05b3-4ec7-be8d-f4e250d8579f"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cidade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="68" width="100" height="10" uuid="b3f10564-11f7-4d69-9630-d595839fc59e"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_bairro}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="68" width="100" height="10" uuid="fdbd2043-e790-4a01-b217-1247b692583a"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_estado}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="89" width="100" height="10" uuid="8c8f3d9e-e60e-4d9f-81c4-215e2a2508c1"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cnae}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="238" y="89" width="312" height="10" uuid="75c70cc5-94a3-4479-91b0-7df926fb75f9"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cnae_descricao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="89" width="100" height="10" uuid="91af01a3-2378-48d3-bbfd-e9e843745982"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cnae_grau_risco}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="47" width="100" height="10" uuid="61dcd92b-24e1-4953-9983-7811a36479ea"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_codigo_documento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="6" y="47" width="287" height="10" uuid="20a1a260-cd3f-4709-925e-4ac327cd4eb7"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_endereco} +", "+ $F{matriz_numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="47" width="100" height="10" uuid="bc267074-1660-4aa5-9269-31ea44f58852"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_complemento}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="313" width="555" height="103" uuid="bcd2d92a-c94c-4f38-8567-1f53fec21e6d"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="f2041d8d-fd84-4227-becf-a87f0ce46be1"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="f30f0ace-2aa3-43f3-b3ba-2a3e5a300954"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[1. INTRODUÇÃO]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="3400d0a1-ce08-443c-9125-c6e560b317ae"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="82" uuid="4d98dfef-ab39-473a-8bde-e695a3ddc7d8"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Passaremos a descrever em seguida o Programa de Controle Médico e Saúde Ocupacional, que orientará nossas atividades na Medicina do Trabalho, no decorrer dos próximos 12 meses, cuja finalidade é promover e preservar a saúde dos trabalhadores, conforme o previsto na NR-07 da Portaria 3.214 de 1978.
+
+O Programa é desenvolvido em concordância com os dispositivos legais do capítulo V do título II da CLT e demais normas que compõem o ordenamento jurídico e Normas Regulamentadoras aprovadas pela Portaria 3.214 de 08 de junho de 1978, considerando sua última atualização.
+
+O Programa está em permanente manutenção, identificando e estabelecendo as ações necessárias para corrigir as deficiências constatadas e indicar alterações nas ações previstas, inclusive àquelas provocadas por mudanças no processo produtivo, na legislação e introdução de novas tecnologias.
+
+Na viabilização do PCMSO, estão envolvidos os profissionais da área de Segurança e Saúde, Gerências de todos os setores, Diretorias, CIPA e demais empregados. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="426" width="555" height="116" uuid="2a6cd889-e946-43dc-bf6e-665f47a37f33"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="a2318400-2493-49a4-9ba5-e57281196cc8"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="f3346841-776e-4ed8-a946-2629c900918d"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[2. OBJETIVOS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="c3a9d9b5-c6b6-42d4-a85c-e16a0b2bb42c"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="95" uuid="4c29d095-464d-411e-b741-fb88c57d75aa"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[O PROGRAMA DE CONTROLE MÉDICO E SAÚDE OCUPACIONAL - PCMSO tem como objetivo promover,  prevenir e conservar a saúde dos trabalhadores; estabelecer diretrizes e parâmetros mínimos para avaliação e acompanhamento das diversas exposições a agentes com potencial nocivo.
+
+Esse acompanhamento é realizado através da sistematização de exames de monitoração biológica, estabelecendo a uniformização de critérios e de procedimentos nas atividades médicas de saúde ocupacional, possibilitando a realização de estudos epidemiológicos.
+
+O programa tem ainda inteira consonância com o PPRA - Programa de Prevenção de Riscos Ambientais, seu Planejamento Anual e as metas estabelecidas, visando à adoção de medidas para eliminação e/ou a minimização e o controle dos riscos ambientais.
+
+Essas medidas são adotadas considerando as viabilidades técnicas de implantação, através da busca em suas múltiplas causas e as consequentes ações coletivas de intervenção sobre as fontes emissoras, associadas à modalidade de atenuação dos agentes, avaliando em seguida cada uma das medidas adotadas e implantadas, através de nova realização de análises quantitativas dos agentes presentes, comparando-os aos resultados anteriores. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="552" width="555" height="57" uuid="6a23396c-cf24-4bf1-8a5a-0e2c441683a9"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="d694667b-5fdc-4cf0-99e3-ab18a2913732"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="0a260073-a1e1-4bc7-8078-c3c1fd893e87"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[3. DIRETRIZES GERAIS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="5ae3cdcf-7603-4ac7-b639-bcabd5bee6ef"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="36" uuid="35f38f2b-543f-40d1-a320-285433388004"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[1. DESENVOLVIMENTO DO PCMSO
+
+Um profundo conhecimento das atividades desenvolvidas por cada trabalhador e dos riscos a que estão expostos é fundamental para o desenvolvimento do PCMSO. Portanto, é de grande importância um estudo da descrição das atividades e um levantamento das exigências das funções, podendo assim compreender a relação de cada atividade ou ambiente de trabalho com a saúde do trabalhador. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="619" width="555" height="238" uuid="71c0ab3d-2940-47dc-8f76-514510e92575"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="3c6817e9-d0cd-4d3a-ad4e-cc448b121217"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="184e2a0f-de58-43d6-bd40-f0e9513a8223"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[4. EXAMES MEDICOS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="639a5ece-cbe8-48df-9178-0951a819f63a"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="217" uuid="655493f7-a03c-4727-a467-4951841011a7"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Os exames complementares designados nesse Programa estão divididos em três categorias, conforme os seus objetivos, a saber:
+
+Exames de Benefício: Exames que a empresa oferece a todos os seus funcionários com a intenção de proporcionar melhor qualidade de vida, detecção preventiva de doenças crônicas, redução do absenteísmo, diminuição da sinistralidade dos planos de saúde e direcionamento das campanhas programadas. São exames de realização recomendável, não devendo estar vinculados à liberação do Atestado de Saúde Ocupacional.
+
+Exames de capacitação: Exames que tem o objetivo de seletividade para a função, de forma a comprovar a capacitação para uma determinada tarefa. São exames de realização obrigatória por exigência legal. Devem estar discriminados no A.S.O. com suas respectivas datas de realização.
+
+Exames ocupacionais propriamente ditos: Exames para o monitoramento biológico dos agentes de risco de cada setor / atividade. São exames de realização obrigatória por exigência legal, devendo estar discriminados no A.S.O. com suas respectivas datas de realização.
+
+a. Exame Pré Admissional
+
+Será realizado em todos os novos funcionários antes que os mesmos iniciem suas atividades. É de responsabilidade do RH enviar os candidatos a novas vagas para a realização dos exames que fazem parte da avaliação admissional.
+
+b. Exame Periódico
+
+Será realizado em intervalos de tempo estabelecidos pela lei e definido no cronograma de avaliação nos exames ocupacionais. Mensalmente, o Serviço Médico enviará ao responsável da área de Recursos Humanos, listagem contendo os nomes dos funcionários que deverão ser avaliados no mês seguinte.
+
+c. Retorno ao Trabalho
+
+Realizado obrigatoriamente no primeiro dia de volta ao trabalho, afastado por período igual ou superior a 30 (trinta) dias, por motivo de doença ou acidente, de natureza ocupacional ou não, ou parto. É de responsabilidade do RH encaminhar estes funcionários para o Serviço Médico.
+
+]]></text>
+				</staticText>
+			</frame>
+			<textField>
+				<reportElement x="75" y="27" width="369" height="25" uuid="c3718bd8-5b99-493d-b275-3481b71af720"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{matriz_razao_social}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="6" y="157" width="100" height="10" uuid="c4fe84a2-07f5-4cd3-b77a-4769c51bfbf3"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{matriz_cep}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement style="bordered" x="0" y="200" width="555" height="101" isRemoveLineWhenBlank="true" uuid="b4ffcf1c-6db6-4d29-adac-6bb310132613">
+					<printWhenExpression><![CDATA[$F{filial_e_tomador}]]></printWhenExpression>
+				</reportElement>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="3578a4ee-9523-4b33-8e0b-bdae392a8c13"/>
+					<staticText>
+						<reportElement x="5" y="0" width="171" height="15" uuid="c9d8f5d9-b6ae-469c-b02f-4a6cad03eea8"/>
+						<textElement verticalAlignment="Middle">
+							<font size="8" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Identificação do Posto de Trabalho]]></text>
+					</staticText>
+				</frame>
+				<staticText>
+					<reportElement x="5" y="15" width="100" height="10" uuid="fc773bb7-7ecd-4335-9443-d79ec29ec12a"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Razão Social]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="37" width="555" height="1" uuid="63e1e9ea-e9c4-46cf-8ab0-002c144a658c"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="b3524dc5-3db7-45d8-933f-ea9ef2b34b2d"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="58" width="555" height="1" uuid="a1754ed5-a76d-4467-9d41-e17c4674e998"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="38" width="100" height="10" uuid="8b176e0d-e8cb-4d0f-aa2a-d66beb4f5926"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Endereço]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="38" width="1" height="21" uuid="d1b66aa7-ef04-4fda-941c-9eb2b17ab16e"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="38" width="100" height="10" uuid="18e8193c-bd7f-4bb9-9255-fb80ba8b633d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Complemento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="429" y="38" width="100" height="10" uuid="0f05a0b2-a558-4319-96b1-ed7a405c98a4"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNPJ]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="38" width="1" height="21" uuid="71f7a154-3ac8-40cd-8955-11ea1ba9ea09"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="59" width="100" height="10" uuid="27bc3459-1fc9-4a2d-bfb4-a285de1951de"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Bairro]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="59" width="1" height="20" uuid="a15339f2-b4f1-4c21-9c57-788177bc6c05"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="79" width="555" height="1" uuid="f5e4089a-8f7d-404c-a75b-139d0bbcb8fb"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="429" y="59" width="100" height="10" uuid="4be5f6e6-99b2-445e-a000-bf99d04dba33"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[UF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="59" width="100" height="10" uuid="11cad39a-7754-45f4-9a30-20868e9f9325"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CEP]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="59" width="1" height="20" uuid="abb7530d-ac3d-4875-aa29-947d742e98c0"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="59" width="1" height="21" uuid="7dbdb502-b763-4d8c-b544-55d1f31e0d80"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="129" y="59" width="100" height="10" uuid="4beff3da-19c2-4abb-9bd2-27a9d3d1f9be"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Cidade]]></text>
+				</staticText>
+				<line>
+					<reportElement x="232" y="80" width="1" height="21" uuid="4e3bd588-f038-4a00-ae54-fd55c0eeee9d"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="80" width="1" height="21" uuid="cd21ab57-3bcd-42ed-a780-eafa2a04d482"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="80" width="100" height="10" uuid="0fab449c-3afb-4421-98f7-46152ed338f0"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNAE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="129" y="80" width="100" height="10" uuid="a530ec35-5b9d-4cdd-a6ee-0aa6e10bad75"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Grau de Risco]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="237" y="80" width="100" height="10" uuid="7c7d373d-3148-4dbb-b8c6-2ae02208b1aa"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Descrição CNAE]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="5" y="25" width="550" height="10" uuid="6b06db69-3169-47cb-8dd0-9ac6e0dcbc9f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="68" width="100" height="10" uuid="185be88a-9c24-4ea0-8553-434528265ae5"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_cidade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="68" width="100" height="10" uuid="ff6da9d4-6d7c-448a-adbc-37ba6caccd62"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_bairro}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="68" width="100" height="10" uuid="099c68c8-2f02-4ea4-970f-f78e411a765f"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_estado}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="89" width="100" height="10" uuid="b5e9d879-521a-4b28-81b6-29865345286d"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cnae}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="238" y="89" width="312" height="10" uuid="234395eb-57dc-4067-a03e-a1c0308ccddb"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ramo_atividade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="89" width="100" height="10" uuid="912c06a1-8d65-4272-ab89-e84d6b4aaff1"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{grau_risco}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="47" width="100" height="10" uuid="4d528f69-e8b7-4e6d-9831-17c495f2b2f3"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_codigo_documento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="6" y="47" width="287" height="10" uuid="6f44c8ca-e5ca-4c69-9666-8537cd2ad262"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_endereco} +", "+ $F{filial_numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="47" width="100" height="10" uuid="4b87884a-c88c-431c-9121-85882b4df455"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_complemento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="69" width="100" height="10" uuid="69bcf2f0-c62d-423d-a86d-7f3dc287420c"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_cep}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="834">
+			<frame>
+				<reportElement style="bordered" x="0" y="0" width="555" height="108" uuid="a11ceb4a-e111-4f5d-8069-5d96280a3e68"/>
+				<staticText>
+					<reportElement x="6" y="0" width="549" height="107" uuid="ce49e4f1-b9e4-4c5e-9209-6e6f1084d560"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[d. Mudança de Função
+
+Realizado em funcionários que têm alteração em sua atividade, posto de trabalho ou setor, que implique em exposição a risco diferente daquele a que estava exposto anteriormente. Deve ser realizado antes da data da mudança. Os exames complementares e o direcionamento do exame clínico terão como referência a antiga e a nova função.
+
+e. Exame Demissional
+
+Será realizado até a data da homologação, desde que o último exame médico ocupacional tenha sido realizado há mais de 135 dias, para empresas de grau de risco 1 ou 2 e 90 dias para empresas de risco 3 ou 4.
+
+f. Exame Monitoração Pontual
+
+Será realizado em intervalos de tempo estabelecidos pela lei e definido no cronograma de avaliação nos exames ocupacionais. Mensalmente, o Serviço Médico enviará ao responsável da área de Recursos Humanos, listagem contendo os nomes dos funcionários que deverão ser avaliados no mês seguinte. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="116" width="555" height="133" uuid="d7dec96a-db2b-47e9-8a22-6818a25233bd"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="9a5f4eeb-f3a5-439a-8574-dfa3eb36ac09"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="28b6e13b-4af1-4c69-9d9d-6dbbe49f5f89"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[5. ATESTADO DE SAÚDE OCUPACIONAL]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="f4e020e6-fde9-471e-b69b-6c57ee8ef5ff"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="112" uuid="38e06866-a98d-4265-a991-d37a7b17477a"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Será emitido após a realização de cada exame médico, em três vias, ficando a primeira com o funcionário, a segunda junto ao dossiê do empregado no Departamento de Pessoal, e a terceira, como cópia de segurança, com o Serviço Médico. O ASO devera conter, no mínimo:
+
+a. Nome do trabalhador, o número do CPF, sua função e setor;
+
+b. Os riscos ocupacionais existentes ou declarada a ausência deles;
+
+c. Os procedimentos médicos a que foi submetido o trabalhador, incluindo os exames complementares e a data em que foram realizados;
+
+d. Nome do médico coordenador com o respectivo CRM;
+
+e. Definição de apto ou inapto para a função específica que o trabalhador irá exercer, estiver exercendo ou exerceu;
+
+f. Nome do médico encarregado do exame e endereço ou forma de contato. Data, assinatura e CRM do médico encarregado do exame. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="258" width="555" height="42" uuid="4d671c38-22c9-4b4f-afd6-760b3616e6ed"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="9de62621-3244-42e5-9936-ed4d6129de09"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="5a61e9f1-eec6-4583-aab8-121bc6599755"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[6. PRONTUÁRIO CLÍNICO INDIVIDUAL]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="dd95439b-c0bf-4d43-8cb5-9cf9932dd269"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="21" uuid="c0c9c61d-5f8f-4106-bb9a-003b364300b1"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Os dados obtidos nos exames médicos e complementares deverão ser registrados em prontuário clínico individual que ficará sob a responsabilidade do médico coordenador. Deverão ser mantidos por um período de 20 anos ou transferidos para o novo coordenador, no caso de substituição.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="309" width="555" height="42" uuid="3741ee49-828b-4fca-a699-4a8a4b1112e6"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="1ddde7f9-4d35-43ed-a1e2-02e0817d6e3e"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="34e7e857-5b55-4e5c-9689-f9aa2fd72d5e"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[7. PRIMEIROS SOCORROS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="fb43e481-4040-41b8-8e88-f84413cf69e0"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="21" uuid="70227b8c-ad6d-42e1-91ca-fab2a0014e3d"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[A NR 7 estabelece que "todo estabelecimento deverá estar equipado com material necessário a prestação de primeiros socorros, considerando-se as características das atividades desenvolvidas". Determina ainda a guarda desse material em local adequado e a existência de pessoal treinado para esse fim.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" stretchType="RelativeToTallestObject" x="0" y="360" width="555" height="97" uuid="08311593-4db8-4e2c-97b1-a054237030cb"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="a94f86e3-06a6-49f2-b0d1-050f8be63cff"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="eff962a2-50a1-44bf-8a45-72bb56febace"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[ MATERIAIS PARA A CAIXA DE PRIMEIROS SOCORROS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="4485f0a6-3f7d-40fe-8a7f-549c42cac46f"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+			<subreport isUsingCache="true">
+				<reportElement isPrintRepeatedValues="false" x="0" y="375" width="555" height="82" uuid="7ad640ac-feaa-4205-ba1b-5e7d2f6e4046"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_materiais_pronto_socorro.jrxml"]]></subreportExpression>
+			</subreport>
+			<frame>
+				<reportElement style="background-gray" x="1" y="468" width="553" height="42" backcolor="#FFFFFF" uuid="b846c98a-3907-4235-8b62-37311916f028"/>
+				<staticText>
+					<reportElement x="4" y="1" width="548" height="15" backcolor="#CCCCCC" uuid="6d556515-e36e-4047-af29-12075103eb99"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SAÚDE NO TRABALHO COVID-19]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="21" width="547" height="21" uuid="33609627-e986-4896-be59-2aa1fda603fb"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[As medidas de prevenção e controle de infecção devem ser implementadas pelos profissionais que atuam nos serviços de saúde objetivando evitar ou reduzir ao máximo a transmissão de microrganismos durante qualquer assistência à saúde realizada.]]></text>
+				</staticText>
+			</frame>
+			<rectangle>
+				<reportElement mode="Transparent" x="0" y="468" width="555" height="42" uuid="37fd733f-bb7b-4bbc-ae4b-7a0e69ff90d1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</rectangle>
+			<line>
+				<reportElement x="0" y="483" width="555" height="1" uuid="2be7b1e0-3402-420a-a2bf-6593f44f693d"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<frame>
+				<reportElement x="0" y="520" width="555" height="166" uuid="0a44a4c6-a88a-4a8a-9c13-692ce2791406"/>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="0" width="554" height="164" uuid="f7a1ffc1-6a0b-40a0-844a-1e62bc9fdb03"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="19" width="546" height="25" uuid="403dcad3-58ad-43dc-9463-eec3ebebea4a"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[	A transmissão da SARS CoV-2 ocorre de humanos para humanos por contato de gotículas respiratórias (tosse, espirro, catarro), pela saliva oriunda de pessoas infectadas pelo vírus ou contato com superfícies contaminadas seguido de contato com a boca, nariz e olhos. O período de incubação da infecção por COVID-19, de acordo com a Organização Mundial da Saúde (OMS), varia de 1 a 14 dias, geralmente ficando a média em torno de 5 dias.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="546" height="15" backcolor="#EDEBEB" uuid="eb33793b-664b-4909-98b9-b2baca293c05"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ASPECTO CLÍNICO E DIAGNÓSTICO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="46" width="535" height="55" uuid="849c08bf-d870-46dc-8887-5f9e9f46bfef"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Os sinais e sintomas da Doença Covid-19, são abaixo relacionados:
+• Febre (>37,8º C);
+• Tosse;
+• Dispnéia;
+• Mialgia e fadiga;
+• Sintomas respiratórias superiores;
+• Sintomas gastrointestinais, como a diarreia (mais raros).]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="7" y="106" width="546" height="16" uuid="842b947f-b080-410e-b033-48324b311bb0"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[	O quadro clínico, típico de uma Síndrome Gripal, pode variar desde uma apresentação com sintomas leves e assintomática (não se sabe a frequência), principalmente em jovens adultos e crianças, até́uma apresentação grave, incluindo choque séptico e falência respiratória.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="7" y="123" width="546" height="9" uuid="4255a68b-8316-48da-acf8-c6cfaaf996b0"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Critérios de confirmação de caso
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="7" y="133" width="546" height="31" uuid="7a232487-5e54-4dd8-b466-6fd8695d240f"/>
+					<textElement>
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[• Critério laboratorial
+• Critério laboratorial em indivíduo assintomático
+• Critério clínico-epidemiológico
+• Critério clínico-imagem]]></text>
+				</staticText>
+			</frame>
+			<line>
+				<reportElement x="0" y="534" width="554" height="1" uuid="4da54bf8-5d9a-4496-a4ca-e9750ee189a4"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<frame>
+				<reportElement x="0" y="694" width="555" height="70" uuid="63de41e0-c8e4-4f44-aef2-a0e470fb3f98"/>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="0" width="555" height="70" uuid="43b9007a-29f4-4ac3-b052-c83b76095821"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="4" y="0" width="546" height="15" uuid="9a4208f9-fbdb-4f97-a8e3-261f6c118a5e"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MANEJO DIAGNÓSTICO DE CASOS SUSPEITOS PELO MÉDICO DO TRABALHO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="20" width="546" height="9" uuid="6e536b3b-0020-47ae-9ace-c7a8d58486f8"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Da Assistência à saúde do trabalhador:
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="32" width="546" height="38" uuid="a3773541-5379-49ba-a399-df0d5dea1579"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[1. - Estabelecer fluxo de atendimento aos trabalhadores, com sala própria e isolada, bem arejada, sem ar condicionado, adotando os protocolos de segurança instituídos pelo Ministério da Saúde para o enfrentamento do COVID-19.
+2. Realizar triagem dos trabalhadores sintomáticos respiratórios. Identificar e separá-los, em um espaço específico e arejado, além de disponibilizar máscara cirúrgica para o trabalhador. Registrar o atendimento no prontuário do trabalhador.
+3. Adotar as medidas para evitar contágio (Quadro 1)]]></text>
+				</staticText>
+			</frame>
+			<line>
+				<reportElement x="0" y="708" width="555" height="1" uuid="f51d899b-de7c-482f-bbb5-6961edc932ff"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+		<band height="733">
+			<staticText>
+				<reportElement x="6" y="105" width="393" height="10" uuid="bb88f785-d7ee-4396-8a6f-3ba764cf0514"/>
+				<textElement>
+					<font size="4" isBold="false"/>
+				</textElement>
+				<text><![CDATA[*  Somente para procedimentos produtores de aerossois usar mascara N95/PFF2.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="111" width="200" height="10" uuid="423ace84-b3f3-4bfe-a538-62a3c6b79da7"/>
+				<textElement>
+					<font size="4" isBold="false"/>
+				</textElement>
+				<text><![CDATA[**  Uso destes EPI durante atendimento do paciente em consultório.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="129" y="111" width="274" height="10" uuid="504b9997-8455-496b-b38f-61deefb5b10a"/>
+				<textElement>
+					<font size="4" isBold="false" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Não é necessário o uso na recepçao/Triagem, desde que mantida distância de 1 metro.]]></text>
+			</staticText>
+			<frame>
+				<reportElement x="0" y="8" width="555" height="118" uuid="5ef2bb90-68fa-4828-88eb-86085068178d"/>
+				<staticText>
+					<reportElement x="6" y="0" width="546" height="9" uuid="9d3e0845-7531-4900-82f6-708c073269e5"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Saúde no Trabalho para Covid-19]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="14" width="555" height="80" uuid="11df322b-47ee-4507-bd6b-733ff194ba86"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement mode="Opaque" x="0" y="14" width="555" height="14" backcolor="#009900" uuid="cfd9a708-9628-4664-a2ad-2e5ae7a385e7"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement mode="Transparent" x="5" y="14" width="546" height="15" forecolor="#FFFFFF" uuid="c9c9f34c-f6c4-4c8b-a4fc-222dd6c205d3"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MEDIDAS DE CONTROLE DE CONTÁGIO]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Opaque" x="0" y="28" width="355" height="11" backcolor="#CCCCCC" uuid="7fa64c46-33c0-4097-bdbd-74a547666ec9"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement mode="Opaque" x="355" y="28" width="200" height="11" backcolor="#CCCCCC" uuid="77d42869-3b93-4684-bc66-005c2e868f9c"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement mode="Transparent" x="355" y="39" width="200" height="55" uuid="d23934e9-10bf-47ab-951d-0b65cccb7654"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement mode="Transparent" x="94" y="28" width="161" height="11" forecolor="#000000" uuid="50fa6037-3a93-473d-b19f-a568c31e524a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Profissionais da Saúde   -  Ambulatório SST]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Transparent" x="378" y="28" width="161" height="11" forecolor="#000000" uuid="7eab8da9-f9d2-49f0-950f-84765dd5a75e"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Pacientes]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="374" y="47" width="164" height="38" uuid="b0707eaa-85a9-4fe7-b2f0-76d629f81d24"/>
+					<textElement>
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[• Fornecer máscara cirúrgica;
+• Isolamento com precauçao de contato em sala isolada e bem arejada]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="47" width="338" height="38" uuid="aef8bff6-5e25-4f2e-95fe-d60408032dee"/>
+					<textElement>
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[• Contenção respiratoria;
+• Máscara cirúrgica*;
+• Uso de luvas, óculos ou protetor facial e aventais de TNT gramatura de 30 a 50g/m2, descartaveis**;
+• Lavar as mãos com frequência;
+• Limpar a desinfetar objetos e superficies tocados com frequência.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="130" width="555" height="200" uuid="e81c6c91-0bf8-4ce3-8961-93d55bf25b30"/>
+				<staticText>
+					<reportElement x="7" y="2" width="468" height="17" uuid="1dae6c37-4c16-45a4-a6a1-47243e2ed5ef"/>
+					<textElement>
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[4 .Avaliar a gravidade da Síndrome Gripal (Quadro 2)
+Adotar as Orientações do Ministério da Saúde para manuseio medicamentoso precoce de pacientes com diagnóstico da COVID-19, nos casos leves, a critério Médico.]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="0" y="26" width="555" height="14" backcolor="#009900" uuid="1bd52c24-fa80-4a8b-a8e5-83bcdaca4c16"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement mode="Transparent" x="6" y="26" width="546" height="15" forecolor="#FFFFFF" uuid="9b5d27ba-8cb0-46fe-95ee-55255c697435"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SINAIS E SINTOMAS DA GRAVIDADE]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="0" y="40" width="555" height="14" backcolor="#CCCCCC" uuid="c7ff3a17-68e6-409f-adcc-df1cd086ebba"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement mode="Transparent" x="6" y="40" width="546" height="15" forecolor="#000000" uuid="e08a485d-d7d4-4da3-94cd-43cc62e557ca"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Adultos]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="54" width="555" height="121" backcolor="#FFFFFF" uuid="366cc498-4b5c-43dd-bcb0-120dcc0f4d62"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="17" y="58" width="451" height="111" uuid="0b18a403-172c-4ae1-aed0-9f98230aad25"/>
+					<textElement>
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Déficit no sistema respirátorio:
+	• Falta de ar ou dificuldade para respirar;ou
+	• Ronco, retração sub/intercostal severa; ou
+	• Cianose central; ou
+	• Saturação de oximetria de pulso <95% em ar ambiente; ou
+	• Taquipneia (> 30 mpm);
+
+Déficit no sistema cardiovascular:
+	• Sinais e sintomas de hipotensao (hipotensão arterial com sistólica abaixo de 90mmHg e/ou diastólica abaixo de 60mmHg); ou
+	• Diminuição do pulso periférico.
+
+Déficit no sistema cardiovascular:
+	• Piora nas condições clinicas de doenças de base;
+	• Alteração do estado mental, como confusao e letargia;
+	• Persistência ou aumento da febre por mais de 3 dias ou retorno após 48h de período afebril
+
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="9" y="178" width="541" height="17" uuid="2689f930-3ccd-4175-b5c8-12d4820fdb8a"/>
+					<textElement>
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[	Como parâmetro para o Médico do Trabalho encaminhar o trabalhador com condições clínicas que exijam avaliação ao Centro de Referência. (Quadro 3)
+]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="338" width="555" height="283" uuid="99cf6a3e-d6a6-4f9e-ba38-f8cfc04f8724"/>
+				<rectangle>
+					<reportElement x="0" y="10" width="555" height="14" backcolor="#009700" uuid="75b37bac-e566-41ac-bf0a-6e7cbf5ba092"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement mode="Transparent" x="5" y="10" width="546" height="15" forecolor="#FFFFFF" uuid="774a2a61-7127-412d-9a36-011fa566a18e"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CONDIÇÕS CLÍNICAS DE RISCO QUE INDICAM AVALIAÇÃO EM CENTRO DE REFERÊNCIA/ATENÇAO ESPECIALIZADA]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="24" width="555" height="12" backcolor="#FFFFFF" uuid="5e093115-6152-4635-a013-cf3a081c3dbc"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="36" width="555" height="12" backcolor="#FFFFFF" uuid="946ea963-ad59-43f2-ba4c-e5d1da2479c9"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="24" width="541" height="12" uuid="387ff0e2-100c-4d53-ad0d-188a7affc48d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Doenças cardíacas descompensadas]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="36" width="541" height="12" uuid="25f9212a-7cf2-4309-a276-19abc3106b09"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Doença cardíaca congênita]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="48" width="555" height="12" backcolor="#FFFFFF" uuid="ecd61d3e-53a3-45be-a699-afa7d0269842"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="48" width="541" height="12" uuid="7fa85928-0377-4fbe-8349-6fa2ce2f50bc"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Insuficiência cardíarca mal controlada]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="60" width="555" height="12" backcolor="#FFFFFF" uuid="7b4e56ae-7f5e-4785-8e30-a0d826a52830"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="60" width="541" height="12" uuid="18d18d81-cc37-49f9-a474-7daf27d654b2"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Doença cardíaca isquêmica descompensada]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="72" width="555" height="12" backcolor="#FFFFFF" uuid="0bb3b557-292d-4da0-af5e-070911fc4d6b"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="72" width="541" height="12" uuid="6d250c38-6a60-4785-abb9-985ea5712f82"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Doenças respiratorias descompensadas]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="84" width="555" height="12" backcolor="#FFFFFF" uuid="ca00b1b4-cfb5-447f-885f-7d3e883ae8e8"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="84" width="541" height="12" uuid="8f292380-0b98-4774-87d8-781bc843c8cf"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[DPOC e Asma mal controlados]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="96" width="555" height="12" backcolor="#FFFFFF" uuid="5e4ab2e3-8934-4641-a399-ec4d06ffeeb8"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="96" width="541" height="12" uuid="b1c387c5-161f-424e-af78-68c5d6888a28"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Doenças pulmonares intersticiais com complicações]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="108" width="555" height="12" backcolor="#FFFFFF" uuid="1735f638-43ff-4543-a131-92d17babd7ee"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="108" width="541" height="12" uuid="639aab36-932e-4276-8530-228764e0145c"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Fibrose cística com infecções recorrentes]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="120" width="555" height="12" backcolor="#FFFFFF" uuid="7fac39aa-62f1-4a0a-ba75-b5dab981cd00"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="120" width="541" height="12" uuid="756611b0-c836-4450-be5b-e555fa0328ed"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Displasia bronco pulmonar com complicaçoes]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="132" width="555" height="12" backcolor="#FFFFFF" uuid="bfeb581b-b890-4085-a0ca-f9c0db282c7d"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="132" width="541" height="12" uuid="8a88bc60-f668-48b5-9fb5-debbff05d72b"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Doenças renais crônicas em estagio avançado (Graus 3,4 e 5) ]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="144" width="555" height="12" backcolor="#FFFFFF" uuid="306b81c1-b6e4-4c6e-bf4f-04cff2253b6b"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="144" width="541" height="12" uuid="c39e1672-9ea8-4912-b1d0-70309f00457f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Pacientes em diálise]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="156" width="555" height="12" backcolor="#FFFFFF" uuid="846eaa8b-ce63-4c95-b29a-8a155f71d9b0"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="156" width="541" height="12" uuid="8f692356-1a2e-45d6-8d34-ed086133d99e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Transplantados de órgãos sólidos e de medulo óssea]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="168" width="555" height="12" backcolor="#FFFFFF" uuid="d971b703-06e2-402c-924e-5de8b1ec9288"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="168" width="541" height="12" uuid="e1e427dc-71c7-4308-ae81-2cdfec0734dd"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Imunossupressão por doenças e/ou medicamentos (em vigência de quimioterapia/radioterapia, entre outros medicamentos)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="180" width="555" height="12" backcolor="#FFFFFF" uuid="718f2251-a8f0-45af-ac1e-9a605ccdb9b5"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="180" width="541" height="12" uuid="63e587f4-4650-468b-8f39-eb997412d2f8"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Portadores de doenças cromossômicas e com estados de fragilidade imunológica (ex.: Sindrome de Down)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="192" width="555" height="12" backcolor="#FFFFFF" uuid="4edb5734-4851-479d-823b-be9f9f418fba"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="192" width="541" height="12" uuid="a19ed83b-83e1-4609-a194-6d682c55349d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Diabetes (conforme juizo clínico)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="204" width="555" height="12" backcolor="#FFFFFF" uuid="5dffde4a-6bf9-4252-911e-5f472345ed80"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="204" width="541" height="12" uuid="7a266237-b24f-4516-8054-eb691a44a5a2"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Gestante de alto risco]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="216" width="555" height="12" backcolor="#FFFFFF" uuid="cac38dbf-db3c-48ac-9d5b-828c1dd663c9"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="216" width="541" height="12" uuid="a9ee7edd-3ab4-453a-bb7d-c5b614d34659"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Doença hepática em estágio avançado]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement mode="Transparent" x="0" y="228" width="555" height="12" backcolor="#FFFFFF" uuid="2192551c-cd54-48aa-bd13-f68c88208834"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="6" y="228" width="541" height="12" uuid="67b09d47-907f-4f50-912c-2cf17b7022a8"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Obsidade (IMC >= 40)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="244" width="541" height="12" uuid="d5b6ec1f-365b-453d-af0b-db621278d4ac"/>
+					<textElement verticalAlignment="Middle">
+						<font size="4" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Fonte: Ministerio da Saúde]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="3" y="259" width="541" height="24" uuid="eefd9420-8cf4-4d92-b7b1-705e162b2bbb"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[5. Encaminhar os pacientes nos casos graves para serviços hospitalares de referência. Nesses casos, verificar a necessidade de chamar o SAMU.
+6. Estabelecer um canal de comunicação para o acompanhamento da evolução do quadro clínico do trabalhador, alertando – o para o aparecimento dos sinais de alerta.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="1" y="627" width="554" height="95" uuid="97674072-8b39-452b-b502-3faa007a0523"/>
+				<staticText>
+					<reportElement x="5" y="10" width="154" height="10" uuid="f1e0c24c-fd4d-410a-b572-5df4c45a1138"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Atendimento Presencial:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="21" width="538" height="38" uuid="e3087593-e950-4bd0-92a9-c91a1e339d11"/>
+					<textElement textAlignment="Justified" verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Para os casos em que os trabalhadores apresentem sintomas gripais durante o serviço, o Médico do Trabalho realizará a triagem dos trabalhadores com: anamnese clínica detalhada, exame físico para o diagnóstico de possíveis complicações respiratórias e procederá com as orientações pertinentes a cada caso segundo avaliação de gravidade. O Médico do Trabalho, nos casos leves, poderá seguir as orientações de tratamento precoce do Ministério da Saúde, em casos suspeitos da COVID -19, além de orientações de isolamento social e repouso, hidratação, alimentação adequada, analgésicos e antitérmicos. Como conduta ainda deve o médico:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="57" width="530" height="38" uuid="aeda805b-25c7-4c85-ade2-5c9491e900e8"/>
+					<textElement textAlignment="Justified" verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[• Afastar o trabalhador que apresentar sintomas gripais pelo prazo inicial de 14 (quatorze dias)10 ou até completar os procedimentos diagnósticos;
+• Emitir atestado para o trabalhador e para os integrantes de seu núcleo familiar/ contactantes.
+• Fazer acompanhamento do trabalhador por telefone a cada 48h ou menos.
+• Orientar ligar para o SAMU ou buscar atendimento em pronto-socorro de hospital de referência caso apresente dispneia. ]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="730">
+			<frame>
+				<reportElement x="0" y="2" width="555" height="138" uuid="194be2ae-6818-41e2-a59c-b6c120af97a6"/>
+				<rectangle>
+					<reportElement x="0" y="1" width="555" height="14" backcolor="#DEDCDC" uuid="735b4b6d-ccf3-4bb1-a797-c679429c7185"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="2" y="0" width="551" height="14" uuid="f404f1e7-281e-4a83-a910-e343621b940f"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[AFASTAMENTO DO TRABALHO E HOMOLOGAÇÃO DE ATESTADOS MÉDICOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="23" width="554" height="106" uuid="34b513ca-6261-4300-9bfa-532692a02d8c"/>
+					<textElement textAlignment="Justified">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[O Médico do Trabalho deve realizar o levantamento dos trabalhadores com 60 anos ou mais, com ou sem comorbidades. À critério, deve o Médico do Trabalho avaliar a condição de saúde e risco ao trabalhador com comorbidades, na manutenção das atividades laborativas presenciais, levando-se em consideração parâmetros clínicos. Ainda, deve o Médico do Trabalho, quando necessário, (Quadro 3) indicar afastamento para realização de trabalho em home office ou caso não seja possível, mudança de função com atividades em que seja possível o trabalho remoto. Se não houver possibilidade de mudança de função ou realocação, o trabalhador deve ser afastado para ficar em casa enquanto durar o isolamento para grupos de risco. Nessa situação, não cabe encaminhamento ao INSS até que alguma norma seja editada pelo Governo Federal orientando conduta diferente. O mesmo se aplica a trabalhadora gestante. Em caso diverso, a gestante de alto risco que obtiver atestado médico de seu médico assistente, deverá ser encaminhada ao INSS a partir de 16º dia de afastamento.
+
+No caso de o trabalhador necessitar prorrogação do atestado em decorrência da doença, deverá ser encaminhado ao INSS a partir do 16º dia, seguindo a orientação contida na portaria Conjunta no 9.381, de 06 de abril de 2020. Cabe ressaltar que o afastamento por medida de prevenção, sem a existência de incapacidade não deve ser encaminhado ao INSS.
+
+A homologação de atestado médico dever ocorrer sem o comparecimento do trabalhador, sendo realizado pelo envio do atestado médico, relatório do médico assistente, receita médica e exames complementares (quando houver) pelo canal de comunicação a ser estabelecido (e-mail, sistema interno de gestão) sempre resguardando o sigilo e a confidencialidade das informações do trabalhador.
+]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="134" width="555" height="160" uuid="513f8439-9eac-4084-aa4f-96878b664ce7"/>
+				<staticText>
+					<reportElement x="9" y="2" width="166" height="9" uuid="e3875cc9-51b0-4c3b-8a9b-7285bfd514a2"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Dos Exames Médicos Ocupacionais:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="14" width="554" height="146" uuid="665a05ae-5c0c-435a-b2ed-0010905a68d2"/>
+					<textElement textAlignment="Justified">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Os exames ocupacionais são indispensáveis para a manutenção da saúde (ao controle do processo saúde-doença) do trabalhador. Subsidiam a prevenção de doenças, na promoção da saúde e na diminuição do absenteísmo. Seguem critérios baseados na literatura científica, são normatizados pela NR 7 – Programa de Controle Médico de Saúde Ocupacional e classificados em: Exame admissional, exame periódico, exame de retorno ao trabalho, exame de mudança de função e exame demissional.
+
+Segundo a MP 927/202012, em seu Art. 15, in verbis:
+
+Art. 15. Durante o estado de calamidade pública a que se refere o art. 1º, fica suspensa a obrigatoriedade de realização dos exames médicos ocupacionais, clínicos e complementares, exceto dos exames demissionais.
+
+§ 1º Os exames a que se refere caput serão realizados no prazo de sessenta dias, contado da data de encerramento do estado de calamidade pública.
+
+§ 2º Na hipótese de o médico coordenador de programa de controle médico e saúde ocupacional considerar que a prorrogação representa risco para a saúde do empregado, o médico indicará ao empregador a necessidade de sua realização.
+
+§ 3º O exame demissional poderáser dispensado caso o exame médico ocupacional mais recente tenha sido realizado há menos de cento e oitenta dias.
+
+Exames devem ser suspensos à exceção dos exames demissionais para os quais admite-se a substituição pelo último exame ocupacional desde que tenha sido realizado em até 180 dias, conforme previsto na referida MP. O trabalhador que receber alta do INSS poderá retornar ao trabalho, sem passar pelo exame com o Médico do Trabalho. Todavia, em todas as situações, o Médico do Trabalho, a critério clínico, poderá indicar a realização de exame ocupacional sempre que identificar risco para a saúde do trabalhador.
+]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="305" width="555" height="119" uuid="3c98d540-e0f3-4a19-b4aa-9610d5dc95f5"/>
+				<rectangle>
+					<reportElement x="0" y="1" width="555" height="14" backcolor="#E8E6E6" uuid="551e572e-a789-4abd-b31f-fe1582c133d1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="5" y="1" width="544" height="14" uuid="8c68a11b-3720-4e27-823c-1fd0c6768327"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROTOCOLO PARA EQUIPAMENTO E PROTEÇÃO INDIVIDUAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="17" width="554" height="102" uuid="5addcd1b-7bae-4979-8648-36a32e3ebc3b"/>
+					<textElement textAlignment="Justified">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[O fornecimento de Equipamento de Proteção Individual - EPI deve acontecer de forma criteriosa tendo em vista a escassez de recursos e a dificuldade de reposição imediata.
+
+Todos os tipos de EPI devem ser:
+
+• Selecionados com base no risco da atividade para o trabalhador.
+• Montados de forma adequada e periodicamente reparados, conforme aplicável (por exemplo, máscara de proteção respiratória).
+• Consistente e adequadamente utilizado quando necessário.
+• Inspecionado, mantido e substituído regularmente, conforme necessário.
+• Removido, limpo e armazenado ou descartado adequadamente, conforme aplicável, para evitar a
+contaminação de si mesmo, de outras pessoas ou do meio ambiente.
+
+A proteção contra agentes biológicos na forma de aerossóis se faz com uso de máscaras de proteção respiratória tipo PFF2 ou PFF3, consoante a Cartilha de Proteção Respiratória contra Agentes Biológicos para Trabalhadores de Saúde da Anvisa]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="429" width="555" height="199" uuid="336312f1-c22c-4330-a43f-ab058357649b"/>
+				<rectangle>
+					<reportElement style="background-gray" mode="Opaque" x="0" y="2" width="555" height="14" backcolor="#E8E6E6" uuid="7097b6c6-13bf-4a2e-8c15-a024fd3920fd"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement mode="Transparent" x="4" y="3" width="530" height="13" uuid="08e2fd12-cf1e-402b-8825-d1e366c40984"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[AVALIAÇÃO E GERENCIAMENTO PARA RETORNO AO TRABALHO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="17" width="550" height="182" uuid="396702b3-3866-41e9-b5c1-2c65a388d3d9"/>
+					<textElement textAlignment="Justified">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Deve o Médico do Trabalho elaborar um Plano de Contingência com as medidas de prevenção e controle no enfrentamento da COVID - 19, para o retorno as atividades laborais e anexá-lo ao PCMSO. Nos locais de trabalho algumas medidas estão indicadas para a proteção coletiva.
+
+• Incentivar a adesão às campanhas de vacinação vigentes;
+• Orientar sobre a necessidade do distanciamento social e da etiqueta social para tosse e espirro;
+• Sempre que possível, recomenda - se a colocação de lavatórios com dispenser para papel toalha e sabonete líquido para a higienização das mãos ou totem com álcool em gel a 70% e acionamento através de pedal, na entrada do serviço.
+
+• Sinalizar / demarcar o piso com faixas / fitas para manter o distanciamento e evitar aglomerações;
+• Manter o distanciamento das mesas/cadeiras, de no mínimo 02 metros de distância de uma para outra;
+• Manter o distanciamento entre trabalhadores que utilizam baias como estação de trabalho;
+• Determinar horário de uso de copa/refeitório de forma a evitar aglomeração.
+
+• Instalar barreiras físicas, como proteções de policarbonato ou vidro transparente, em postos de trabalho que requeiram o contato direto do trabalhador com o público, quando possível ou fornecimento de face shield;
+• Afixar alertas visuais com orientações de fluxos, do uso obrigatório de máscaras, do(s) local(is) para a higienização das mãos, de etiqueta respiratória e da necessidade do paciente / trabalhador comunicar (ao adentar ao serviço), se apresenta sinais ou sintomas de síndrome gripal;
+• Aumentar a taxa de ventilação nos ambientes de trabalho, seja por fonte natural ou artificial, de forma a aumentar a troca de ar no local;
+• Instalar sistemas de ventilação por pressão negativa em algumas situações, como nos procedimentos de geração de aerossóis (Ex. leitos de isolamento em estabelecimentos de saúde e salas de autópsia em ambientes mortuários);
+• Garantir que o sistema de climatização de ar não esteja reutilizando o ar e sim que esteja programado para renovação de ar constantemente, atendendo ao Regulamento Técnico do Ministério da Saúde sobre “Qualidade do Ar de Interiores em Ambientes Climatização”, com redação da Portaria MS no 3.523, de 28 de agosto de 199819 e os Padrões Referenciais de Qualidade do Ar Interior em Ambientes Climatizados Artificialmente de Uso Público e Coletivo, com redação dada pela Resolução RE no 9, de 16 de janeiro de 2003, da ANVISA.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="634" width="555" height="90" uuid="10c92b78-7e39-4cd7-965e-9fdf74aebd82"/>
+				<staticText>
+					<reportElement x="8" y="3" width="210" height="14" uuid="56433a0c-204c-4c40-a4c2-e16e8e89189e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Avaliação para retorno ao trabalho:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="22" width="552" height="68" uuid="44ec5897-5bb7-4703-870c-02dbcf7ec997"/>
+					<textElement verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Deve-se utilizar critérios clínico/epidemiológico e laboratorial. Assim sendo, observar:
+                                                       72 horas assintomático (sem usar antitérmico) e estar entre 7 a 10 dias do início dos sintomas.
+
+
+• RT-PCR negativo + atender critério clínico epidemiológico. Poderá retornar ao trabalho.
+• RT-PCR positivo. Manter o trabalhador 14 dias afastado.
+• Sorologia negativa, deve fazer o RT- PCR.
+• Sorologia positiva para IgA ou IgM, deve manter o trabalhador 14 dias afastado.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="30" width="93" height="10" uuid="fa16ada6-e6cd-469d-b0e9-92581c6e28f8"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Critério clínico/epidemiológico: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="42" width="60" height="10" uuid="abf1a835-d573-4995-b2fa-4e9d51bc36cf"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Critério laboratorial:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="808">
+			<frame>
+				<reportElement x="0" y="4" width="555" height="275" uuid="f8ca43d0-2d2f-46f7-b2bb-bcf18f60d5d2"/>
+				<rectangle>
+					<reportElement mode="Opaque" x="0" y="2" width="555" height="14" backcolor="#EDE8E8" uuid="5c69373a-0104-4121-8a8d-bd4a96fe4d68"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="9" y="3" width="538" height="13" uuid="7497a491-d0f3-4ce0-a3ee-f663094ff174"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ESTRATÉGIAS GERAIS DE CONTROLE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="25" width="548" height="25" uuid="79ece5fd-1221-4f58-a3e0-fff537b1c9e2"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Para reduzir a possibilidade de ocorrência da doença e conter a sua disseminação nos locais de trabalho, as estratégias, relacionadas a seguir, devem ser aplicadas de acordo com a fase da epidemia e as indicações do Ministério da Saúde.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="50" width="100" height="10" uuid="ceff9379-9a8a-42ed-9166-fbc65a49d3ee"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Condições de saúde:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="60" width="100" height="30" uuid="d1985b05-0b92-4a9b-83d5-9cd477fdbe72"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[• Infecções;
+• Traumas físicos;
+• Condições cardiovasculares;
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="93" width="100" height="10" uuid="7e2a5ff1-7f4b-481d-945f-c318a8151d24"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Distanciamento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="107" width="550" height="72" uuid="452630dc-686c-4fd1-becc-3fb7f3696731"/>
+					<textElement textAlignment="Justified">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Compreendem a modificação da frequência do encontro entre empregados, entre empregados e clientes e entre empregados e o público em geral. Esta estratégia é aplicável durante a pandemia de corona vírus e visa restringir os deslocamentos.
+
+As principais ações compreendem:
+
+• Informação e difusão aos empregados sobre medidas preventivas individuais e coletivas, que deverão ser cumpridas para diminuir o risco de contágio;
+• Filtro e supervisão geral no ingresso dos empregados, dos clientes e usuários;
+• Isolamento: Definir estratégias e procedimentos de flexibilização de local e horário de trabalho e de procedimentos para os empregados que tenham sido expostos a um caso de corona vírus e para os que se suspeite estar doente, gestantes, portadores de doenças crônicas, imunodeprimidos e empregados com mais de 60 anos, estabelecendo licença e comunicação do caso.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="190" width="100" height="10" uuid="84a88a8d-b9e2-4806-9fca-bf6616017bd6"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Promoção de saúde]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="203" width="550" height="72" uuid="e9285a88-b404-48d1-ae3b-7584ea82feeb"/>
+					<textElement textAlignment="Justified">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Orientação, capacitação e organização dos empregados para prevenir e controlar a propagação do corona vírus nos locais de trabalho, em cumprimento às medidas divulgadas e adotadas pelo Ministério da Saúde.
+
+Entre as quais se destacam:
+
+• Medidas básicas de higiene
+• Técnicas corretas para lavar as mãos
+• Utilização de álcool em gel para limpeza das mãos
+• Promoção de regras gerais e etiqueta para tossir e espirrar
+• Uso de equipamentos de proteção individual, se for o caso
+• Limpeza dos locais de trabalho, dos acessórios e utensílios
+• Comunicação sobre telefones de orientação e das unidades de saúde de referência, mais próximas ao trabalho, em caso de sintomas respiratórios.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="285" width="555" height="84" uuid="ba8feb4e-e0a2-498c-8db1-50d0d7f64a3f"/>
+				<rectangle>
+					<reportElement mode="Opaque" x="0" y="3" width="555" height="14" backcolor="#EBE6E6" uuid="038b82bd-8498-4bb3-b274-81c0f8c6dc83"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</rectangle>
+				<staticText>
+					<reportElement x="179" y="3" width="204" height="14" uuid="b0159bb4-da40-44fd-87fd-2a77d28771c2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[REFERÊNCIAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="20" width="548" height="60" uuid="2e4bdd61-e47a-4e05-90fc-1093ae23be38"/>
+					<textElement textAlignment="Justified">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[NOTA TÉCNICA GVIMS/GGTES/ANVISA Nº 04/2020 - orientações para serviços de saúde: medidas de prevenção e controle que devem ser adotadas durante a assistência aos casos suspeitos ou confirmados de infecção pelo novo coronavírus (SARS-COV-2).(Atualizada em 08/05/2020)
+
+Ministério da Saúde – Plano de Contingência Nacional para Infecção Humana pelo novo Coronavírus COVID-19, 2020 https://portalarquivos2.saude.gov.br/images/pdf/2020/fevereiro/13/ plano-contingencia-coronavirus-COVID19.pdf.
+
+Associação Nacional de Medicina do Trabalho- Guia Prático de Gestão em Saúde no Trabalho para COVID-19 – ANANT - Ministério da Saúde – Julho de 2020.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="71">
+			<frame>
+				<reportElement x="1" y="6" width="554" height="64" uuid="c8f73fc9-9e85-4d0d-99be-d5d77f0ab97b"/>
+				<textField>
+					<reportElement x="57" y="0" width="492" height="14" uuid="64ddd71f-1f01-456d-8850-e0c754520b72"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{filial_nome_fantasia}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="6" y="0" width="61" height="14" uuid="883b244c-4a82-45fb-9968-19695a72ef53"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Unidade:]]></text>
+				</staticText>
+				<subreport>
+					<reportElement x="0" y="22" width="554" height="41" uuid="e1e6caa7-0c6b-48d0-9ad8-585dce2a4826"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="IMP_SETOR_CARGO_VAZIO">
+						<subreportParameterExpression><![CDATA[$P{IMP_SETOR_CARGO_VAZIO}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:relatorio_unidades.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="344">
+			<frame>
+				<reportElement style="bordered" x="0" y="18" width="555" height="56" uuid="a17c5c8b-7a43-42e3-9694-b5d9ce7966b2"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="0f96432a-1e07-4d79-9e2a-3d2c0ec8fd7d"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="88eedebb-c9b1-48aa-ab85-1ae50546eaaa"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[OBSERVAÇÃO]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="42fc0178-2339-4660-88e5-f287e76f6fec"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="35" uuid="96f61ba6-b6e8-40fc-ba0e-241f3f4bece0"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Todos os funcionários com idade entre 18 e 45 anos poderão realizar o exame periódico a cada dois anos, desde que não estejam expostos a riscos no ambiente de trabalho e que não sejam portadores de doenças crônicas.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="79" width="555" height="192" uuid="9b58ee49-cf31-40d8-abc8-9bbd28419cf8"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="dd7cd726-306a-449e-9d9d-5d351157b791"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="22df3700-5122-478a-88fc-ff911091bca2"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[ATIVIDADES E PROGRAMAS SUPLEMENTARES]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="e8363988-134c-4938-83f3-88a1a2637892"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="33" width="549" height="35" uuid="0c154395-b93c-4693-8d86-e35f1c42a801"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[A medicina do trabalho ministra, palestras sobre temas atuais relacionados à saúde e o bem estar pessoal, com a finalidade de orientar os trabalhadores sobre os riscos à sua saúde existentes em seu local de trabalho. Estas palestras visam conscientizar a população trabalhadora a respeito das regras de Saúde e Segurança no trabalho, prevenindo assim possíveis danos a sua saúde.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="23" width="170" height="8" uuid="e0046c17-ab2f-4491-a251-ac72b9393312"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE PALESTRAS EDUCATIVAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="93" width="549" height="35" uuid="752d751d-0850-442a-85a9-d5340b626638"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Os funcionários portadores dessas doenças passam a ter uma ficha de acompanhamento clínico em separado, sendo examinados no Serviço Médico, para verificação. Esses funcionários são encaminhados para seus médicos clínicos assistentes para avaliação, tratamento e acompanhamento. Os resultados das avaliações, assim como as alterações / trocas de medicamentos serão informadas ao Serviço Médico e inseridas nas fichas de acompanhamento.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="83" width="287" height="8" uuid="0788d047-69ae-4785-9526-258dbc3dacbe"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE ACOMPANHAMENTO DE DOENÇAS CRÔNICAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="145" width="287" height="8" uuid="d7fc5c1e-116c-4fe3-b493-1124b4c0b3e6"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE PREVENÇÃO DE D.O.R.T]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="155" width="549" height="35" uuid="016666af-b0e1-4cc9-9be4-d53a3d0a5684"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Serão realizadas vistorias nos postos de trabalho com riscos ergonômicos (movimentos repetitivos, posições forçadas etc.). Para orientação geral dos trabalhadores, serão realizados palestras e treinamentos com orientações específicas para neutralizar ou reduzir os efeitos mórbidos dos constrangimentos posturais.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="277" width="555" height="56" uuid="99034248-fbad-4ea5-b5cb-5659347d5d68"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="74ea5d76-b594-49f9-b02b-ad6affda25ec"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="f2e027b2-a733-497b-b0f0-6a3be252db73"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[TOTAL DE FUNCIONARIOS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="d08e4d80-d5a7-4f7e-8db2-0d8b63d6e1fc"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<frame>
+					<reportElement style="bordered" x="155" y="15" width="100" height="41" uuid="4cd4de91-02ae-4482-a970-a199522327cd"/>
+					<staticText>
+						<reportElement x="0" y="10" width="100" height="10" uuid="8fc68372-af2d-40da-8054-77f7b5904a9f"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Masculino]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="21" y="26" width="62" height="10" uuid="4f7b1f12-0404-430e-9da1-bd9ccfb014c1"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{quant_funcionario_masculino}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="bordered" x="355" y="15" width="100" height="41" uuid="b549aed7-fa71-4c64-8dfc-ae4716385dee"/>
+					<staticText>
+						<reportElement x="0" y="10" width="100" height="10" uuid="8a29c314-54ee-4226-ab7e-ce0232f2d37f"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Menor]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="20" y="26" width="62" height="10" uuid="0d79e042-6e9c-4a84-9217-325ac7f903aa"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{quant_menor_idade}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="bordered" x="455" y="15" width="100" height="41" uuid="e58f7075-22d9-4919-b89c-60ce34429a6f"/>
+					<staticText>
+						<reportElement x="0" y="10" width="100" height="10" uuid="fa18c783-c718-48ce-8f1a-85239c4a677a"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Total]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="20" y="26" width="62" height="10" uuid="edae224c-19ee-49c0-afac-3e7e2f395a31"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[($F{quant_funcionario_masculino} + $F{quant_funcionario_feminino} + $F{quant_menor_idade})]]></textFieldExpression>
+					</textField>
+				</frame>
+				<staticText>
+					<reportElement x="40" y="41" width="100" height="10" uuid="2b5ceb3b-1937-40a2-8bc2-3ee25b192238"/>
+					<textElement textAlignment="Center">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Funcionarios]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="255" y="292" width="100" height="41" uuid="9549d5e3-5f4e-4e9c-be00-325df99ffde3"/>
+				<staticText>
+					<reportElement x="0" y="10" width="100" height="10" uuid="343667e2-36ff-46e4-bf0f-1130bb091219"/>
+					<textElement textAlignment="Center">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Feminino]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="20" y="26" width="62" height="10" uuid="edd30323-17f8-419d-abb3-2ee1e5754148"/>
+					<textElement textAlignment="Center">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{quant_funcionario_feminino}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="44">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="44" uuid="b1683b59-1cba-4d39-b366-fcd8b9f90ea2"/>
+				<subreport isUsingCache="false">
+					<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="44" isRemoveLineWhenBlank="true" uuid="0dacc65d-76c2-4cb7-99c0-dd8875a21b53"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_hospitais_emergencia.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="90">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="90" uuid="3d55b425-0775-48e1-9727-56f2d3992a42"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="217" y="73" width="121" height="11" uuid="b2fd91ee-153b-4996-91e5-84b8c5f09c46"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA["CRM/UF:"+$F{numero_conselho}+"/"+$F{conselho_uf}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="216" y="62" width="122" height="11" uuid="3524d1b1-6776-497a-8b61-4175de780be7"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome_medico}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="215" y="50" width="124" height="10" uuid="30311e98-96e0-4696-a772-08dfd3acf934"/>
+					<textElement textAlignment="Center">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Médico Coordenador do PCMSO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="216" y="47" width="122" height="1" uuid="0b447b1f-737c-48d1-a4e9-c9ed31fe8386"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+			<break>
+				<reportElement x="0" y="89" width="555" height="1" uuid="9d638a6e-110e-4191-9727-74fa580568c6"/>
+			</break>
+		</band>
+		<band height="49">
+			<subreport isUsingCache="false">
+				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="41" uuid="0d964d0d-0e55-4a40-b05f-c6d261972409"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cronogramas_acoes.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="44">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="44" uuid="2c11616b-fc13-48ce-a678-df11e651c516"/>
+				<subreport isUsingCache="false">
+					<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="44" isRemoveLineWhenBlank="true" uuid="8a106b1f-2699-49ee-9827-faa2461659f0"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_corpo_clinico.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="38">
+			<textField>
+				<reportElement x="455" y="9" width="100" height="20" uuid="dace3557-7a76-4526-a1f1-6c070688e236"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

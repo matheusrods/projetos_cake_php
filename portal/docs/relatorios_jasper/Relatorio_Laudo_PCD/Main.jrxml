@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="laudo_pcd" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="17341c5f-6e37-45f2-84dc-c48338600691">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="17"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/laudo_pcd"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="border">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_CLIENTE_FUNCIONARIO" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\Relatorio_Laudo_PCD\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+                ClienteFuncionario.codigo AS cliente_funcionario_codigo,
+                ClienteFuncionario.codigo_cliente AS cliente_funcionario_codigo_cliente,
+                ClienteFuncionario.codigo_funcionario AS cliente_funcionario_codigo_funcionario,
+                Cliente.codigo AS cliente_codigo,
+                Cliente.codigo_documento AS cliente_cnpj,
+                Cliente.razao_social AS cliente_razao_social,
+                Cliente.nome_fantasia AS cliente_nome_fantasia,
+                Funcionario.codigo AS funcionario_codigo,
+                Funcionario.nome AS funcionario_nome,
+                Funcionario.cpf AS funcionario_cpf,
+                MultiEmpresa.codigo AS empresa_codigo,
+                MultiEmpresa.razao_social AS empresa_razao_social,
+                MultiEmpresa.nome_fantasia AS empresa_nome_fantasia,
+                MultiEmpresa.logomarca AS empresa_logomarca
+            FROM RHHealth.dbo.cliente_funcionario AS ClienteFuncionario
+            LEFT JOIN RHHealth.dbo.funcionarios Funcionario ON Funcionario.codigo = ClienteFuncionario.codigo_funcionario
+            LEFT JOIN RHHealth.dbo.cliente Cliente ON Cliente.codigo = ClienteFuncionario.codigo_cliente
+            LEFT JOIN RHHealth.dbo.multi_empresa MultiEmpresa ON MultiEmpresa.codigo = ClienteFuncionario.codigo_empresa AND MultiEmpresa.codigo = Funcionario.codigo_empresa AND MultiEmpresa.codigo = Cliente.codigo_empresa
+            WHERE
+            ClienteFuncionario.codigo =$P{CODIGO_CLIENTE_FUNCIONARIO}]]>
+	</queryString>
+	<field name="cliente_funcionario_codigo" class="java.lang.Integer"/>
+	<field name="cliente_funcionario_codigo_cliente" class="java.lang.Integer"/>
+	<field name="cliente_funcionario_codigo_funcionario" class="java.lang.Integer"/>
+	<field name="cliente_codigo" class="java.lang.Integer"/>
+	<field name="cliente_cnpj" class="java.lang.String"/>
+	<field name="cliente_razao_social" class="java.lang.String"/>
+	<field name="cliente_nome_fantasia" class="java.lang.String"/>
+	<field name="funcionario_codigo" class="java.lang.Integer"/>
+	<field name="funcionario_nome" class="java.lang.String"/>
+	<field name="funcionario_cpf" class="java.lang.String"/>
+	<field name="empresa_codigo" class="java.lang.Integer"/>
+	<field name="empresa_razao_social" class="java.lang.String"/>
+	<field name="empresa_nome_fantasia" class="java.lang.String"/>
+	<field name="empresa_logomarca" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="45" splitType="Stretch">
+			<frame>
+				<reportElement style="border" x="0" y="0" width="555" height="44" isRemoveLineWhenBlank="true" uuid="b95f0a5b-1ad3-4dbb-9979-5d3c85834950"/>
+				<staticText>
+					<reportElement mode="Transparent" x="138" y="4" width="52" height="15" uuid="92e60f18-19e5-4b97-81c2-90b5e2719f5d"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="11" isBold="true" isItalic="false" isUnderline="false"/>
+					</textElement>
+					<text><![CDATA[Empresa:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="138" y="25" width="52" height="15" uuid="a5e8bfa3-03b0-4b3e-ab60-fbf798859ffa"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" size="11" isBold="true" isItalic="false" isUnderline="false"/>
+					</textElement>
+					<text><![CDATA[CNPJ:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="197" y="5" width="217" height="14" uuid="84db9e1d-8f99-49aa-9841-58097149ee21"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cliente_nome_fantasia}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="196" y="25" width="135" height="15" uuid="8756bfc7-5f6e-44f2-8fde-954ffa7ae2d2"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Arial" size="11"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cliente_cnpj}]]></textFieldExpression>
+				</textField>
+				<image>
+					<reportElement x="8" y="11" width="76" height="21" uuid="6c1e8fc4-6583-4c70-b801-3bf4c2c929f6"/>
+					<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+				</image>
+				<image>
+					<reportElement x="450" y="4" width="100" height="40" uuid="0c2e6f31-1fad-4e48-8d3f-e9a8033a38ea">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+					</reportElement>
+					<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+				</image>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="757" splitType="Stretch">
+			<frame>
+				<reportElement style="border" x="0" y="5" width="555" height="55" uuid="e99388aa-b7df-417d-91a9-1e95611acc3a"/>
+				<staticText>
+					<reportElement x="0" y="0" width="555" height="20" uuid="edd06845-802f-4eb4-a0ec-eb792927b5dc"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true"/>
+					</textElement>
+					<text><![CDATA[LAUDO CARACTERIZADOR DE DEFICIÊNCIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="21" width="554" height="31" uuid="cb49e458-bbcc-416f-81be-44cc5b9dd592"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Arial" size="9"/>
+					</textElement>
+					<text><![CDATA[De acordo com o Decreto 3.298/1999 e com a Instrução Normativa SIT/ MTE n.º 98 de 15/08/2012, observados os dispositivos da Convenção sobre os Direitos das Pessoas com deficiência, Lei 12764/12, Lei13146/2015.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="59" width="555" height="693" uuid="de48289b-8115-4ee4-83ca-5d4d4197b413"/>
+				<frame>
+					<reportElement style="border" x="0" y="1" width="555" height="15" forecolor="#00FF99" uuid="a8d29bca-ced0-4309-ac4a-3118432ef413"/>
+					<staticText>
+						<reportElement x="21" y="1" width="34" height="12" uuid="266cedc2-3aa7-4b10-ad60-41e650aabe9f"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="5"/>
+						</textElement>
+						<text><![CDATA[Nome:]]></text>
+					</staticText>
+					<line>
+						<reportElement x="349" y="0" width="1" height="15" uuid="972bece3-99b6-4641-b716-15dcefa69300"/>
+					</line>
+					<staticText>
+						<reportElement x="357" y="1" width="30" height="12" uuid="b4826f70-6f8f-4ce1-bf12-279212dbceba"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="5"/>
+						</textElement>
+						<text><![CDATA[CPF:]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="62" y="1" width="290" height="12" uuid="c532958b-e2e5-4ed3-ab64-b3d70ab3a1fa"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{funcionario_nome}]]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement x="387" y="1" width="128" height="12" uuid="4978ca36-b7a1-4e69-be03-60ae88563dde"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{funcionario_cpf}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="16" width="555" height="29" uuid="4b766e9d-e424-4780-97dd-761d095efbc6"/>
+					<frame>
+						<reportElement x="0" y="0" width="555" height="15" forecolor="#00FF99" uuid="107c4b23-cfd5-4aad-ac77-2c6b55b8e6b7"/>
+						<staticText>
+							<reportElement x="0" y="0" width="34" height="15" uuid="b85e433e-adb7-42a5-a099-e18600d566b5"/>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="Arial" size="9" isBold="true"/>
+								<paragraph firstLineIndent="5"/>
+							</textElement>
+							<text><![CDATA[CID:]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="227" y="0" width="130" height="15" uuid="2590a4ea-1b05-4277-89bb-307cc667bfe5"/>
+							<textElement textAlignment="Left" verticalAlignment="Middle">
+								<font fontName="Arial" size="9" isBold="true"/>
+							</textElement>
+							<text><![CDATA[Origem da deficiência:]]></text>
+						</staticText>
+					</frame>
+					<frame>
+						<reportElement mode="Transparent" x="0" y="14" width="555" height="15" uuid="29b24eb1-31d0-423b-8671-e62af27de746"/>
+						<rectangle>
+							<reportElement x="5" y="4" width="8" height="8" uuid="af059192-660b-4759-862a-6567b982fd6d"/>
+						</rectangle>
+						<staticText>
+							<reportElement x="18" y="0" width="100" height="15" uuid="0db74d3d-63e6-4434-855f-062a56f3c567"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9"/>
+							</textElement>
+							<text><![CDATA[Acidente de trabalho]]></text>
+						</staticText>
+						<rectangle>
+							<reportElement x="122" y="4" width="8" height="8" uuid="20889459-91db-488a-975f-a89fbe2d57f8"/>
+						</rectangle>
+						<staticText>
+							<reportElement x="137" y="0" width="77" height="15" uuid="a86d9459-7938-465e-adcf-21c4bdbe65a8"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9"/>
+							</textElement>
+							<text><![CDATA[Congênita]]></text>
+						</staticText>
+						<rectangle>
+							<reportElement x="222" y="4" width="8" height="8" uuid="ba2d0967-a42e-48a5-aa41-e3dadfaabaf2"/>
+						</rectangle>
+						<staticText>
+							<reportElement x="239" y="0" width="92" height="15" uuid="6fdebfce-2509-448b-bf4e-394086f9197b"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9"/>
+							</textElement>
+							<text><![CDATA[Adquirida em pós operatório]]></text>
+						</staticText>
+						<rectangle>
+							<reportElement x="335" y="4" width="8" height="8" uuid="d0a035f4-f9a5-4ba9-bac8-8be779f019bd"/>
+						</rectangle>
+						<staticText>
+							<reportElement x="350" y="0" width="89" height="15" uuid="e0a2075e-7ad7-4ade-8db2-b4d740b52a7a"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9"/>
+							</textElement>
+							<text><![CDATA[Acidente comum]]></text>
+						</staticText>
+						<rectangle>
+							<reportElement x="440" y="4" width="8" height="8" uuid="cf38f5ec-6ef7-425a-9c9d-d7c2bdfa5960"/>
+						</rectangle>
+						<staticText>
+							<reportElement x="455" y="0" width="98" height="15" uuid="72629c0c-f1e0-48a6-8a37-cb4ee1dac39b"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9"/>
+							</textElement>
+							<text><![CDATA[Doença]]></text>
+						</staticText>
+					</frame>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="45" width="555" height="55" uuid="e70357bd-e2e7-4626-bfd8-707b8a8d4dc0"/>
+					<elementGroup>
+						<staticText>
+							<reportElement x="106" y="0" width="447" height="15" uuid="f239ca1e-ecff-44e6-93dc-afa564a27181"/>
+							<textElement verticalAlignment="Middle">
+								<font fontName="Arial" size="9" isUnderline="false"/>
+							</textElement>
+							<text><![CDATA[das alterações físicas (anatômicas e funcionais), sensoriais, intelectuais e mentais:]]></text>
+						</staticText>
+						<staticText>
+							<reportElement mode="Opaque" x="57" y="2" width="45" height="15" uuid="812e057c-3510-473d-ac71-31c1fd91fd25"/>
+							<textElement>
+								<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							</textElement>
+							<text><![CDATA[detalhada]]></text>
+						</staticText>
+						<staticText>
+							<reportElement x="1" y="0" width="55" height="15" uuid="3a773cff-c286-4487-8dc0-41351100d345"/>
+							<textElement>
+								<paragraph firstLineIndent="5"/>
+							</textElement>
+							<text><![CDATA[Descrição]]></text>
+						</staticText>
+					</elementGroup>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="100" width="555" height="55" uuid="2c99e108-8012-4416-baff-e173047c062d"/>
+					<staticText>
+						<reportElement x="0" y="2" width="554" height="15" uuid="b45993fd-56f1-4bef-969c-609aabc273dc"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isUnderline="false"/>
+							<paragraph firstLineIndent="5"/>
+						</textElement>
+						<text><![CDATA[Descrição das limitações funcionais para atividades da vida diária e social e dos apoios necessários:]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="156" width="278" height="105" uuid="6f0d9bd9-eed1-471e-ac26-3bc1daee806c"/>
+					<rectangle>
+						<reportElement x="5" y="6" width="8" height="8" uuid="da2d3acf-a8be-4786-b758-8ef5d320f387"/>
+					</rectangle>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="6" width="112" height="15" uuid="370adf30-07dd-4624-b829-fa7a9498c7db"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[I- Deficiência Física -]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="0" width="268" height="95" uuid="e20f4da4-899c-4d0e-941e-349329243b4e"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="110"/>
+						</textElement>
+						<text><![CDATA[alteração completa ou parcial de um ou mais segmentos do corpo humano, acarretando o comprometimento da função física, apresentando-se sob a forma de paraplegia, paraparesia, monoplegia, monoparesia, tetraplegia, tetraparesia, triplegia, triparesia, hemiplegia, hemiparesia, ostomia, amputação ou ausência de membro, paralisia cerebral, membros com deformidade congênita ou adquirida, nanismo (altura: _______), outras (especificar). ]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" mode="Opaque" x="0" y="261" width="278" height="75" uuid="06ff05fa-bfc0-446f-bccb-16ef94aec13e"/>
+					<rectangle>
+						<reportElement x="5" y="3" width="8" height="8" uuid="a9ecbe9e-3e84-4f9f-9d88-63e21bcc05d1"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="2" width="117" height="15" uuid="5a0b2682-2b28-48f7-bb65-3e36739db59b"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[II- Deficiência Auditiva - ]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="0" width="268" height="35" uuid="305b0690-bad5-48e9-8b86-6dbfc76351de"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="125"/>
+						</textElement>
+						<text><![CDATA[perda bilateral, parcial ou total, de 41 decibéis (dB) ou mais, aferida por audiograma nas frequências de 500HZ, 1.000HZ, 2.000Hz e 3.000Hz]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="34" width="268" height="15" uuid="7a2cd04b-abf4-4f28-95c9-31b2c6799ef2"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[Obs: Anexar audiograma]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="336" width="278" height="171" uuid="2bff49f2-85f3-419d-80e5-54eccfd0e98b"/>
+					<rectangle>
+						<reportElement x="5" y="2" width="8" height="8" uuid="77dd2ee5-30c4-4ccb-a215-566337e5d49f"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="1" width="127" height="15" uuid="29f81fb1-963e-462f-994e-c540426814f1"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[III- Deficiência Visual]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="15" width="268" height="65" uuid="c3fc93cc-a667-4714-b3c8-eceaca4cd96b"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[( ) cegueira - acuidade visual ≤ 0,05 (20/400) no melhor olho, com a melhor correção óptica;
+( ) baixa visão - acuidade visual entre 0,3 (20/60) e 0,05 (20/400) no melhor olho, com a melhor correção óptica;
+( ) somatória da medida do campo visual em ambos os olhos for igual ou menor que 60o.]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="80" width="265" height="29" uuid="1f46e18b-87ed-4c8b-a1c5-2c9ba07eadd1"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[Obs: Anexar laudo oftalmológico, utilizar tabela Snellen para avaliar acuidade visual.
+]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="507" width="555" height="26" uuid="cd623380-dceb-4116-8c51-79cc5304a858"/>
+					<rectangle>
+						<reportElement x="6" y="5" width="8" height="8" uuid="cbd34053-76e5-4306-9dee-801404d6bdb1"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="5" width="131" height="15" uuid="bd06f0a6-fd08-4643-87b3-9cc4dfd228b6"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[V- Deficiência Múltipla - ]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="3" width="546" height="15" uuid="312541d2-ce29-4c02-bf62-6101d9e5320f"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="120"/>
+						</textElement>
+						<text><![CDATA[associação de duas ou mais deficiências. (Assinalar cada uma acima)]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="278" y="156" width="277" height="55" uuid="7b2924a5-23cd-4abe-9911-f5cb8d7c0a2d"/>
+					<rectangle>
+						<reportElement x="6" y="6" width="8" height="8" uuid="af930f3e-fd6b-4819-abc4-9cb3f4b5c806"/>
+					</rectangle>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="4" width="119" height="15" uuid="e8ba7f73-b86b-42ca-993e-d516fc341a8c"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph lineSpacing="Single" firstLineIndent="12"/>
+						</textElement>
+						<text><![CDATA[III a- Visão Monocular -]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="3" width="270" height="48" uuid="bde7e230-44b6-441f-9940-b6d478b6b7b8"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="114"/>
+						</textElement>
+						<text><![CDATA[conforme parecer CONJUR/MTE 444/11: cegueira, na qual a acuidade visual com a melhor correção óptica é igual ou menor que 0,05 (20/400) em um olho (ou cegueira declarada por oftalmologista).]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="278" y="211" width="277" height="195" uuid="317f27ed-a46c-4ae3-b37b-9b0b9eea7f13"/>
+					<rectangle>
+						<reportElement x="6" y="8" width="8" height="8" uuid="b05b2bb4-244d-46a7-b110-394774fe5cc0"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="6" y="5" width="130" height="14" uuid="198b3ce7-ea3a-46f6-9e1e-6b75d1caf032"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="10"/>
+						</textElement>
+						<text><![CDATA[IV- Deficiência Intelectual -]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="5" width="268" height="46" uuid="f6db2314-ef19-4a07-807d-c5b45e3dfec5"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="130"/>
+						</textElement>
+						<text><![CDATA[funcionamento intelectual significativamente inferior à média, com manifestação antes dos 18 anos e limitações associadas a duas ou mais habilidades adaptativas, tais como:]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="57" width="8" height="8" uuid="1c6a3965-e43e-4e8e-9b21-204350a24634"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="51" width="268" height="15" uuid="33945999-146d-4ea4-b01f-4e282f5cbde1"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[a) - Comunicação;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="71" width="8" height="8" uuid="dce4d410-67a1-4686-83d1-24c1d691ad1b"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="65" width="268" height="15" uuid="eec748ee-4be8-4216-be29-d52a58ce8aaf"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[b) - Cuidado pessoal;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="84" width="8" height="8" uuid="2b6d3efe-c235-47d9-9923-b42c0b082c9a"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="79" width="268" height="15" uuid="03b6e168-e922-49bb-bf70-6419e2ce0c39"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[c) - Habilidades sociais;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="99" width="8" height="8" uuid="6c09da4e-27a7-492b-837f-b45cf7acca01"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="93" width="268" height="15" uuid="e93f7ccc-be1f-4bf0-8b27-1b467760fcbb"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[d) - Utilização de recursos da comunidade;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="112" width="8" height="8" uuid="1d820c66-a0be-4a60-a41e-5c496184fd55"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="107" width="268" height="15" uuid="b168d0f3-70ae-4e2e-954f-2144e1e01759"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[e) - Saúde e segurança;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="127" width="8" height="8" uuid="0d873ae7-f2d4-4cb8-bc98-4913f2dca60c"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="121" width="268" height="15" uuid="9f2ea04a-b58b-4977-9391-7e5b739ddc45"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[f) - Habilidades acadêmicas;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="141" width="8" height="8" uuid="e55a957f-8c99-4240-b924-d118976a3c2b"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="135" width="268" height="15" uuid="c95729ed-8116-46bb-bab6-b69e80c38ebc"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[g) - Lazer;]]></text>
+					</staticText>
+					<rectangle>
+						<reportElement x="6" y="155" width="8" height="8" uuid="ed824403-6490-4497-b27d-757883953d70"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="5" y="149" width="268" height="15" uuid="3f3a94b6-6c67-465c-984c-04b6346738ba"/>
+						<textElement textAlignment="Left" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="15"/>
+						</textElement>
+						<text><![CDATA[h) - Trabalho.]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="163" width="268" height="15" uuid="ddaa001d-9758-49e1-972f-c2559933de57"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[Idade de Início: ______]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="177" width="268" height="15" uuid="e157e330-0c86-4238-9a56-6e913d5333f3"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[Obs: Anexar laudo do especialista.]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="278" y="406" width="277" height="75" uuid="8eccfce5-a7d7-456b-b064-33b212cf36ca"/>
+					<rectangle>
+						<reportElement x="6" y="5" width="8" height="8" uuid="9a31c93c-7671-4346-ada3-5108f8e01b59"/>
+					</rectangle>
+					<staticText>
+						<reportElement x="6" y="3" width="130" height="15" uuid="12856038-38d8-4aa7-83d1-d9a8e537b4c0"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="10"/>
+						</textElement>
+						<text><![CDATA[IV a- Deficiência Mental  - ]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="0" width="268" height="73" uuid="81912b4e-983a-4efb-9de7-f0b1db79b299"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9"/>
+							<paragraph lineSpacing="Single" firstLineIndent="130"/>
+						</textElement>
+						<text><![CDATA[Psicossocial – conforme Convenção ONU – Esquizofrenia, outros transtornos psicóticos, outras limitações psicossociais. Informar se há outras doenças associadas e data de inicio de manifestação da doença (assinalar também as limitações para habilidades adaptativas no quadro acima).]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="47" y="56" width="203" height="14" uuid="41c8da99-2b31-4824-bc46-ceb856a29a7f"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							<paragraph lineSpacing="Single" firstLineIndent="35"/>
+						</textElement>
+						<text><![CDATA[Obs: Anexar laudo do especialista.]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="278" y="481" width="277" height="26" uuid="58af6da2-7e71-4992-886c-c3329b7f6a6c"/>
+					<rectangle>
+						<reportElement x="5" y="5" width="8" height="8" uuid="dceacd55-cb12-44f5-9ce3-51587d0e3a76"/>
+					</rectangle>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="4" width="120" height="11" uuid="9ccb9acf-4adc-4085-9c43-0d5ae5faf7b4"/>
+						<textElement verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true"/>
+							<paragraph firstLineIndent="10"/>
+						</textElement>
+						<text><![CDATA[IV b- Deficiência Mental - ]]></text>
+					</staticText>
+					<staticText>
+						<reportElement mode="Transparent" x="5" y="4" width="268" height="11" uuid="de8e7d93-78fb-4a19-80af-13b5bf3b868d"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+							<paragraph lineSpacing="Single" firstLineIndent="120"/>
+						</textElement>
+						<text><![CDATA[Lei 12764/2012 – Espectro Autista]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="13" width="268" height="11" uuid="8f4d8103-3ba3-4751-a162-86e0c0e739a6"/>
+						<textElement textAlignment="Justified" verticalAlignment="Middle">
+							<font fontName="Arial" size="9" isBold="true" isUnderline="true"/>
+							<paragraph lineSpacing="Single"/>
+						</textElement>
+						<text><![CDATA[Obs: Anexar laudo do especialista.]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="533" width="555" height="33" uuid="f8a0991e-0aea-4208-b43a-de79a243f7a5"/>
+					<staticText>
+						<reportElement x="5" y="0" width="56" height="15" uuid="620f5f9f-045b-4158-abe3-b6b15ca50cc7"/>
+						<textElement>
+							<font fontName="Arial" size="9" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Conclusão: ]]></text>
+					</staticText>
+					<staticText>
+						<reportElement x="5" y="0" width="546" height="32" uuid="0558ac3d-109c-49bc-8885-937356f842e9"/>
+						<textElement>
+							<font fontName="Arial" size="9"/>
+							<paragraph firstLineIndent="55"/>
+						</textElement>
+						<text><![CDATA[A pessoa está enquadrada nas definições dos artigos 3º e 4º do Decreto nº 3.298/1999, com alterações do Dec. 5296/2004, Lei 12764/2012, de acordo com dispositivos da Convenção sobre os Direitos das Pessoas com Deficiência promulgada pelo Decreto n°. 6.949/2009 e recomendações da IN 98/SIT/2012.]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="566" width="555" height="39" uuid="8a684590-43eb-4443-a33c-e99e39d990d5"/>
+					<staticText>
+						<reportElement x="5" y="1" width="546" height="20" uuid="39643d70-ca2a-4b40-a154-32eede4827dc"/>
+						<textElement>
+							<font fontName="Arial" size="9"/>
+						</textElement>
+						<text><![CDATA[Assinatura e carimbo do Profissional de nível superior da área da saúde/Especialidade]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="605" width="555" height="25" uuid="f977deb4-c923-44f4-9af0-0db24c5de759"/>
+					<staticText>
+						<reportElement x="5" y="2" width="546" height="22" uuid="3f7f7939-2642-4e49-b396-7c4b19dc27b4"/>
+						<textElement>
+							<font fontName="Arial" size="9"/>
+						</textElement>
+						<text><![CDATA[Estou ciente de que estou sendo enquadrado na cota de pessoas com deficiência/reabilitados da empresa Autorizo a apresentação deste Laudo e exames ao Ministério do Trabalho e Emprego.]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement style="border" x="0" y="630" width="555" height="30" uuid="5931c97f-1f57-4577-94ba-99dc24ee7325"/>
+					<staticText>
+						<reportElement x="0" y="0" width="32" height="12" uuid="24d68fab-f5a4-4d47-9cd0-1fef75eadbed"/>
+						<textElement>
+							<font fontName="Arial" size="9"/>
+							<paragraph firstLineIndent="5"/>
+						</textElement>
+						<text><![CDATA[Data:]]></text>
+					</staticText>
+					<line>
+						<reportElement x="272" y="0" width="1" height="30" uuid="9ba28fd1-d1b2-490c-812a-99c5aa4d10ce"/>
+					</line>
+					<staticText>
+						<reportElement x="277" y="0" width="169" height="12" uuid="bf4cae52-8e22-4daf-8b9e-d211fc97eaa7"/>
+						<textElement>
+							<font fontName="Arial" size="9"/>
+						</textElement>
+						<text><![CDATA[Assinatura do avaliado:]]></text>
+					</staticText>
+				</frame>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

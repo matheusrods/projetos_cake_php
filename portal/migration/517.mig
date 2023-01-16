@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/MensageriaEsocial;index_eventos
+create;buonny/MensageriaEsocial;listagem_eventos
+create;buonny/MensageriaEsocial;integracao_eventos

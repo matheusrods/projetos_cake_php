@@ -1,0 +1,9 @@
+[ACO]
+create;buonny/Consultas;consulta_ppra_pcmso_pendente
+create;buonny/Consultas;listagem_ppra_pcmso_pendente
+create;buonny/Consultas;consulta_ppra_pcmso_pendente_sc
+create;buonny/Consultas;listagem_ppra_pcmso_pendente_sc
+create;buonny/Consultas;status_os_unidade
+create;buonny/Consultas;finalizar_processo_pendente
+create;buonny/Consultas;ausencia_risco_ppra
+create;buonny/Consultas;gera_arquivo_pendencia_ppra_pcmso

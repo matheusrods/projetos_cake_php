@@ -1,0 +1,10 @@
+[ACO]
+create;buonny;QuantitativoPorCid
+create;buonny/QuantitativoPorCid;index
+create;buonny/QuantitativoPorCid;listagem
+create;buonny/QuantitativoPorCid;sub_filtro_cliente_funcionario
+
+create;buonny;QuantitativoPorMedico
+create;buonny/QuantitativoPorMedico;index
+create;buonny/QuantitativoPorMedico;listagem
+create;buonny/QuantitativoPorMedico;sub_filtro_cliente_funcionario

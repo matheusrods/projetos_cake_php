@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/GruposRiscos;index_externo
+create;buonny/GruposRiscos;listagem_externo
+create;buonny/GruposRiscos;editar_externo

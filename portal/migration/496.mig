@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;GdModelos
+create;buonny/GdModelos;index
+create;buonny/GdModelos;listagem
+create;buonny;GestaoDoc
+create;buonny/GestaoDoc;index
+create;buonny/GestaoDoc;listagem

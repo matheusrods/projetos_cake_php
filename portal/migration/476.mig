@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/FichasClinicas;fichas_clinicas_terceiros
+create;buonny/FichasClinicas;lista_fichas_clinicas_terceiros
+create;buonny/FichasClinicas;carrega_combo_unidades
+create;buonny/FichasClinicas;export_lista_ficha_clinica_terceiros

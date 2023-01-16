@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subrelatorio_riscos_agrupados" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.4641000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_pcmso"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="bordered" mode="Opaque">
+		<pen lineWidth="0.0"/>
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_CARGO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[246294]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_SETOR" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[423719]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[10011]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SET NOCOUNT ON
+DECLARE @temp_riscos TABLE (
+    codigo INT,
+    risco_especifico VARCHAR(255) NULL,
+    codigo_grupo_risco INT NULL,
+    grupo_risco VARCHAR(255) NULL,
+    codigo_tipo_medicao INT NULL,
+    linha CHAR(1) NULL
+);
+INSERT INTO @temp_riscos
+SELECT
+    DISTINCT(ri.codigo),
+    RHHealth.publico.Ufn_decode_utf8_string(ri.nome_agente) AS risco_especifico,
+    gr.codigo AS codigo_grupo_risco,
+    RHHealth.publico.Ufn_decode_utf8_string(gr.descricao) AS grupo_risco,
+    grer.codigo_tipo_medicao,
+    CASE WHEN (ri.nivel_acao <> '' AND grer.valor_medido <> '') THEN
+        CASE WHEN CONVERT(money, REPLACE(grer.valor_medido, ',', '.')) > CONVERT(money, REPLACE(ri.nivel_acao, ',', '.')) THEN 'S'
+        ELSE 'N'
+        END
+    ELSE 'S'
+    END as linha
+FROM RHHealth.dbo.grupo_exposicao gre
+INNER JOIN RHHealth.dbo.grupos_exposicao_risco grer  ON (grer.codigo_grupo_exposicao = gre.codigo)
+INNER JOIN RHHealth.dbo.riscos ri ON (ri.codigo = grer.codigo_risco)
+INNER JOIN RHHealth.dbo.grupos_riscos gr  ON (gr.codigo = ri.codigo_grupo)
+INNER JOIN RHHealth.dbo.clientes_setores cs on cs.codigo = gre.codigo_cliente_setor
+WHERE gre.codigo_cargo = $P{CODIGO_CARGO} AND cs.codigo_setor = $P{CODIGO_SETOR} AND cs.codigo_cliente_alocacao = $P{CODIGO_CLIENTE};
+
+DECLARE @riscos_qnt INT = (SELECT COUNT(codigo) FROM @temp_riscos);
+DECLARE @sql_ausencia_risco NVARCHAR(1000) = 'SELECT TOP(1)
+        ri.codigo,
+        RHHealth.publico.Ufn_decode_utf8_string(ri.nome_agente) as risco_especifico,
+        gr.codigo AS codigo_grupo_risco,
+        RHHealth.publico.Ufn_decode_utf8_string(gr.descricao) as grupo_risco,
+        grer.codigo_tipo_medicao,
+        CASE WHEN (ri.nivel_acao <> '''' AND grer.valor_medido <> '''') THEN
+            CASE WHEN CONVERT(money, REPLACE(grer.valor_medido, '','', ''.'')) > CONVERT(money, REPLACE(ri.nivel_acao, '','', ''.'')) THEN ''S''
+            ELSE ''N''
+            END
+        ELSE ''S''
+        END as linha
+    FROM RHHealth.dbo.grupo_exposicao gre
+    INNER JOIN RHHealth.dbo.grupos_exposicao_risco grer  ON (grer.codigo_grupo_exposicao = gre.codigo)
+    INNER JOIN RHHealth.dbo.riscos ri ON (ri.codigo = grer.codigo_risco)
+    INNER JOIN RHHealth.dbo.grupos_riscos gr  ON (gr.codigo = ri.codigo_grupo)
+    WHERE gr.codigo = 13 AND ri.codigo = 4434';
+
+-- REGRA DE RUIDOS
+DECLARE @riscos_ruidos_quantitativo_menor_qnt INT = (SELECT COUNT(codigo) FROM @temp_riscos WHERE codigo IN (8, 9, 3543, 3544, 4772,4774) AND codigo_tipo_medicao = 1 AND linha = 'N');
+IF(@riscos_qnt > 1 AND @riscos_ruidos_quantitativo_menor_qnt != 0)
+    DELETE FROM @temp_riscos WHERE codigo IN(SELECT codigo FROM @temp_riscos WHERE codigo IN(8, 9, 3543, 3544, 4772,4774) AND codigo_tipo_medicao = 1 AND linha = 'N');
+ELSE IF(@riscos_qnt = 1 AND @riscos_qnt = @riscos_ruidos_quantitativo_menor_qnt)
+BEGIN
+    DELETE FROM @temp_riscos;
+    INSERT INTO @temp_riscos
+    EXEC sp_executesql @sql_ausencia_risco;
+END
+-- FIM REGRA DE RUIDOS
+
+-- REGRA GRUPO QUIMICO
+DECLARE @riscos_quimicos_quantitativo_menor_qnt INT = (SELECT COUNT(codigo) FROM @temp_riscos WHERE codigo_grupo_risco = 2 AND codigo_tipo_medicao = 1 AND linha = 'N');
+IF(@riscos_qnt > 1 AND @riscos_quimicos_quantitativo_menor_qnt != 0)
+    DELETE FROM @temp_riscos WHERE codigo IN(SELECT codigo FROM @temp_riscos WHERE codigo_tipo_medicao = 1 AND linha = 'N');
+ELSE IF(@riscos_qnt = 1 AND @riscos_qnt = @riscos_quimicos_quantitativo_menor_qnt)
+BEGIN
+    DELETE FROM @temp_riscos;
+    INSERT INTO @temp_riscos
+    EXEC sp_executesql @sql_ausencia_risco;
+END
+-- FIM REGRA GRUPO QUIMICO
+
+SELECT codigo, risco_especifico, grupo_risco, linha FROM @temp_riscos;]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="risco_especifico" class="java.lang.String"/>
+	<field name="grupo_risco" class="java.lang.String"/>
+	<field name="linha" class="java.lang.String"/>
+	<pageHeader>
+		<band height="17">
+			<frame>
+				<reportElement style="bordered" x="0" y="1" width="552" height="15"/>
+				<staticText>
+					<reportElement x="8" y="0" width="182" height="15"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Risco Ocupacional Específico]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="291" y="0" width="99" height="15"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Grupo]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<frame>
+				<reportElement style="bordered" mode="Opaque" x="0" y="1" width="552" height="20" isRemoveLineWhenBlank="true"/>
+				<textField>
+					<reportElement x="6" y="0" width="271" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{risco_especifico}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="291" y="0" width="259" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{grupo_risco}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

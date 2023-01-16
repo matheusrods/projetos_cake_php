@@ -1,0 +1,5 @@
+[ACO]
+create;buonny;ItensNotasFiscais
+create;buonny/ItensNotasFiscais;por_produto
+create;buonny/ItensNotasFiscais;ranking_faturamento
+create;buonny/ItensNotasFiscais;ranking_faturamento_listagem

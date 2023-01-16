@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Cliente WEB" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b063162c-ceaa-421c-ab0f-cbf53eef5186">
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/Recomendacoes"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.zoom" value="5.054470284992967"/>
+	<property name="ireport.x" value="1802"/>
+	<property name="ireport.y" value="1062"/>
+	<style name="subrelatorio_risco" mode="Opaque" backcolor="#F0F0F0" fill="Solid">
+		<box>
+			<pen lineWidth="1.0"/>
+			<topPen lineWidth="1.0"/>
+			<leftPen lineWidth="1.0"/>
+			<bottomPen lineWidth="1.0"/>
+			<rightPen lineWidth="1.0"/>
+		</box>
+	</style>
+	<subDataset name="dataset1" uuid="59278288-5af5-4dfe-935a-d0dfd13b2960"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.Integer"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\RECOMENDACOES\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE_FUNCIONARIO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[--
+
+            SELECT
+                TOP 1
+                CAST(pedidos_exames.exame_admissional AS varchar) AS exame_admissional,
+                CAST(pedidos_exames.exame_periodico AS varchar) AS exame_periodico,
+                CAST(pedidos_exames.exame_demissional AS varchar) AS exame_demissional,
+                CAST(pedidos_exames.exame_retorno AS varchar) AS exame_retorno,
+                CAST(pedidos_exames.exame_mudanca AS varchar) AS exame_mudanca,
+                CAST(pedidos_exames.qualidade_vida AS varchar) AS qualidade_vida,
+                CAST(pedidos_exames.exame_monitoracao AS varchar) AS exame_monitoracao,
+                SUBSTRING(RHHealth.publico.Ufn_decode_utf8_string(cliente.razao_social),0,50) as empresa_nome,
+                RHHealth.publico.Ufn_decode_utf8_string(fornecedores.razao_social) as prestador,
+                RHHealth.publico.Ufn_decode_utf8_string(cliente.nome_fantasia) as empresa_unidade,
+                RHHealth.publico.ufn_formata_cnpj(CASE WHEN(cliente.codigo_documento_real IS NOT NULL AND cliente.codigo_documento_real <> '' ) THEN cliente.codigo_documento_real ELSE cliente.codigo_documento END) as empresa_cnpj,
+                ISNULL(RHHealth.publico.Ufn_decode_utf8_string(medicos.nome), '') as medico_coordenador,
+                RHHealth.publico.Ufn_decode_utf8_string(funcionarios.nome) as funcionario_nome,
+                convert(NVARCHAR, funcionarios.data_nascimento, 103) AS funcionario_nascimento,
+                funcionarios.cpf as funcionario_cpf,
+                cliente_funcionario.matricula as funcionario_matricula,
+                RHHealth.publico.Ufn_decode_utf8_string(setores.descricao) as funcionario_setor,
+                RHHealth.publico.Ufn_decode_utf8_string(cargos.descricao) as funcionario_cargo,
+                ISNULL(convert(NVARCHAR, cliente_funcionario.admissao, 103), '') as funcionario_admissao,
+                FLOOR(DATEDIFF(DAY, funcionarios.data_nascimento, GETDATE()) / 365.25) AS funcionario_idade
+               
+            FROM
+                RHHealth.dbo.itens_pedidos_exames
+                INNER JOIN RHHealth.dbo.fornecedores ON (fornecedores.codigo = itens_pedidos_exames.codigo_fornecedor)
+                INNER JOIN RHHealth.dbo.pedidos_exames ON (pedidos_exames.codigo = itens_pedidos_exames.codigo_pedidos_exames)
+				INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON (fsc.codigo = pedidos_exames.codigo_func_setor_cargo)
+                INNER JOIN RHHealth.dbo.cliente_funcionario ON (cliente_funcionario.codigo = pedidos_exames.codigo_cliente_funcionario)
+                INNER JOIN RHHealth.dbo.cliente ON (cliente.codigo = fsc.codigo_cliente_alocacao)
+                INNER JOIN RHHealth.dbo.funcionarios ON (funcionarios.codigo = cliente_funcionario.codigo_funcionario)
+                INNER JOIN RHHealth.dbo.setores ON (setores.codigo = fsc.codigo_setor)
+                INNER JOIN RHHealth.dbo.cargos ON (cargos.codigo = fsc.codigo_cargo)
+                LEFT JOIN RHHealth.dbo.medicos ON (medicos.codigo = cliente.codigo_medico_pcmso)
+            WHERE
+                pedidos_exames.codigo = $P{CODIGO_PEDIDO_EXAME}
+        -- FIM]]>
+	</queryString>
+	<field name="exame_admissional" class="java.lang.String"/>
+	<field name="exame_periodico" class="java.lang.String"/>
+	<field name="exame_demissional" class="java.lang.String"/>
+	<field name="exame_retorno" class="java.lang.String"/>
+	<field name="exame_mudanca" class="java.lang.String"/>
+	<field name="qualidade_vida" class="java.lang.String"/>
+	<field name="exame_monitoracao" class="java.lang.String"/>
+	<field name="empresa_nome" class="java.lang.String"/>
+	<field name="prestador" class="java.lang.String"/>
+	<field name="empresa_unidade" class="java.lang.String"/>
+	<field name="empresa_cnpj" class="java.lang.String"/>
+	<field name="medico_coordenador" class="java.lang.String"/>
+	<field name="funcionario_nome" class="java.lang.String"/>
+	<field name="funcionario_nascimento" class="java.lang.String"/>
+	<field name="funcionario_cpf" class="java.lang.String"/>
+	<field name="funcionario_matricula" class="java.lang.String"/>
+	<field name="funcionario_setor" class="java.lang.String"/>
+	<field name="funcionario_cargo" class="java.lang.String"/>
+	<field name="funcionario_admissao" class="java.lang.String"/>
+	<field name="funcionario_idade" class="java.math.BigDecimal"/>
+	<columnHeader>
+		<band height="67">
+			<staticText>
+				<reportElement x="130" y="4" width="305" height="30" forecolor="#009999" uuid="4726d6a6-7360-4215-9fa0-5530eb81b61e"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[RECOMENDAÇÕES DE EXAMES]]></text>
+			</staticText>
+			<image>
+				<reportElement x="5" y="17" width="81" height="29" uuid="25b395ac-d51e-4636-a712-626f9b937337"/>
+				<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="450" y="5" width="100" height="40" uuid="d598adda-ad37-4a18-8f56-cd787810708c">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="145">
+			<rectangle>
+				<reportElement x="0" y="19" width="555" height="116" forecolor="#000000" backcolor="#F0F0F0" uuid="06f29433-63f9-437d-82be-a11893da514f"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="54" width="72" height="15" uuid="b339776e-cc40-4968-91ab-81f221d82dc4"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Funcionário:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="192" y="4" width="203" height="18" uuid="7fc6ef7d-d2e2-4538-9d85-3b83233bfb82"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RECOMENDAÇÕES DE EXAMES:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="39" width="73" height="15" uuid="bc372cab-0472-4383-af27-df37d6e8cb5a"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nome Fantasia:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="1" width="555" height="1" uuid="8886a9be-a0d1-4b25-9d27-d6bda46792e1"/>
+			</line>
+			<staticText>
+				<reportElement x="309" y="39" width="109" height="15" uuid="61baa48e-fb7e-4dfa-b9ed-84ef0f766e8a"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Medico Coordenador:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="309" y="55" width="98" height="15" uuid="a7a633d7-3a5f-4b6b-bfeb-ff515084f694"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data Nascimento:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="68" y="22" width="241" height="15" uuid="49658b41-d72b-4a2f-8cc6-45141967e01c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{empresa_nome}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="23" width="73" height="14" uuid="f4dc7c33-e98d-4881-915d-a29f46753d7a"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Razão Social:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="68" y="55" width="241" height="15" uuid="d82780cb-0568-4c28-a5b4-77423e10c19d"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_nome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="397" y="39" width="155" height="15" uuid="2da19b6a-a06d-4b85-bd6e-b91f587a449c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{medico_coordenador} != null)? $F{medico_coordenador} : '']]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="397" y="55" width="155" height="15" uuid="f13785ad-a0f6-4fa3-8aef-e9d48f361fe8"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_nascimento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="68" y="39" width="241" height="15" uuid="c9cfd9c2-f1d4-4fb8-8cbf-dc9c7efc9466"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{empresa_unidade}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="309" y="23" width="56" height="15" uuid="d816e723-abf7-43ba-895c-6dca9905a6dc"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CNPJ:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="397" y="24" width="155" height="15" uuid="1ef9da67-a0fd-4eef-a427-efff67df4f14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{empresa_cnpj}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="70" width="55" height="15" uuid="116abc1b-687a-4207-8a75-efc961b56b8e"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CPF:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="39" y="70" width="270" height="15" uuid="d7948f8b-1c7c-4b4e-bcf5-d64a87f1905c"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_cpf}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="309" y="70" width="97" height="15" uuid="2ea41931-d0bf-4198-b49f-2569cbbd68d7"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Matricula:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="397" y="70" width="155" height="15" uuid="ce0a1c5c-ff5e-44b1-b8b7-3bcbb4ef83eb"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_matricula}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="85" width="54" height="15" uuid="48a21e9f-0a0d-4be2-99e5-70b2eacf3067"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Setor:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="100" width="53" height="15" uuid="d5664104-e7d9-4fca-82f3-86ea4ad63ce4"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cargo:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="39" y="85" width="513" height="15" uuid="40e98e11-19dc-4569-afda-5e400ed497df"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_setor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="39" y="100" width="513" height="15" uuid="1b798f1d-e6da-469e-8312-fde7b464d840"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_cargo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="6" y="115" width="56" height="15" uuid="b826221f-3ee9-4525-9548-0dcbbf0e4da3"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Idade:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="309" y="115" width="96" height="15" uuid="f3db21dd-ea05-4bcd-95d9-be4d8b116f0f"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data Admissão:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="36" y="115" width="98" height="15" uuid="036037a0-3bd7-4d81-8590-bf17eb952bd0"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_idade}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="380" y="115" width="155" height="15" uuid="e0357924-cd59-4b17-8121-8f5c3b18595d"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_admissao}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="62">
+			<staticText>
+				<reportElement x="156" y="12" width="279" height="15" uuid="ead7b642-30ff-418f-9229-1b063bb44043"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TIPO DE EXAME OCUPACIONAL:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="30" width="555" height="26" forecolor="#000000" backcolor="#F0F0F0" uuid="2c70c36f-a979-4403-8926-534b590c40f1"/>
+			</rectangle>
+			<textField>
+				<reportElement x="11" y="36" width="6" height="20" uuid="cced8d12-6295-40ab-bc37-046459cc5599"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exame_admissional} != null && $F{exame_admissional} == '1' ? 'X': '']]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="6" y="35" width="28" height="20" uuid="bc1567f3-f39d-4d11-975a-ba9e24af0613"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[[    ]]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="23" y="36" width="57" height="20" uuid="b1c5513d-eafd-48ce-a258-7788f80e6354"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Admissional]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="76" y="35" width="28" height="20" uuid="b0b5ce5d-8373-4695-9d7e-93cacd046a33"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[[    ]]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="93" y="36" width="57" height="20" uuid="f484142d-5d72-4577-8339-466c34d630b6"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Periódico]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="134" y="35" width="28" height="20" uuid="b6e45d15-8a7f-4cec-a8ca-867ec371aa1d"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[[    ]]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="151" y="36" width="57" height="20" uuid="1cba2931-2c41-4e6d-87fc-627bba4ba719"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Demissional]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="36" width="57" height="20" uuid="fdcbaa9c-b728-45dc-8507-89f7b3fff65e"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Retorno]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="203" y="35" width="28" height="20" uuid="66fae02c-8a02-46e5-a671-916b494f86f5"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[[    ]]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="255" y="35" width="28" height="20" uuid="e3bf7a32-f2b1-42cd-8fce-0760e602dbb8"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[[    ]]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="272" y="36" width="74" height="20" uuid="0b05707e-cbfc-4c2d-b864-5fe1c1130e58"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Mudança Função]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="345" y="35" width="28" height="20" uuid="b574b0d3-73fe-4681-946f-0bf17a393f17"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[[    ]]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="362" y="36" width="70" height="20" uuid="6f798c51-4907-496f-bde7-66ce97b8525f"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Qualidade Vida]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="81" y="36" width="8" height="20" uuid="b804c7cd-c09a-4534-b702-0a39f42ba7c6"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exame_periodico} != null && $F{exame_periodico} == '1' ? 'X': '']]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="139" y="36" width="8" height="20" uuid="9d2b368e-4f09-4ef8-a910-9a3c5ce9202e"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exame_demissional} != null && $F{exame_demissional} == '1' ? 'X': '']]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="260" y="36" width="8" height="20" uuid="253c0c3a-e58f-4bbd-8ce1-833cab9fe4fe"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exame_mudanca} != null && $F{exame_mudanca} == '1' ? 'X': '']]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="208" y="36" width="8" height="20" uuid="ca871c9c-67fa-4df1-9a05-fefbb37ac89b"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exame_retorno} != null && $F{exame_retorno} == '1' ? 'X': '']]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="350" y="36" width="8" height="20" uuid="e4742008-da59-4de2-9324-6a1323801c04"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qualidade_vida} != null && $F{qualidade_vida} == '1' ? 'X': '']]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="429" y="35" width="28" height="20" uuid="0857d9cd-38ae-4ebb-b02e-3cdd088769bb"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[[    ]]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="446" y="36" width="100" height="20" uuid="a7fdb707-5b09-49c7-a625-214e64c4f15d"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Monitoração Pontual]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="434" y="36" width="8" height="20" uuid="9657596d-98ee-4126-888f-41c959af4d96"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exame_monitoracao} != null && $F{exame_monitoracao} == '1' ? 'X': '']]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="108">
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="79a527fb-7c1c-422f-8356-1ff9cd06d5af"/>
+			</line>
+			<subreport>
+				<reportElement x="0" y="1" width="555" height="106" uuid="bbbe38d8-9d15-466c-a727-22f317faa8c7"/>
+				<subreportParameter name="CODIGO_PEDIDO">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:subrelatorio_recomendacoes_exames.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

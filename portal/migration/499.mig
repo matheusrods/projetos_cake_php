@@ -1,0 +1,17 @@
+[ACO]
+create;buonny;Swt
+create;buonny/Swt;index_qtd_participantes
+create;buonny/Swt;listagem_qtd_participantes
+create;buonny/Swt;incluir_qtd_participantes
+create;buonny/Swt;index_metas
+create;buonny/Swt;listagem_metas
+create;buonny/Swt;incluir_metas
+create;buonny/Swt;index_form
+create;buonny/Swt;listagem_form
+create;buonny/Swt;incluir_form
+create;buonny/Swt;index_form_titulo
+create;buonny/Swt;listagem_form_titulo
+create;buonny/Swt;incluir_form_titulo
+create;buonny/Swt;index_form_questao
+create;buonny/Swt;listagem_form_questao
+create;buonny/Swt;incluir_form_questao

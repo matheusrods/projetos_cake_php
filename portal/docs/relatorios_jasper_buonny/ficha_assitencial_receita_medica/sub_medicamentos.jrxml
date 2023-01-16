@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 4.5.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subrelatorio_detalhes.jrxml" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ficha_assitencial_receita_medica"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository/"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/ficha_assitencial_receita_medica_files/sub_medicamentos.jrxml"/>
+	<parameter name="CODIGO_FICHA_ASSISTENCIAL" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+	dbBuonny.publico.ufn_decode_utf8_string(faf.farmaco) as farmaco,
+	faf.duracao,
+	dbBuonny.publico.ufn_decode_utf8_string(faf.posologia) as posologia,
+	faf.dose_diaria,
+	fatu.descricao as tipo
+FROM RHHealth.dbo.fichas_assistenciais_farmacos faf
+	INNER JOIN RHHealth.dbo.fichas_assistenciais_tipo_uso fatu ON faf.tipo_uso = fatu.codigo
+WHERE faf.codigo_ficha_assistencial_questao = '177'
+	AND faf.codigo_ficha_assistencial = $P{CODIGO_FICHA_ASSISTENCIAL}]]>
+	</queryString>
+	<field name="farmaco" class="java.lang.String"/>
+	<field name="duracao" class="java.lang.String"/>
+	<field name="posologia" class="java.lang.String"/>
+	<field name="dose_diaria" class="java.lang.String"/>
+	<field name="tipo" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="93" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="3" width="550" height="80"/>
+			</rectangle>
+			<frame>
+				<reportElement x="0" y="3" width="550" height="80"/>
+				<staticText>
+					<reportElement x="11" y="10" width="100" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[FÁRMACO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="463" y="30" width="87" height="20"/>
+					<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="11" y="30" width="100" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[DURAÇÃO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="463" y="10" width="87" height="20"/>
+					<textFieldExpression><![CDATA[$F{dose_diaria}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="11" y="50" width="100" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[POSOLOGIA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="111" y="50" width="439" height="20"/>
+					<textFieldExpression><![CDATA[$F{posologia}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="363" y="10" width="100" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOSE DIÁRIA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="111" y="30" width="252" height="20"/>
+					<textFieldExpression><![CDATA[$F{duracao}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="363" y="30" width="100" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[TIPO DE USO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="111" y="10" width="252" height="20"/>
+					<textFieldExpression><![CDATA[$F{farmaco}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

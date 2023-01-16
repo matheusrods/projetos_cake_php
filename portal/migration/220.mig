@@ -1,0 +1,4 @@
+[ACO]
+create;buonny;ConsultasAgendas
+create;buonny/ConsultasAgendas;index
+create;buonny/ConsultasAgendas;listagem

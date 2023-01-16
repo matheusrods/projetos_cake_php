@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/Fornecedores;relatorio_fat_cred
+create;buonny/Fornecedores;relatorio_fat_cred_listagem
+create;buonny/Fornecedores;export_fat_cred

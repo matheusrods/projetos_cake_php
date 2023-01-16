@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Cotacoes
+create;buonny/Cotacoes;incluir
+create;buonny/Cotacoes;excluir
+create;buonny/Cotacoes;index
+create;buonny/Cotacoes;listagem
+create;buonny/Servicos;carrega_medicamentos_por_ajax

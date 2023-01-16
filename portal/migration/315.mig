@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;CidCnae
+create;buonny/CidCnae;index
+create;buonny/CidCnae;listagem
+create;buonny/CidCnae;incluir
+create;buonny/CidCnae;editar
+create;buonny/CidCnae;atualiza_status
+create;buonny/Cid;busca_cid
+create;buonny/Cid;listagem_visualizar

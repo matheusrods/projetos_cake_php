@@ -1,0 +1,7 @@
+[ACO]
+create;buonny/Cat;lista_cat
+create;buonny/Cat;imprimir_relatorio
+create;buonny/Cat;carrega_combos_grupo_economico
+create;buonny/Cat;modal_retificacao_cat
+create;buonny/Cat;salvar_retificacao
+create;buonny/Cat;cat_log

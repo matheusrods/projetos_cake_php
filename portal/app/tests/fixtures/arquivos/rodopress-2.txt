@@ -1,0 +1,62 @@
+
+                                                                                                               Data: 6/11/2013  07:30
+                                                                  Romaneio
+                                                                                                               Nro:   43957
+
+
+ Placa do veícu ABC 3333                                                     Ajudantes:   Thiago Vitor da Silva
+ Nome do        Paulinho Ferreira de Matos                                   CPF do motor 26938746885
+ motorista:
+
+ Km de saída:   274.149      Km de chegad                                    Hr de saída: 07:30     Hr de chegad
+
+
+ Doc Nota F Remetente   Destinatári Endereço de entrega                            Cidade Des UFBairro de entrega Vol Peso  Frete  Valor NF
+ 593 453264 SCHNEIDER C MON-TER ( I Avenida Osvaldo Berto, 220                     Itatiba    SPDistrito Industri  4 36,24  25,16  1.459,38
+     /45338
+     1/4533
+     96
+
+ 592 452320 SCHNEIDER C MON-TER ( I Avenida Osvaldo Berto, 220                     Itatiba    SPDistrito Industri  6 40,36  25,16  2.156,35
+     /45305
+     3/4531
+     00/453
+     263/45
+     3340
+
+ 593 453314 SCHNEIDER C LOOP AUTOMA Via Luiz Varga, 2010                           Limeira    SPGleba Beatriz      1  0,65  25,16  1.414,41
+
+ 591 452979 SCHNEIDER C TECNOSERV I Rua Rolando Natali, 114                        Limeira    SPJardim Santa Fe    1  8,13  25,16   534,11
+
+ 590 452558 SCHNEIDER C TECNOSERV I Rua Rolando Natali, 114                        Limeira    SPJardim Santa Fe    1  4,00  25,16  1.098,53
+
+ 592 452458 SCHNEIDER C INDUSTRIA D Rodovia Anhanguera - Km 141, s/nº              Limeira    SPPereiras           3 16,47  45,36  4.847,22
+     /45327
+     0
+
+ 591 452750 SCHNEIDER C INDUSTRIA D Rodovia Anhanguera - Km 141, s/nº              Limeira    SPPereiras           1  0,41  25,16   191,73
+
+ 592 453168 SCHNEIDER C INDUSTRIAS  Rua Laranjal, 180                              Limeira    SPVila Fascina       1  1,47  25,16   746,98
+
+ 590 452517 SCHNEIDER C INDUSTRIAS  Rua Laranjal, 180                              Limeira    SPVila Fascina       2 18,42  25,16  2.240,09
+
+ 592 453009 SCHNEIDER C DIMENSIONAL Via Antonio Cruanes Filho, 4530                Limeira    SPJardim Colinas de  3  2,85  25,16  1.970,01
+     /45310
+     2/4531
+     76
+
+ 590 452572 SCHNEIDER C DIMENSIONAL Via Antonio Cruanes Filho, 4530                Limeira    SPJardim Colinas de  5 21,05 210,03  2.960,66
+     /45273
+     5
+
+ 591 452885 SCHNEIDER C DIMENSIONAL Via Antonio Cruanes Filho, 4530                Limeira    SPJardim Colinas de  1  0,95  31,72  3.346,03
+
+ 591 452959 SCHNEIDER C COMERCIAL M Rua Carmem Zanco Zamariam, 20                  Mogi-Guacu SPJardim Guacu-Miri  1  1,35  25,16   509,70
+
+ 589 451867 SCHNEIDER C SITI S/A -  Avenida Suecia, 564                            Mogi-Guacu SPJARDIM SANTA TERE  4 10,40  52,38  5.618,85
+
+ Total de      CTRC:  14    Coleta:  0                                                                            34 62,75 591,09  9.094,05
+ embarques:
+
+
+ Assinatura Motorista __________________

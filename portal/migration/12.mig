@@ -1,0 +1,14 @@
+[ACO]
+create;buonny;Exportadores
+create;buonny/Exportadores;index
+create;buonny/Sistemas;tarefas_desenvolvimento
+create;buonny/Sistemas;manutencao
+create;buonny/Sistemas;upload_planilha_ramais 
+create;buonny;ViagensLocais
+create;buonny/ViagensLocais;reprocessamento
+create;buonny;ClientesIps
+create;buonny/ClientesIps;index
+create;buonny;WsConfiguracoes
+create;buonny/WsConfiguracoes;index
+create;buonny;StatusTecnologias
+create;buonny/StatusTecnologias;conta_tecnologias

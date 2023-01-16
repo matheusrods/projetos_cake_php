@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;Audiometrias
+create;buonny/Audiometrias;index
+create;buonny/Audiometrias;listagem
+create;buonny/Audiometrias;selecionar_funcionario
+create;buonny/Audiometrias;listagem_funcionarios
+create;buonny/Audiometrias;incluir
+create;buonny/Audiometrias;editar
+create;buonny/Audiometrias;excluir

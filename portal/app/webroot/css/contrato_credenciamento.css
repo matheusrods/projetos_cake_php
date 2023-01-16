@@ -1,0 +1,19 @@
+footer {
+    font-family: Georgia;
+    font-size: 13px;
+    color: #f00;
+    text-align: center;
+}
+@page {
+    size: A4;
+}
+@media print {
+    footer {
+        position: fixed;
+        bottom: 0;
+    }
+}
+html, body {
+    width: 210mm;
+    height: 350mm;
+}

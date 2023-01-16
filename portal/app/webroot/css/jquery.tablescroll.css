@@ -1,0 +1,33 @@
+.tablescroll
+{ font: 12px normal Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif; background-color:#fff; }
+
+.tablescroll_wrapper,
+.tablescroll_head,
+.tablescroll_foot
+{ border:1px solid #ccc; }
+
+.tablescroll td
+{ padding:3px 5px; }
+
+.tablescroll_wrapper
+{ border-left:0; }
+
+.tablescroll_head
+{ font-size:13px; font-weight:bold; background-color:#eee; border-left:0; border-top:0; margin-bottom:3px; }
+.tablescroll_head th
+{ padding: 8px; text-align: left; }
+
+.tablescroll thead td
+{ border-right:0; border-bottom:0; }
+
+.tablescroll tbody td
+{ border-right:0; border-bottom:0; padding: 8px; }
+
+.tablescroll tbody tr.first td
+{ border-top:0; }
+
+.tablescroll_foot
+{ font-weight:bold; background-color:#eee; border-left:0; border-top:0; margin-top:3px; }
+
+.tablescroll tfoot td
+{ border-right:0; border-bottom:0; }

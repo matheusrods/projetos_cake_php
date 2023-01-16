@@ -1,0 +1,1 @@
+<? echo $this->element('pgpg_pgs/lista_clientes') ?>

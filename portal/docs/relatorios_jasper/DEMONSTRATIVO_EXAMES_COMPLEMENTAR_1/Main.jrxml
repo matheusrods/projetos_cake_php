@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Demonstrativo de Serviços" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="087ab6c9-184d-4c30-8366-13ff46ab966b">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/demostrativo_exame_complementar_1"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="DATA_FIM" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_INICIAL" class="java.lang.String"/>
+	<parameter name="CODIGO_CLIENTE_PAGADOR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\DEMONSTRATIVO_EXAMES_COMPLEMENTAR_1\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+  	cli.nome_fantasia AS nome_pagador,
+	CONVERT(varchar(10),CONVERT(date,$P{DATA_INICIAL},106),103) as data_inicial,
+	CONVERT(varchar(10),CONVERT(date,$P{DATA_FIM},106),103) as data_fim,
+	SUM(det.valor) as valor_assinatura,
+	ISNULL(cpd.valor,'0') as valor_desconto,
+	ISNULL((SUM(det.valor) - cpd.valor),SUM(det.valor)) as valor_liquido
+FROM RHHealth.dbo.[detalhes_itens_pedidos_manuais] AS det
+INNER JOIN RHHealth.dbo.[itens_pedidos] AS [ItemPedido]  ON ([ItemPedido].[codigo] = det.[codigo_item_pedido])
+INNER JOIN RHHealth.dbo.[pedidos] AS [Pedido]  ON ([Pedido].[codigo] = [ItemPedido].[codigo_pedido]
+  AND [Pedido].[mes_referencia] = MONTH($P{DATA_INICIAL})
+  AND [Pedido].[ano_referencia] = YEAR($P{DATA_INICIAL})
+  AND [Pedido].[codigo_cliente_pagador] = $P{CODIGO_CLIENTE_PAGADOR})
+INNER JOIN RHHealth.dbo.[produto] AS [Produto]  ON ([Produto].[codigo] = [ItemPedido].[codigo_produto]
+  AND [Produto].[codigo] = 59)
+INNER JOIN RHHealth.dbo.[servico] AS [Servico]  ON ([Servico].[codigo] = det.[codigo_servico])
+INNER JOIN RHHealth.dbo.[cliente] AS cli  ON (cli.[codigo] = det.codigo_cliente_utilizador)
+inner join RHHealth.dbo.pedidos_exames AS pe on pe.codigo_cliente = det.codigo_cliente_utilizador
+inner join RHHealth.dbo.itens_pedidos_exames ipe on  pe.codigo = ipe.codigo_pedidos_exames
+inner join RHHealth.dbo.itens_pedidos_exames_baixa ipeb on ipe.codigo = ipeb.codigo_itens_pedidos_exames
+INNER JOIN RHHealth.dbo.fornecedores forn on forn.codigo = ipe.codigo_fornecedor
+inner join RHHealth.dbo.exames e on ipe.codigo_exame = e.codigo and e.codigo_servico = det.codigo_servico
+inner join RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo = pe.codigo_func_setor_cargo
+inner join RHHealth.dbo.cliente_funcionario cf on cf.codigo = pe.codigo_cliente_funcionario
+inner join RHHealth.dbo.funcionarios fun on fun.codigo = cf.codigo_funcionario
+LEFT JOIN RHHealth.dbo.cliente_produto_desconto cpd on cpd.codigo_cliente = cli.codigo
+	AND cpd.codigo_produto = 59
+	AND cpd.mes_ano BETWEEN $P{DATA_INICIAL} and $P{DATA_FIM}
+WHERE ipeb.data_inclusao BETWEEN $P{DATA_INICIAL} and $P{DATA_FIM}
+	AND ipeb.fornecedor_particular=0
+	AND ipeb.pedido_importado <> 1
+group by cli.nome_fantasia, cpd.valor;]]>
+	</queryString>
+	<field name="nome_pagador" class="java.lang.String"/>
+	<field name="data_inicial" class="java.lang.String"/>
+	<field name="data_fim" class="java.lang.String"/>
+	<field name="valor_assinatura" class="java.math.BigDecimal"/>
+	<field name="valor_desconto" class="java.lang.Double"/>
+	<field name="valor_liquido" class="java.lang.Double"/>
+	<variable name="total_a_pagar_liquido" class="java.lang.Double" resetType="Group" resetGroup="grp_cliente_pagador" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_liquido}]]></variableExpression>
+	</variable>
+	<variable name="total_servicos" class="java.lang.Double" resetType="Group" resetGroup="grp_cliente_pagador" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_assinatura}]]></variableExpression>
+	</variable>
+	<group name="grp_cliente_pagador">
+		<groupExpression><![CDATA[$P{CODIGO_CLIENTE_PAGADOR}]]></groupExpression>
+		<groupHeader>
+			<band height="54">
+				<textField pattern="dd/MM/yyyy">
+					<reportElement isPrintRepeatedValues="false" x="0" y="2" width="555" height="14" uuid="13462801-5eaf-49e7-8b54-623d17590aa5"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Periodo de " + $F{data_inicial} +" até " + $F{data_fim}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement mode="Transparent" x="79" y="16" width="476" height="14" uuid="a1a5b901-7c9c-4626-95a1-107ccbc9665c"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{CODIGO_CLIENTE_PAGADOR} + " - " + $F{nome_pagador}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Transparent" x="0" y="16" width="79" height="14" forecolor="#646464" uuid="92a71dce-b736-4af0-aff0-372585c9ff16"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Cliente Pagador:]]></text>
+				</staticText>
+				<line>
+					<reportElement mode="Opaque" x="0" y="51" width="555" height="1" forecolor="#646464" uuid="dcda3798-b801-4f01-9eb4-0163e216df46"/>
+				</line>
+				<staticText>
+					<reportElement mode="Transparent" x="0" y="36" width="79" height="14" forecolor="#646464" uuid="2acfc43b-ab49-40f7-b761-d6733e7392e8"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Produto:]]></text>
+				</staticText>
+				<line>
+					<reportElement mode="Opaque" x="0" y="31" width="555" height="1" forecolor="#646464" uuid="0460b120-474f-41c2-932c-8df9ad7186dc"/>
+				</line>
+				<staticText>
+					<reportElement mode="Transparent" x="79" y="36" width="219" height="14" forecolor="#000000" uuid="83f4a529-1286-4eaf-924a-93b3fa346db4"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" isItalic="false"/>
+					</textElement>
+					<text><![CDATA[Exames Complementares]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="87">
+				<staticText>
+					<reportElement x="354" y="5" width="118" height="20" uuid="2ca96106-a986-4084-93e7-edf3a757d61c"/>
+					<textElement>
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total Serviços:]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="446" y="5" width="109" height="20" uuid="5ec989df-c534-422d-9ee2-0da04f978474"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{total_servicos}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement mode="Opaque" x="0" y="69" width="555" height="1" forecolor="#646464" uuid="d23447a9-bcf4-4ee1-8be6-05f02cca08bb"/>
+				</line>
+				<staticText>
+					<reportElement x="354" y="25" width="118" height="20" uuid="487f594b-c26e-40f1-8294-5a9e307986fb"/>
+					<textElement>
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Desconto:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="354" y="45" width="118" height="20" uuid="ee4e5124-c498-428e-887a-f8035b636e75"/>
+					<textElement>
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total A Pagar:]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="446" y="25" width="109" height="20" uuid="26316b9c-b00c-4300-b8c5-a9ac9d40694e"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{valor_desconto}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="446" y="45" width="109" height="20" uuid="49e1d279-3050-4806-b514-bef0bf10ae42"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{total_a_pagar_liquido}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="37" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="0" width="555" height="21" uuid="14d6cf0a-8cb0-47fb-a862-dbfa31b23609"/>
+				<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="18" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Demonstrativo de Serviços]]></text>
+			</staticText>
+			<line>
+				<reportElement mode="Opaque" x="0" y="31" width="555" height="1" uuid="172ea509-4b20-4575-b0e3-375193fc9752"/>
+			</line>
+			<textField>
+				<reportElement mode="Transparent" x="455" y="21" width="100" height="10" forecolor="#646464" uuid="2f5893ab-42e0-473d-b49d-460159e0813e"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isItalic="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="2" y="0" width="79" height="32" uuid="3fe7ca00-b044-42ff-82d5-096af481488e"/>
+				<imageExpression><![CDATA["repo:file_1506606255695.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="59">
+			<subreport isUsingCache="false">
+				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="59" printWhenGroupChanges="grp_cliente_pagador" uuid="59ba8fd7-1c27-44da-80b3-2cfba614bb6e">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()==1)]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="DATA_FIM">
+					<subreportParameterExpression><![CDATA[$P{DATA_FIM}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATA_INICIAL">
+					<subreportParameterExpression><![CDATA[$P{DATA_INICIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE_PAGADOR">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE_PAGADOR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:unidade_funcionario_exame.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="42" splitType="Stretch">
+			<textField>
+				<reportElement mode="Transparent" x="455" y="2" width="100" height="10" uuid="63e024c9-e443-4f87-bf48-b512cc68a9be"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}.toString()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement mode="Opaque" x="0" y="1" width="555" height="1" uuid="721451bb-be65-49b7-8a9c-a3944cf7bb08"/>
+			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="2" width="229" height="10" uuid="e23da0ce-0625-4f49-915e-36e55186de38"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[RH HEALTH]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

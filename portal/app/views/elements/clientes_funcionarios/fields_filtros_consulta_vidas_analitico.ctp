@@ -1,0 +1,1 @@
+<?php echo $this->Buonny->input_grupo_economico($this, 'ClienteFuncionarioAnalitico', $unidades, $setores, $cargos, 1); ?>

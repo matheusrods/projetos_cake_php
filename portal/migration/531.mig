@@ -1,0 +1,13 @@
+[ACO]
+create;buonny;AuditoriaProcesso
+create;buonny/AuditoriaProcesso;index 
+create;buonny/AuditoriaProcesso;listagem
+create;buonny/AuditoriaProcesso;incluir
+create;buonny/AuditoriaProcesso;editar
+create;buonny/AuditoriaProcesso;troca_status
+create;buonny;AreaProcesso
+create;buonny/AreaProcesso;index 
+create;buonny/AreaProcesso;listagem
+create;buonny/AreaProcesso;incluir
+create;buonny/AreaProcesso;editar
+create;buonny/AreaProcesso;troca_status

@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/ItensPedidos;incluir_pedido_v2
+create;buonny/ItensPedidos;listar_v2
+create;buonny/ItensPedidos;editar_v2

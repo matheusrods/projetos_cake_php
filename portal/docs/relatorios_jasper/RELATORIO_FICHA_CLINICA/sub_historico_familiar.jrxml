@@ -1,0 +1,853 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_historico_familiar" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="4415c551-0188-49b4-8a90-836174fbf553">
+	<property name="ireport.zoom" value="1.9487171000000025"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ficha_clinica"/>
+	<property name="ireport.jasperserver.url" value="http://gol.local.buonny:8090/jasperserver/services/repository"/>
+	<style name="style1">
+		<box>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="style2">
+		<box>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FICHA_CLINICA" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["C:\\Users\\fabio.potame\\Documents\\ficha_clinica\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[DECLARE @MaxCount INT;
+DECLARE @Cod INT;
+SELECT @MaxCount = max(cnt)
+FROM (
+    SELECT
+        count(codigo) AS cnt
+    FROM RHHealth.dbo.fichas_clinicas_questoes fcq
+    ) X;
+DECLARE @SQL NVARCHAR(max)
+    ,@i INT;
+SET @i = 0;
+WHILE @i < @MaxCount
+BEGIN
+    SET @i = @i + 1;
+    SELECT @Cod = codigo from (
+    SELECT codigo, CAST(row_number() OVER (ORDER BY codigo) AS Varchar(10)) AS RowNo FROM RHHealth.dbo.fichas_clinicas_questoes
+    ) pv WHERE RowNo = @i
+    SET @SQL = COALESCE(@Sql + ', ', '') + 'questao_' + CONVERT(VARCHAR(10), @Cod);
+END
+;SET @SQL = N';WITH CTE AS (
+        SELECT
+             CONCAT(
+			IIF(fichas_clinicas_respostas.resposta  = ''0'', '' '', fichas_clinicas_respostas.resposta) COLLATE SQL_Latin1_General_CP1_CI_AS,
+			''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+			ISNULL(CASE fichas_clinicas_respostas.parentesco
+				WHEN '''' THEN '' ''
+				ELSE RHHealth.publico.ufn_decode_utf8_string(fichas_clinicas_respostas.parentesco)
+				END, '' '') COLLATE SQL_Latin1_General_CP1_CI_AS,
+			''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+			RHHealth.publico.ufn_decode_utf8_string(fichas_clinicas_respostas.campo_livre) COLLATE SQL_Latin1_General_CP1_CI_AS
+		) AS resposta,
+        ''questao_'' +  CONVERT(VARCHAR(10), fichas_clinicas_questoes.codigo) COLLATE SQL_Latin1_General_CP1_CI_AS AS RowNo
+        FROM RHHealth.dbo.fichas_clinicas_questoes
+            LEFT JOIN RHHealth.dbo.fichas_clinicas_respostas
+                ON(fichas_clinicas_respostas.codigo_ficha_clinica_questao = fichas_clinicas_questoes.codigo)
+        WHERE fichas_clinicas_questoes.codigo_ficha_clinica_grupo_questao = 2 AND fichas_clinicas_respostas.codigo_ficha_clinica = ' + $P{CODIGO_FICHA_CLINICA} + ' )
+SELECT *
+FROM   CTE
+PIVOT (MAX(resposta) FOR RowNo IN (' + @SQL + N')) pvt';
+EXECUTE (@SQL)]]>
+	</queryString>
+	<field name="questao_7" class="java.lang.String"/>
+	<field name="questao_8" class="java.lang.String"/>
+	<field name="questao_9" class="java.lang.String"/>
+	<field name="questao_10" class="java.lang.String"/>
+	<field name="questao_11" class="java.lang.String"/>
+	<field name="questao_12" class="java.lang.String"/>
+	<field name="questao_13" class="java.lang.String"/>
+	<field name="questao_15" class="java.lang.String"/>
+	<field name="questao_16" class="java.lang.String"/>
+	<field name="questao_17" class="java.lang.String"/>
+	<field name="questao_18" class="java.lang.String"/>
+	<field name="questao_19" class="java.lang.String"/>
+	<field name="questao_20" class="java.lang.String"/>
+	<field name="questao_21" class="java.lang.String"/>
+	<field name="questao_22" class="java.lang.String"/>
+	<field name="questao_23" class="java.lang.String"/>
+	<field name="questao_24" class="java.lang.String"/>
+	<field name="questao_25" class="java.lang.String"/>
+	<field name="questao_26" class="java.lang.String"/>
+	<field name="questao_31" class="java.lang.String"/>
+	<field name="questao_35" class="java.lang.String"/>
+	<field name="questao_36" class="java.lang.String"/>
+	<field name="questao_37" class="java.lang.String"/>
+	<field name="questao_38" class="java.lang.String"/>
+	<field name="questao_39" class="java.lang.String"/>
+	<field name="questao_40" class="java.lang.String"/>
+	<field name="questao_41" class="java.lang.String"/>
+	<field name="questao_42" class="java.lang.String"/>
+	<field name="questao_43" class="java.lang.String"/>
+	<field name="questao_44" class="java.lang.String"/>
+	<field name="questao_49" class="java.lang.String"/>
+	<field name="questao_50" class="java.lang.String"/>
+	<field name="questao_53" class="java.lang.String"/>
+	<field name="questao_54" class="java.lang.String"/>
+	<field name="questao_55" class="java.lang.String"/>
+	<field name="questao_56" class="java.lang.String"/>
+	<field name="questao_61" class="java.lang.String"/>
+	<field name="questao_62" class="java.lang.String"/>
+	<field name="questao_63" class="java.lang.String"/>
+	<field name="questao_64" class="java.lang.String"/>
+	<field name="questao_65" class="java.lang.String"/>
+	<field name="questao_70" class="java.lang.String"/>
+	<field name="questao_71" class="java.lang.String"/>
+	<field name="questao_72" class="java.lang.String"/>
+	<field name="questao_73" class="java.lang.String"/>
+	<field name="questao_74" class="java.lang.String"/>
+	<field name="questao_75" class="java.lang.String"/>
+	<field name="questao_76" class="java.lang.String"/>
+	<field name="questao_81" class="java.lang.String"/>
+	<field name="questao_82" class="java.lang.String"/>
+	<field name="questao_83" class="java.lang.String"/>
+	<field name="questao_84" class="java.lang.String"/>
+	<field name="questao_109" class="java.lang.String"/>
+	<field name="questao_110" class="java.lang.String"/>
+	<field name="questao_111" class="java.lang.String"/>
+	<field name="questao_112" class="java.lang.String"/>
+	<field name="questao_117" class="java.lang.String"/>
+	<field name="questao_118" class="java.lang.String"/>
+	<field name="questao_119" class="java.lang.String"/>
+	<field name="questao_120" class="java.lang.String"/>
+	<field name="questao_122" class="java.lang.String"/>
+	<field name="questao_123" class="java.lang.String"/>
+	<field name="questao_124" class="java.lang.String"/>
+	<field name="questao_126" class="java.lang.String"/>
+	<field name="questao_127" class="java.lang.String"/>
+	<field name="questao_128" class="java.lang.String"/>
+	<field name="questao_129" class="java.lang.String"/>
+	<field name="questao_130" class="java.lang.String"/>
+	<field name="questao_131" class="java.lang.String"/>
+	<field name="questao_132" class="java.lang.String"/>
+	<field name="questao_137" class="java.lang.String"/>
+	<field name="questao_138" class="java.lang.String"/>
+	<field name="questao_139" class="java.lang.String"/>
+	<field name="questao_140" class="java.lang.String"/>
+	<field name="questao_141" class="java.lang.String"/>
+	<field name="questao_143" class="java.lang.String"/>
+	<field name="questao_148" class="java.lang.String"/>
+	<field name="questao_150" class="java.lang.String"/>
+	<field name="questao_152" class="java.lang.String"/>
+	<field name="questao_153" class="java.lang.String"/>
+	<field name="questao_154" class="java.lang.String"/>
+	<field name="questao_155" class="java.lang.String"/>
+	<field name="questao_156" class="java.lang.String"/>
+	<field name="questao_157" class="java.lang.String"/>
+	<field name="questao_158" class="java.lang.String"/>
+	<field name="questao_159" class="java.lang.String"/>
+	<field name="questao_160" class="java.lang.String"/>
+	<field name="questao_161" class="java.lang.String"/>
+	<field name="questao_162" class="java.lang.String"/>
+	<field name="questao_163" class="java.lang.String"/>
+	<field name="questao_164" class="java.lang.String"/>
+	<field name="questao_165" class="java.lang.String"/>
+	<field name="questao_166" class="java.lang.String"/>
+	<field name="questao_168" class="java.lang.String"/>
+	<field name="questao_169" class="java.lang.String"/>
+	<field name="questao_170" class="java.lang.String"/>
+	<field name="questao_171" class="java.lang.String"/>
+	<field name="questao_172" class="java.lang.String"/>
+	<field name="questao_173" class="java.lang.String"/>
+	<field name="questao_174" class="java.lang.String"/>
+	<field name="questao_181" class="java.lang.String"/>
+	<field name="questao_182" class="java.lang.String"/>
+	<field name="questao_183" class="java.lang.String"/>
+	<field name="questao_190" class="java.lang.String"/>
+	<field name="questao_192" class="java.lang.String"/>
+	<field name="questao_195" class="java.lang.String"/>
+	<field name="questao_197" class="java.lang.String"/>
+	<field name="questao_199" class="java.lang.String"/>
+	<field name="questao_201" class="java.lang.String"/>
+	<field name="questao_203" class="java.lang.String"/>
+	<field name="questao_205" class="java.lang.String"/>
+	<field name="questao_207" class="java.lang.String"/>
+	<field name="questao_209" class="java.lang.String"/>
+	<field name="questao_210" class="java.lang.String"/>
+	<field name="questao_211" class="java.lang.String"/>
+	<field name="questao_212" class="java.lang.String"/>
+	<field name="questao_213" class="java.lang.String"/>
+	<field name="questao_214" class="java.lang.String"/>
+	<field name="questao_215" class="java.lang.String"/>
+	<field name="questao_216" class="java.lang.String"/>
+	<field name="questao_217" class="java.lang.String"/>
+	<field name="questao_218" class="java.lang.String"/>
+	<field name="questao_219" class="java.lang.String"/>
+	<field name="questao_220" class="java.lang.String"/>
+	<field name="questao_221" class="java.lang.String"/>
+	<field name="questao_222" class="java.lang.String"/>
+	<field name="questao_223" class="java.lang.String"/>
+	<field name="questao_224" class="java.lang.String"/>
+	<field name="questao_225" class="java.lang.String"/>
+	<field name="questao_226" class="java.lang.String"/>
+	<field name="questao_227" class="java.lang.String"/>
+	<field name="questao_228" class="java.lang.String"/>
+	<field name="questao_229" class="java.lang.String"/>
+	<field name="questao_230" class="java.lang.String"/>
+	<field name="questao_231" class="java.lang.String"/>
+	<field name="questao_232" class="java.lang.String"/>
+	<field name="questao_233" class="java.lang.String"/>
+	<field name="questao_234" class="java.lang.String"/>
+	<field name="questao_235" class="java.lang.String"/>
+	<field name="questao_236" class="java.lang.String"/>
+	<field name="questao_237" class="java.lang.String"/>
+	<field name="questao_238" class="java.lang.String"/>
+	<field name="questao_239" class="java.lang.String"/>
+	<field name="questao_240" class="java.lang.String"/>
+	<field name="questao_241" class="java.lang.String"/>
+	<field name="questao_242" class="java.lang.String"/>
+	<field name="questao_243" class="java.lang.String"/>
+	<field name="questao_244" class="java.lang.String"/>
+	<field name="questao_245" class="java.lang.String"/>
+	<field name="questao_246" class="java.lang.String"/>
+	<field name="questao_247" class="java.lang.String"/>
+	<field name="questao_248" class="java.lang.String"/>
+	<field name="questao_249" class="java.lang.String"/>
+	<field name="questao_250" class="java.lang.String"/>
+	<field name="questao_251" class="java.lang.String"/>
+	<field name="questao_252" class="java.lang.String"/>
+	<field name="questao_253" class="java.lang.String"/>
+	<field name="questao_254" class="java.lang.String"/>
+	<field name="questao_255" class="java.lang.String"/>
+	<field name="questao_256" class="java.lang.String"/>
+	<field name="questao_257" class="java.lang.String"/>
+	<field name="questao_258" class="java.lang.String"/>
+	<field name="questao_259" class="java.lang.String"/>
+	<field name="questao_260" class="java.lang.String"/>
+	<field name="questao_261" class="java.lang.String"/>
+	<field name="questao_262" class="java.lang.String"/>
+	<field name="questao_263" class="java.lang.String"/>
+	<field name="questao_264" class="java.lang.String"/>
+	<field name="questao_265" class="java.lang.String"/>
+	<field name="questao_266" class="java.lang.String"/>
+	<field name="questao_267" class="java.lang.String"/>
+	<field name="questao_268" class="java.lang.String"/>
+	<field name="questao_269" class="java.lang.String"/>
+	<field name="questao_270" class="java.lang.String"/>
+	<field name="questao_271" class="java.lang.String"/>
+	<field name="questao_272" class="java.lang.String"/>
+	<field name="questao_273" class="java.lang.String"/>
+	<field name="questao_274" class="java.lang.String"/>
+	<field name="questao_280" class="java.lang.String"/>
+	<field name="questao_281" class="java.lang.String"/>
+	<field name="questao_282" class="java.lang.String"/>
+	<field name="questao_283" class="java.lang.String"/>
+	<field name="questao_284" class="java.lang.String"/>
+	<field name="questao_285" class="java.lang.String"/>
+	<field name="questao_286" class="java.lang.String"/>
+	<field name="questao_288" class="java.lang.String"/>
+	<field name="questao_290" class="java.lang.String"/>
+	<field name="questao_291" class="java.lang.String"/>
+	<field name="questao_293" class="java.lang.String"/>
+	<field name="questao_294" class="java.lang.String"/>
+	<field name="questao_295" class="java.lang.String"/>
+	<field name="questao_296" class="java.lang.String"/>
+	<field name="questao_297" class="java.lang.String"/>
+	<field name="questao_298" class="java.lang.String"/>
+	<field name="questao_299" class="java.lang.String"/>
+	<field name="questao_300" class="java.lang.String"/>
+	<columnHeader>
+		<band height="20">
+			<staticText>
+				<reportElement x="207" y="0" width="140" height="20" uuid="b3fab0a3-fc7e-45a3-af82-e91dbfdaacfe"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HISTORICO FAMILIAR]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="100" splitType="Stretch">
+			<frame>
+				<reportElement style="style1" x="0" y="1" width="555" height="12" uuid="2f5cc8be-6784-46ae-b5d8-e210cba9f982"/>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12" uuid="f658f454-f4bf-43cc-9f58-134bc6e50f23"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_7}.split("#")[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12" uuid="7003d995-f1e0-4fd5-afaf-7bbca54e4da7">
+						<printWhenExpression><![CDATA[$F{questao_7}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="83" y="0" width="95" height="12" uuid="1f6575af-ee45-4ca9-a895-1f56d31dbf56"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_7}.split("#")[0] == ' ' || $F{questao_7}.split("#")[0] == '0')) ? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="78" height="12" uuid="6a35b3a5-fad0-47e0-b397-ae923beadae3"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DIABETES:]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="style1" x="0" y="13" width="555" height="12" uuid="b31952a9-7910-4e84-bae7-d8db2d10390b"/>
+				<textField>
+					<reportElement x="83" y="0" width="95" height="12" uuid="02f2714a-c422-4973-a21b-97c2b23bd59a"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[(!($F{questao_8}.split("#")[0] == ' ' || $F{questao_8}.split("#")[0] == '0'))? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12" uuid="569ab038-93aa-49d6-b4f0-692cc8005199">
+						<printWhenExpression><![CDATA[$F{questao_8}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="78" height="12" uuid="1aefe53e-1afa-4cfd-be6a-b156cdfde29e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PRESSÃO ALTA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12" uuid="5b20514d-9c44-4220-bdaa-67889f830bc4"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_8}.split("#")[1]]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="style1" x="0" y="25" width="555" height="74" uuid="2c6733e9-6dd1-4a74-bf1c-3c19efa57d60"/>
+				<textField>
+					<reportElement x="279" y="0" width="111" height="12" uuid="4714c430-361a-45af-8bce-57bd1a5c393a"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_9}.split("#")[1]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="78" height="12" uuid="3b03380f-28b7-4537-ab99-6fb685bbcb31"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CÂNCER:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="0" width="79" height="12" uuid="c5b8950d-5c1e-4c85-85a8-72932470b9f4">
+						<printWhenExpression><![CDATA[$F{questao_9}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="83" y="0" width="95" height="12" uuid="184e1003-c3e1-49b6-8dc9-2711b6e13c9e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_9} != null) ? ((!($F{questao_9}.split("#")[0] == ' ' || $F{questao_9}.split("#")[0] == '0'))? 'Sim' : 'Não'): 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="12" width="79" height="12" uuid="1d2ec42c-4473-4bd4-b02c-23f0be50dccb">
+						<printWhenExpression><![CDATA[$F{questao_10}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="49" width="79" height="12" uuid="0f4d9696-c335-479c-85a5-bc10975e029c">
+						<printWhenExpression><![CDATA[$F{questao_13}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="279" y="12" width="161" height="12" uuid="75ffacbd-2f32-446e-89ab-003dcf80a3ac"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_10} != null)? $F{questao_10}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="36" width="79" height="12" uuid="126bfb82-c3a3-4698-997b-1db488414d07">
+						<printWhenExpression><![CDATA[$F{questao_12}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="100" y="49" width="95" height="12" uuid="7cc7fd98-6967-4212-8dd8-0a46696ce810"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_13} != null && $F{questao_13}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="279" y="49" width="161" height="12" uuid="e0462afb-6f0f-4792-aa81-2e75e862f86c"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_13} != null)? $F{questao_13}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="78" height="12" uuid="b0c0e3a4-5690-4f06-9a33-237dda54a118"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MAMA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="36" width="78" height="12" uuid="e52c1d4a-1e4a-4382-830d-83c1735ffae0"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[COLO DO ÚTERO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="24" width="79" height="12" uuid="f1a2dc9e-7bdd-4f9d-8df4-91c1ffd11b21">
+						<printWhenExpression><![CDATA[$F{questao_11}.split("#")[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="100" y="24" width="95" height="12" uuid="226dd29d-fedb-465c-b877-19ff50328731"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_11} != null && $F{questao_11}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="49" width="78" height="12" uuid="d53831d3-6ed3-4f1c-8b1b-35bf348c9c92"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[INTESTINO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="100" y="12" width="95" height="12" uuid="24c39a41-5d33-4759-b086-b65b52078b8e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_10} != null && $F{questao_10}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="100" y="36" width="95" height="12" uuid="8051f10f-fb3c-48c7-8cc9-d09b4eb614a8"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_12} != null && $F{questao_12}.split("#")[0])? 'Sim' : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="12" width="78" height="12" uuid="43d8382c-a047-4177-b3c4-fbae250d373f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PRÓSTATA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="279" y="36" width="161" height="12" uuid="eb4aeacc-9401-45f1-9c74-cebd1665e1c3"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_12} != null)? $F{questao_12}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="279" y="24" width="161" height="12" uuid="cf5f86e5-f38d-47d3-bdab-94d02752f041"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_11} != null)? $F{questao_11}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="61" width="78" height="12" uuid="f8cc7c77-5d11-4649-a2bb-d78c957b5f9b"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[OUTRAS (CID10):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="100" y="61" width="339" height="12" uuid="fee6ebfe-f853-4201-b714-5a6455680b21"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_300} != null && $F{questao_300}.split("#")[0])? $F{questao_300}.split("#")[0] : '']]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="25">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="25" uuid="18b1391f-2aa2-49f4-8c4e-456b50a8cc53"/>
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cancer.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="134">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="555" height="134" uuid="3fea39ec-6f0c-4e40-a968-d6893e84656c"/>
+				<textField>
+					<reportElement x="279" y="1" width="160" height="12" uuid="e5d32186-059d-4a46-bed2-78b39e4031ed"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_15} != null)? $F{questao_15}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="279" y="13" width="160" height="12" uuid="2cd7b846-31f5-4ddb-bb22-af13d8d2c159"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_16} != null)? $F{questao_16}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="49" width="79" height="12" uuid="debb059d-b1d0-428f-8a25-d77e4669a7e9">
+						<printWhenExpression><![CDATA[$F{questao_19}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="119" y="13" width="71" height="12" uuid="f82e7d9e-2725-44b2-a35d-b1bb3eaee762"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_16} != null) ? ((!($F{questao_16}.split("#")[0] == ' ' || $F{questao_16}.split("#")[0] == '0'))? 'Sim' : 'Não') : 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="13" width="95" height="12" uuid="d11c7737-dc3f-4c58-8ef3-99e566bf50e8"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IAM (I24.9):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="279" y="25" width="160" height="12" uuid="040a39e9-fcb3-4b78-b076-25e1a25c9306"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_17} != null)? $F{questao_17}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="109" width="79" height="12" uuid="47e4553e-ac9e-4c3c-800b-a6bca36cec68">
+						<printWhenExpression><![CDATA[$F{questao_24}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="119" y="25" width="71" height="12" uuid="4f90c2f3-bbf5-49a8-a736-f4f8e270bce2"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_17} != null) ? ((!($F{questao_17}.split("#")[0] == ' ' || $F{questao_17}.split("#")[0] == '0'))? 'Sim' : 'Não'): 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="25" width="95" height="12" uuid="f500888e-08a6-4427-ba44-4d12d8ccfaac"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS VALVARES (I08.9):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="279" y="37" width="160" height="12" uuid="b0b1aa13-5359-4d6f-bd40-e5382d22e294"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_18} != null)? $F{questao_18}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="73" width="79" height="12" uuid="41a90791-28f4-444d-9fbc-e62c79131302">
+						<printWhenExpression><![CDATA[$F{questao_21}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="119" y="37" width="71" height="12" uuid="b295c760-3d0b-4185-9eaf-625b9567c434"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_18} != null) ? ((!($F{questao_18}.split("#")[0] == ' ' || $F{questao_18}.split("#")[0] == '0'))? 'Sim' : 'Não'): 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="37" width="97" height="12" uuid="ae52f7fe-cd97-43ec-bc26-5b5eeaa87239"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS REUMÁTICAS (I09.9):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="279" y="49" width="160" height="12" uuid="e3423b43-dc16-4c36-8ce3-0ecc9890651d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_19} != null)? $F{questao_19}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="85" width="79" height="12" uuid="b50eaf37-91c4-40f3-b387-0d4eff0fdc81">
+						<printWhenExpression><![CDATA[$F{questao_22}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="119" y="49" width="71" height="12" uuid="89bf820e-bc98-45b1-811f-f6bb1b0beb40"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_19} != null) ? ((!($F{questao_19}.split("#")[0] == ' ' || $F{questao_19}.split("#")[0] == '0'))? 'Sim' : 'Não'): 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="49" width="97" height="12" uuid="a5dc8ef6-4e38-4654-a93e-bfd7ca757218"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ANGINA (I20.9):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="279" y="61" width="160" height="12" uuid="fec796a8-4c65-409e-b984-63b70449704e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_20} != null)? $F{questao_20}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="61" width="79" height="12" uuid="fe6fdaeb-734b-454e-993b-075f683d9437">
+						<printWhenExpression><![CDATA[$F{questao_20}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="119" y="61" width="71" height="12" uuid="aac96595-3c9f-4c67-b707-0b8f5450a879"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_20} != null) ? ((!($F{questao_20}.split("#")[0] == ' ' || $F{questao_20}.split("#")[0] == '0'))? 'Sim' : 'Não'): 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="61" width="97" height="12" uuid="5e5da78d-817c-487f-a36a-8f67241aaf84"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PERICARDITE (I30.9):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="280" y="73" width="160" height="12" uuid="ba24940e-16ed-463f-85dd-fd43746b91ef"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_21} != null)? $F{questao_21}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="1" width="79" height="12" uuid="3ab1040a-ad43-4879-a788-ce9266cf1043">
+						<printWhenExpression><![CDATA[$F{questao_15}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="119" y="73" width="71" height="12" uuid="228a8f9f-4bd2-40df-9d15-af9b674c6759"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_21} != null) ? ((!($F{questao_21}.split("#")[0] == ' ' || $F{questao_21}.split("#")[0] == '0'))? 'Sim' : 'Não'): 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="73" width="97" height="12" uuid="6b6a8fcf-b113-4dd2-bda7-cdcdf30bac84"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MIOCARDITE (I40.9):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="280" y="85" width="160" height="12" uuid="bcc9c06a-b94b-4fc5-8973-5a1617b69b25"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_22} != null)? $F{questao_22}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="97" width="79" height="12" uuid="2898ba7a-2409-42a7-8efd-634b09440134">
+						<printWhenExpression><![CDATA[$F{questao_23}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="119" y="85" width="71" height="12" uuid="51eeb128-e710-424e-8b26-ae3a350f8ffa"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_22} != null) ? ((!($F{questao_22}.split("#")[0] == ' ' || $F{questao_22}.split("#")[0] == '0'))? 'Sim' : 'Não'): 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="85" width="97" height="12" uuid="a1b72e5d-3768-4813-b1a1-df40150e7d85"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ICC (I50.9):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="280" y="97" width="160" height="12" uuid="a6985edc-5685-4353-a8ef-b05c23a05761"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_23} != null)? $F{questao_23}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="13" width="79" height="12" uuid="c45ac2b3-6659-43e4-a0a5-4edc871a9cf7">
+						<printWhenExpression><![CDATA[$F{questao_16}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="119" y="97" width="71" height="12" uuid="f6875f1a-d494-4f6d-b9a7-d5fc5210a633"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_23} != null) ? ((!($F{questao_23}.split("#")[0] == ' ' || $F{questao_23}.split("#")[0] == '0'))? 'Sim' : 'Não'): 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="97" width="97" height="12" uuid="289b3e9e-ab7c-4762-a7a5-8df54e60fdf0"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ARRITMIAS (I49.9):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="280" y="109" width="160" height="12" uuid="91f00aca-94cc-4d0d-a0ff-67ac5bc14bfa"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_24} != null)? $F{questao_24}.split("#")[1] : '']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="201" y="25" width="79" height="12" uuid="56ecc550-ae09-487d-866a-ac98b2131810">
+						<printWhenExpression><![CDATA[$F{questao_17}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="119" y="109" width="71" height="12" uuid="397e05d4-8127-4daf-b656-9ee66755a855"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_24} != null) ? ((!($F{questao_24}.split("#")[0] == ' ' || $F{questao_24}.split("#")[0] == '0'))? 'Sim' : 'Não'): 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="109" width="97" height="12" uuid="b13d9582-73c3-47b2-b2b6-4ee5bcbf379a"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CARDIOMEGALIAS (I51.7):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="37" width="79" height="12" uuid="1593e522-9101-4c10-93e4-c6ec4af81d27">
+						<printWhenExpression><![CDATA[$F{questao_18}.split('#')[1] != ' ']]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARENTESCO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="102" y="1" width="71" height="12" uuid="fa936307-fbfc-48dd-bdbf-2a78a716f8b2"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_15} != null) ? ((!($F{questao_15}.split("#")[0] == ' ' || $F{questao_15}.split("#")[0] == '0'))? 'Sim' : 'Não'): 'Não']]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="7" y="1" width="95" height="12" uuid="b6bddf00-7467-42ea-bc28-30a104d761b7"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOENÇAS DO CORAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="120" width="97" height="12" uuid="1236ccab-f90d-4502-9343-0160afe6b4f4"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[OUTRAS (CID10):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="119" y="120" width="320" height="12" uuid="cb227115-7dd8-4dc5-8758-cf1e82a186e9"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_25} != null && $F{questao_25}.split("#")[0])? $F{questao_25}.split("#")[0] : '']]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="25">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="25" isRemoveLineWhenBlank="true" uuid="f33ff96a-c1ef-4d72-81fa-a303ebd91afd"/>
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_doencas_coracao.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,9 @@
+[ACO]
+create;buonny/Clientes;visualizar_clientes
+create;buonny/Clientes;listagem
+create;buonny/ClientesProdutosContratos;visualiza_cliente
+create;buonny/Clientes;visualizar
+create;buonny/ClientesContatos/contatos_por_cliente_visualizar
+create;buonny/ClientesHistoricos/listar_visualizar
+create;buonny/ClientesEnderecos/listar_visualizar
+create;buonny/Clientes/listagem_visualizar

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ficha_assistencial_atestado_medico"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/ficha_assistencial_atestado_medico_files/ficha_assistencial_atestado_medico_jrxml"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="0"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="1000"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<parameter name="CODIGO_FICHA_ASSISTENCIAL" class="java.lang.String"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String"/>
+	<parameter name="CODIGO_FUNCIONARIO" class="java.lang.String"/>
+    <parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+
+	dbBuonny.publico.ufn_decode_utf8_string(cli.razao_social) as razao_social,
+	dbBuonny.publico.ufn_decode_utf8_string(cli.nome_fantasia) as nome_fantasia,
+	dbBuonny.publico.ufn_decode_utf8_string(fun.nome) as nome_funcionario,
+	fun.cpf as cpf_funcionario,
+	dbBuonny.publico.ufn_decode_utf8_string(se.descricao) as setor,
+	dbBuonny.publico.ufn_decode_utf8_string(ca.descricao) as cargo,
+	pe.codigo as codigo_pedido,
+	fa.codigo as codigo_ficha_assistencial,
+	dbBuonny.publico.ufn_decode_utf8_string(me.nome) as nome_medico,
+	cp.descricao as tipo_conselho_medico,
+	me.numero_conselho as numero_conselho_medico,
+	me.conselho_uf as conselho_uf_medico,
+	ate.codigo as codigo_atestado,
+	ate.data_inclusao as data_ficha,
+	CONVERT(varchar(10), CONVERT(date,ate.data_afastamento_periodo,106),103) as periodo_afastamento,
+	CONVERT(varchar(10), CONVERT(date,ate.data_retorno_periodo,106),103) as periodo_retorno,
+	dbBuonny.publico.ufn_decode_utf8_string(ate.restricao) as restricao,
+	ate.afastamento_em_dias as quantidade_dias
+
+FROM RHHealth.dbo.fichas_assistenciais fa
+	INNER JOIN RHHealth.dbo.pedidos_exames pe ON fa.codigo_pedido_exame = pe.codigo
+	INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc on pe.codigo_func_setor_cargo = fsc.codigo
+	INNER JOIN RHHealth.dbo.cliente cli ON fsc.codigo_cliente_alocacao = cli.codigo
+	INNER JOIN RHHealth.dbo.cliente_funcionario cf ON pe.codigo_cliente_funcionario = cf.codigo AND fsc.codigo_cliente_funcionario = cf.codigo
+	INNER JOIN RHHealth.dbo.funcionarios fun ON cf.codigo_funcionario = fun.codigo
+	INNER JOIN RHHealth.dbo.setores se ON fsc.codigo_setor = se.codigo
+	INNER JOIN RHHealth.dbo.cargos ca ON fsc.codigo_cargo = ca.codigo
+	INNER JOIN RHHealth.dbo.medicos me ON fa.codigo_medico = me.codigo
+	INNER JOIN RHHealth.dbo.conselho_profissional cp ON me.codigo_conselho_profissional = cp.codigo
+	INNER JOIN RHHealth.dbo.atestados ate ON fa.codigo_atestado = ate.codigo
+WHERE fa.codigo = $P{CODIGO_FICHA_ASSISTENCIAL}]]>
+	</queryString>
+	<field name="razao_social" class="java.lang.String"/>
+	<field name="nome_fantasia" class="java.lang.String"/>
+	<field name="nome_funcionario" class="java.lang.String"/>
+	<field name="cpf_funcionario" class="java.lang.String"/>
+	<field name="setor" class="java.lang.String"/>
+	<field name="cargo" class="java.lang.String"/>
+	<field name="codigo_pedido" class="java.lang.Integer"/>
+	<field name="codigo_ficha_assistencial" class="java.lang.Integer"/>
+	<field name="nome_medico" class="java.lang.String"/>
+	<field name="tipo_conselho_medico" class="java.lang.String"/>
+	<field name="numero_conselho_medico" class="java.lang.String"/>
+	<field name="conselho_uf_medico" class="java.lang.String"/>
+	<field name="codigo_atestado" class="java.lang.Integer"/>
+	<field name="data_ficha" class="java.sql.Timestamp"/>
+	<field name="periodo_afastamento" class="java.lang.String"/>
+	<field name="periodo_retorno" class="java.lang.String"/>
+	<field name="restricao" class="java.lang.String"/>
+	<field name="quantidade_dias" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="50" splitType="Stretch">
+			<staticText>
+				<reportElement x="145" y="10" width="266" height="32"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ATESTADO MÉDICO]]></text>
+			</staticText>
+			<image>
+				<reportElement x="2" y="2" width="143" height="46"/>
+				<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+            <image>
+                <reportElement x="450" y="5" width="100" height="40">
+                    <property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+                    <property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+                    <property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+                    <property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+                    <printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+                </reportElement>
+                <imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+            </image>
+		</band>
+	</title>
+	<detail>
+		<band height="167" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="12" width="555" height="150"/>
+			</rectangle>
+			<frame>
+				<reportElement x="2" y="12" width="553" height="151"/>
+				<staticText>
+					<reportElement x="6" y="6" width="83" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Razão Social:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="26" width="102" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Nome Fantasia:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="46" width="83" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Funcionário:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="66" width="83" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[CPF:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="86" width="83" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Setor:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="106" width="83" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Cargo:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="126" width="118" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Código do pedido:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="186" y="126" width="187" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Código da Ficha Assistencial:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="89" y="6" width="464" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="89" y="26" width="464" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{nome_fantasia}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="77" y="46" width="476" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{nome_funcionario}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="34" y="66" width="320" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{cpf_funcionario}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="43" y="86" width="510" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{setor}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="43" y="106" width="510" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{cargo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="100" y="126" width="60" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{codigo_pedido}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="335" y="126" width="60" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{codigo_ficha_assistencial}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="354" y="66" width="100" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Data Ficha:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="416" y="66" width="137" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{data_ficha}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="73">
+			<rectangle>
+				<reportElement x="0" y="6" width="555" height="55"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="8" y="15" width="152" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Periodo de afastamento:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="8" y="35" width="152" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Restrição para o retorno:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="348" y="15" width="118" height="20"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantidade de dias:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="145" y="15" width="203" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{periodo_afastamento} +" até "+ $F{periodo_retorno}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="145" y="35" width="390" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{restricao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="466" y="15" width="69" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{quantidade_dias}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="53">
+			<staticText>
+				<reportElement x="2" y="0" width="335" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CID10:]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="23" width="555" height="25"/>
+				<subreportParameter name="CODIGO_ATESTADO">
+					<subreportParameterExpression><![CDATA[$F{codigo_atestado}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_atestado_cid.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="96" splitType="Stretch">
+			<line>
+				<reportElement x="375" y="40" width="160" height="1"/>
+			</line>
+			<textField>
+				<reportElement x="375" y="43" width="160" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nome_medico}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="375" y="63" width="160" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA["("+$F{tipo_conselho_medico}+": "+$F{numero_conselho_medico}+"-"+$F{conselho_uf_medico}+")"]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+</jasperReport>

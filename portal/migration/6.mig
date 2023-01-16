@@ -1,0 +1,4 @@
+[ACO]
+create;buonny;Clientes;index
+create;buonny/Clientes;usuarios
+create;buonny/Usuarios;por_cliente

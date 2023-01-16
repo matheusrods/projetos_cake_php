@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Setores
+create;buonny/Setores;index
+create;buonny/Setores;listagem
+create;buonny/Setores;incluir
+create;buonny/Setores;editar
+create;buonny/Setores;excluir

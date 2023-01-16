@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="grade_pcmso" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="b4a636a1-466f-4788-8590-34b1ce770b4c">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="CODIGO_FORNECEDOR" class="java.lang.Integer"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT RHHealth.publico.Ufn_decode_utf8_string(exames.descricao) AS exame_descricao
+FROM RHHealth.dbo.itens_pedidos_exames
+INNER JOIN RHHealth.dbo.pedidos_exames ON (pedidos_exames.codigo = itens_pedidos_exames.codigo_pedidos_exames)
+INNER JOIN RHHealth.dbo.exames ON (exames.codigo = itens_pedidos_exames.codigo_exame)
+WHERE pedidos_exames.codigo = $P{CODIGO_PEDIDO_EXAME}
+  AND pedidos_exames.pontual = 1
+  AND itens_pedidos_exames.codigo_fornecedor = $P{CODIGO_FORNECEDOR};]]>
+	</queryString>
+	<field name="exame_descricao" class="java.lang.String"/>
+	<detail>
+		<band height="17" splitType="Stretch">
+			<textField>
+				<reportElement x="9" y="2" width="350" height="13" uuid="21524e47-6bec-4bd0-b4ad-2bfec21ceeb3"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exame_descricao}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

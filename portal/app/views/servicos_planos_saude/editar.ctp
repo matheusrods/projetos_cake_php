@@ -1,0 +1,2 @@
+<?php echo $this->BForm->create('Servico', array('url' => array('controller' => 'servicos', 'action' => 'editar',$this->passedArgs[0]), 'type' => 'post')); ?>
+<?php echo $this->element('servicos/fields', array('edit_mode' => true)); ?>

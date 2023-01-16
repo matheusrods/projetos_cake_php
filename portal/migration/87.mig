@@ -1,0 +1,10 @@
+[ACO]
+create;buonny;ClientesProdutos
+create;buonny/ClientesProdutos;incluir2
+create;buonny/ClientesProdutos;editar
+create;buonny/ClientesProdutos;excluir_servico_assinatura
+create;buonny/ClientesProdutos;cadastrar_valores_servicos_do_produto
+
+
+
+

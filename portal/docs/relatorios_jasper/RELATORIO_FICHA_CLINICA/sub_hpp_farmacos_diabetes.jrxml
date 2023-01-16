@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_hpp_farmacos_pressao_alta" language="groovy" pageWidth="555" pageHeight="30" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ficha_clinica"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<parameter name="CODIGO_FICHA_CLINICA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[12091]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT TOP(1)
+	RHHealth.publico.ufn_decode_utf8_string(farmaco) as farmaco,
+	RHHealth.publico.ufn_decode_utf8_string(posologia) as posologia, dose_diaria, aprazamento
+FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica_questao = 31 AND fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} ORDER BY fcf.codigo DESC]]>
+	</queryString>
+	<field name="farmaco" class="java.lang.String"/>
+	<field name="posologia" class="java.lang.String"/>
+	<field name="dose_diaria" class="java.lang.String"/>
+	<field name="aprazamento" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="20"/>
+				<staticText>
+					<reportElement x="3" y="0" width="41" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FARMACO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="46" y="0" width="128" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{farmaco} == null || $F{farmaco}.toString().length() == 0) ? '-' : $F{farmaco}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="174" y="0" width="47" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[POSOLOGIA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="222" y="0" width="85" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{posologia} == null || $F{posologia}.toString().length() == 0) ? '-' : $F{posologia}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="307" y="0" width="51" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DOSE DIÁRIA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="360" y="0" width="61" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{dose_diaria} == null || $F{dose_diaria}.toString().length() == 0) ? '-' : $F{dose_diaria}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="421" y="0" width="57" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APRAZAMENTO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="479" y="0" width="76" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{aprazamento} == null || $F{aprazamento}.toString().length() == 0) ? '-' : $F{aprazamento}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

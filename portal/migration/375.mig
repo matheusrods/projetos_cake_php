@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;PCMSOVersoes
+create;buonny/PCMSOVersoes;versoes_pcmso
+create;buonny/PCMSOVersoes;listagem
+
+create;buonny;PPRAVersoes
+create;buonny/PPRAVersoes;versoes_ppra
+create;buonny/PPRAVersoes;listagem

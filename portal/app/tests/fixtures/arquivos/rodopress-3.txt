@@ -1,0 +1,57 @@
+
+                                                                                                               Data: 27/11/2013  07:30
+                                                                  Romaneio
+                                                                                                               Nro:   43984
+
+
+ Placa do veícu ABC 3333                                                     Ajudantes:   Marcelino Ferreira de Mat
+ Nome do        Carlos Alberto Francisco dos Santos                          CPF do motor 57012075872
+ motorista:
+
+ Km de saída:   386.043      Km de chegad                                    Hr de saída: 07:30     Hr de chegad
+
+
+ Doc Nota F Remetente   Destinatári Endereço de entrega                            Cidade Des UFBairro de entrega Vol Peso  Frete  Valor NF
+ 593 453662 SCHNEIDER C J. V. PINHE Rua Araguaia, 229                              Varzea Pau SPVila São José      2  0,77  25,16    63,30
+
+ 594 453967 SCHNEIDER C J. V. PINHE Rua Araguaia, 229                              Varzea Pau SPVila São José      2  3,48  37,75  4.010,40
+
+ 595 454047 SCHNEIDER C ASSEPLAM CO Rua Jose Maria Marinho, 150                    Jundiai    SPVila Agrícola      1  4,69  25,16  1.455,04
+
+ 591 42585  TEXTIL CORT VALTER GONC Rua Coronel Leme da Fonseca, 47                Jundiai    SPCentro             5 47,50  58,69  1.617,84
+
+ 594 454163 SCHNEIDER C MOVIND AUTO Rodovia Romildo Prado, 3211                    Louveira   SPSagrado Coracao d  1  1,41  25,16  1.024,24
+
+ 594 453816 SCHNEIDER C GH DO BRASI Avenida Engenheiro Afonso Botti, 330           Cabreuva   SPPinhal             4 52,39 142,70  5.555,26
+
+ 593 3826   SCHNEIDER J BANCO COMER Avenida Americo de Carvalho, 646               Sorocaba   SPAlphaville Indust  2 54,50  88,08  5.500,00
+
+ 594 454175 SCHNEIDER C INDUCTOTHER Rua Herminio de Mello, 526                     Indaiatuba SPDISTRITO INDUSTRI  2 11,13  25,16  2.603,62
+     /45418
+     3
+
+ 595 454083 SCHNEIDER C MEGA STEEL  Rua Macassit, 611                              Indaiatuba SPRecreio Campestre  3  9,72  25,16  2.112,72
+
+ 594 453676 SCHNEIDER C MEGA STEEL  Rua Macassit, 611                              Indaiatuba SPRecreio Campestre  2  3,63  40,33  4.293,16
+
+ 594 453916 SCHNEIDER C ANIXTER DO  Rua Eduardo Borsari, 2571                      Indaiatuba SPDistrito Industri  1  0,75  25,16  2.299,60
+
+ 593 453658 SCHNEIDER C BENER COMER Rua Iracema Lucas, 450                         Vinhedo    SPDistrito Industri  2  6,04  26,97  2.823,66
+
+ 594 454087 SCHNEIDER C BEVILACQUA  Rua do Cafe, 585                               Vinhedo    SPCapela             3 18,31  57,69  6.203,48
+
+ 594 454208 SCHNEIDER C JOBER COMER Avenida Brasil, 789                            Vinhedo    SPCENTRO             9 93,72  35,08  3.716,78
+
+ 593 453663 SCHNEIDER C INOBAG INDU Rua Graciosa Trevisan Saltori, 76              Vinhedo    SPBarra Funda        1  1,22  25,16   424,35
+
+ 594 453873 SCHNEIDER C CETRON - IN Rua Joao Lando Neto, 86                        Valinhos   SPChácaras São Bent  1  1,15  25,16   921,35
+
+ 594 453749 SCHNEIDER C AUTILOG AUT Rua Vereador Antonio de Castro, 235            Valinhos   SPLoteamento Nova E  1  0,50  25,16  1.060,62
+
+ 594 52720  BLAU        INSTITUTO D Rua Visconde de Cairu, 116                     Sorocaba   SPVila Independênci  4 19,20  67,72  7.250,00
+
+ Total de      CTRC:  18    Coleta:  0                                                                            46 30,11 781,45  2.935,42
+ embarques:
+
+
+ Assinatura Motorista __________________

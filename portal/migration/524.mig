@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;PosObsLocal
+create;buonny/PosObsLocal;index 
+create;buonny/PosObsLocal;listagem
+create;buonny/PosObsLocal;incluir
+create;buonny/PosObsLocal;editar
+create;buonny/PosObsLocal;troca_status

@@ -1,0 +1,14 @@
+[ACO]
+create;buonny;QuestionariosTreinamentos
+create;buonny/QuestionariosTreinamentos;index
+create;buonny/QuestionariosTreinamentos;listagem
+create;buonny/QuestionariosTreinamentos;incluir
+create;buonny/QuestionariosTreinamentos;editar
+create;buonny/QuestionariosTreinamentos;inativar_questionario_treinamento
+
+create;buonny;QuestionariosTreinamentosPerguntas
+create;buonny/QuestionariosTreinamentosPerguntas;index
+create;buonny/QuestionariosTreinamentosPerguntas;listagem
+create;buonny/QuestionariosTreinamentosPerguntas;incluir
+create;buonny/QuestionariosTreinamentosPerguntas;editar
+create;buonny/QuestionariosTreinamentosPerguntas;inativar_pergunta

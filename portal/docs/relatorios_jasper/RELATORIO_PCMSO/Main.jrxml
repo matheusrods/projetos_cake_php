@@ -1,0 +1,1341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_pcmso" pageWidth="595" pageHeight="940" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3bf143da-460f-467a-8807-e2c84afd6838">
+	<property name="ireport.zoom" value="1.9487171000000014"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="5638"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_pcmso"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="0"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="1000"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="back-gray-border" mode="Opaque" backcolor="#F0F0F0">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="background-gray" mode="Opaque" backcolor="#F0F0F0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\RELATORIO_PCMSO\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[80053]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMP_SETOR_CARGO_VAZIO" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[-- pcmso
+
+SELECT TOP(1)
+    RHHealth.publico.Ufn_decode_utf8_string(cnae.descricao) COLLATE SQL_Latin1_General_CP1_CI_AS AS ramo_atividade,
+    ISNULL(cnae.grau_risco, '') COLLATE SQL_Latin1_General_CP1_CI_AS AS grau_risco,
+    CONVERT(VARCHAR(10), os.inicio_vigencia_pcmso, 103) COLLATE SQL_Latin1_General_CP1_CI_AS AS inicio_vigencia_pcmso,
+    CONVERT(VARCHAR(10), DATEADD(DAY, -1,DATEADD(MONTH, CONVERT(INT, os.vigencia_em_meses), os.inicio_vigencia_pcmso)), 103) COLLATE SQL_Latin1_General_CP1_CI_AS AS fim_vigencia_pcmso,
+    os.vigencia_em_meses,
+    me.nome as nome_medico,
+    me.numero_conselho as numero_conselho,
+    me.conselho_uf as conselho_uf,
+	-- dados matriz
+	(case when clm.razao_social is null then RHHealth.publico.Ufn_decode_utf8_string(clf.razao_social) else RHHealth.publico.Ufn_decode_utf8_string(clm.razao_social) end) as matriz_razao_social,
+	(case when clm.codigo_documento is null then clf.codigo_documento else clm.codigo_documento  end) as matriz_codigo_documento,
+
+	(case when cmef.logradouro is null then RHHealth.publico.Ufn_decode_utf8_string(clef.logradouro) else RHHealth.publico.Ufn_decode_utf8_string(cmef.logradouro) end) as matriz_endereco,
+    (case when cmef.numero is null then clef.numero else cmef.numero end) as matriz_numero,
+    (case when cmef.complemento is null then RHHealth.publico.Ufn_decode_utf8_string(clef.complemento) else RHHealth.publico.Ufn_decode_utf8_string(cmef.complemento) end) as matriz_complemento,
+    (case when cmef.cep is null then clef.cep else cmef.cep end) as matriz_cep,
+    (case when cmef.cidade is null then RHHealth.publico.Ufn_decode_utf8_string(clef.cidade) else RHHealth.publico.Ufn_decode_utf8_string(cmef.cidade) end) as matriz_cidade,
+    (case when cmef.bairro is null then RHHealth.publico.Ufn_decode_utf8_string(clef.bairro) else RHHealth.publico.Ufn_decode_utf8_string(cmef.bairro) end) as matriz_bairro,
+    (case when cmef.estado_abreviacao is null then clef.estado_abreviacao else cmef.estado_abreviacao end) as matriz_estado,
+	(case when clm.cnae is null then clf.cnae else cnaem.cnae end) as matriz_cnae,
+	(case when cnaem.grau_risco is null then ISNULL(cnae.grau_risco, '') else ISNULL(cnaem.grau_risco, '') end) as matriz_cnae_grau_risco,
+    (case when cnaem.descricao is null then RHHealth.publico.Ufn_decode_utf8_string(cnae.descricao) else RHHealth.publico.Ufn_decode_utf8_string(cnaem.descricao) end) as matriz_cnae_descricao,
+	-- filial se é tomador
+    clf.e_tomador as filial_e_tomador,
+    -- endereco da matriz
+    RHHealth.publico.Ufn_decode_utf8_string(clf.razao_social) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_razao_social,
+    RHHealth.publico.Ufn_decode_utf8_string(clf.nome_fantasia) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_nome_fantasia,
+    RHHealth.publico.ufn_formata_cnpj(CASE WHEN(clf.codigo_documento_real IS NOT NULL AND clf.codigo_documento_real <> '' ) THEN
+                                        clf.codigo_documento_real COLLATE SQL_Latin1_General_CP1_CI_AS
+                                      ELSE
+                                        clf.codigo_documento COLLATE SQL_Latin1_General_CP1_CI_AS
+                                      END) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_codigo_documento,
+    clf.cnae COLLATE SQL_Latin1_General_CP1_CI_AS AS cnae,
+    -- endereco da filial
+    RHHealth.publico.Ufn_decode_utf8_string(clef.logradouro) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_endereco,
+    ISNULL(RHHealth.publico.Ufn_decode_utf8_string(clef.complemento),'') COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_complemento,
+    clef.numero AS filial_numero,
+    RHHealth.publico.Ufn_decode_utf8_string(clef.bairro) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_bairro,
+    RHHealth.publico.Ufn_decode_utf8_string(clef.cidade) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_cidade,
+    CONCAT(' ' COLLATE SQL_Latin1_General_CP1_CI_AS, RHHealth.publico.Ufn_decode_utf8_string(clef.estado_descricao) COLLATE SQL_Latin1_General_CP1_CI_AS) COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_estado,
+    clef.cep COLLATE SQL_Latin1_General_CP1_CI_AS AS filial_cep,
+    -----------------
+    (
+        SELECT count(sfu.codigo) AS count
+        FROM RHHealth.dbo.cliente_funcionario scf
+        INNER JOIN RHHealth.dbo.funcionarios sfu ON (sfu.codigo = scf.codigo_funcionario)
+        INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = (Select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_funcionario = scf.codigo order by 1 desc )
+        WHERE fsc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+        AND (FLOOR(DATEDIFF(DAY, sfu.data_nascimento, getdate()) / 365.25) < 18)
+		AND scf.ativo NOT IN (0)
+    ) AS quant_menor_idade,
+    (
+        SELECT count(sfu.codigo) AS count
+        FROM RHHealth.dbo.cliente_funcionario scf
+        INNER JOIN RHHealth.dbo.funcionarios sfu ON (sfu.codigo = scf.codigo_funcionario)
+        INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = (Select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_funcionario = scf.codigo order by 1 desc )
+        WHERE fsc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+        AND sfu.sexo = 'F'
+        AND scf.ativo NOT IN (0)
+    ) AS quant_funcionario_feminino,
+    (
+        SELECT count(sfu.codigo) AS count
+        FROM RHHealth.dbo.cliente_funcionario scf
+        INNER JOIN RHHealth.dbo.funcionarios sfu ON (sfu.codigo = scf.codigo_funcionario)
+        INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = (Select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_funcionario = scf.codigo order by 1 desc )
+        WHERE fsc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+        AND sfu.sexo = 'M'
+        AND scf.ativo NOT IN (0)
+    ) AS quant_funcionario_masculino
+-----------------
+FROM RHHealth.dbo.grupos_economicos_clientes gec
+INNER JOIN RHHealth.dbo.grupos_economicos ge ON (ge.codigo = gec.codigo_grupo_economico)
+
+left join RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo = (select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_alocacao = gec.codigo_cliente order by codigo desc)
+
+    --cliente matriz
+left JOIN RHHealth.dbo.cliente clm ON (clm.codigo = fsc.codigo_cliente_referencia ) -- ge.codigo_cliente)
+    -- cliente filial
+INNER JOIN RHHealth.dbo.cliente clf ON (clf.codigo = gec.codigo_cliente)
+LEFT JOIN RHHealth.dbo.cnae ON (cnae.cnae = clf.cnae)
+    -- obtem o endereco da filial
+LEFT JOIN RHHealth.dbo.cliente_endereco clef ON (clef.codigo_cliente = clf.codigo)
+-- obtem enderedo da matriz
+LEFT JOIN RHHealth.dbo.cliente_endereco cmef ON (cmef.codigo_cliente = clm.codigo)
+-- obtem cnae matriz
+LEFT JOIN RHHealth.dbo.cnae cnaem ON(cnaem.cnae = clm.cnae)
+LEFT JOIN RHHealth.dbo.medicos me ON (me.codigo = ISNULL(clf.codigo_medico_pcmso,clm.codigo_medico_pcmso))
+LEFT JOIN RHHealth.dbo.ordem_servico os ON(os.codigo_grupo_economico = ge.codigo AND os.codigo_cliente = gec.codigo_cliente AND os.codigo IN (SELECT codigo_ordem_servico FROM RHHealth.dbo.ordem_servico_item WHERE codigo_servico=2340))
+WHERE gec.codigo_cliente = $P{CODIGO_CLIENTE}]]>
+	</queryString>
+	<field name="ramo_atividade" class="java.lang.String"/>
+	<field name="grau_risco" class="java.lang.String"/>
+	<field name="inicio_vigencia_pcmso" class="java.lang.String"/>
+	<field name="fim_vigencia_pcmso" class="java.lang.String"/>
+	<field name="vigencia_em_meses" class="java.lang.Integer"/>
+	<field name="nome_medico" class="java.lang.String"/>
+	<field name="numero_conselho" class="java.lang.String"/>
+	<field name="conselho_uf" class="java.lang.String"/>
+	<field name="matriz_razao_social" class="java.lang.String"/>
+	<field name="matriz_codigo_documento" class="java.lang.String"/>
+	<field name="matriz_endereco" class="java.lang.String"/>
+	<field name="matriz_numero" class="java.lang.Integer"/>
+	<field name="matriz_complemento" class="java.lang.String"/>
+	<field name="matriz_cep" class="java.lang.String"/>
+	<field name="matriz_cidade" class="java.lang.String"/>
+	<field name="matriz_bairro" class="java.lang.String"/>
+	<field name="matriz_estado" class="java.lang.String"/>
+	<field name="matriz_cnae" class="java.lang.String"/>
+	<field name="matriz_cnae_grau_risco" class="java.lang.String"/>
+	<field name="matriz_cnae_descricao" class="java.lang.String"/>
+	<field name="filial_e_tomador" class="java.lang.Boolean"/>
+	<field name="filial_razao_social" class="java.lang.String"/>
+	<field name="filial_nome_fantasia" class="java.lang.String"/>
+	<field name="filial_codigo_documento" class="java.lang.String"/>
+	<field name="cnae" class="java.lang.String"/>
+	<field name="filial_endereco" class="java.lang.String"/>
+	<field name="filial_complemento" class="java.lang.String"/>
+	<field name="filial_numero" class="java.lang.Integer"/>
+	<field name="filial_bairro" class="java.lang.String"/>
+	<field name="filial_cidade" class="java.lang.String"/>
+	<field name="filial_estado" class="java.lang.String"/>
+	<field name="filial_cep" class="java.lang.String"/>
+	<field name="quant_menor_idade" class="java.lang.Integer"/>
+	<field name="quant_funcionario_feminino" class="java.lang.Integer"/>
+	<field name="quant_funcionario_masculino" class="java.lang.Integer"/>
+	<detail>
+		<band height="861" splitType="Stretch">
+			<staticText>
+				<reportElement x="160" y="118" width="234" height="47" uuid="9ba0cdd0-d72a-4b42-badf-f540df9bdec8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="18" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PCMSO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="209" width="555" height="20" uuid="f0636d18-9c7f-4f60-a79b-cfccb6864990"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROGRAMA DE CONTROLE MÉDICO DE SAÚDE OCUPACIONAL]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="271" width="555" height="56" uuid="17d8538a-9642-47ba-964d-915f5d0a4123"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{filial_razao_social}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="358" width="555" height="45" uuid="b7e82a7a-f9cd-4cbf-a1f3-312da353386e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["UNIDADE: " + $F{filial_nome_fantasia}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="614" width="555" height="42" uuid="7a0f435c-2d0e-4e19-ba5e-165da0a75396"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{filial_endereco} +", "+ $F{filial_numero} + "\n" +
+$F{filial_bairro} +" - "+ $F{filial_cidade} +"/"+ $F{filial_estado}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="206" y="678" width="143" height="46" uuid="e7765d26-59df-4a3a-b539-691191eb8bfb"/>
+				<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="418" width="555" height="45" uuid="b5da1a3a-be49-43a5-ab9d-6ef5cafea0ec"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Vigência: " + $F{inicio_vigencia_pcmso} + " a " +  $F{fim_vigencia_pcmso}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="857">
+			<frame>
+				<reportElement style="bordered" x="0" y="1" width="555" height="52" uuid="07a8b76e-a72c-4888-a527-847de0c864e2"/>
+				<staticText>
+					<reportElement x="75" y="0" width="369" height="26" uuid="24a1f07c-cefb-4f25-91f2-1dfb43992cd4"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[PCMSO
+Programa de controle Médico de Saúde Ocupacional]]></text>
+				</staticText>
+				<textField pattern="dd/MM/yyyy">
+					<reportElement x="450" y="31" width="100" height="20" uuid="e3df3f82-7af7-4f36-a02d-733d03210371"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+				<image>
+					<reportElement x="7" y="17" width="61" height="21" uuid="58014b0f-2cee-4e45-99ab-828fddf2a133"/>
+					<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+				</image>
+				<image>
+					<reportElement x="451" y="3" width="100" height="30" uuid="6cbefc55-d490-42b0-b12c-f53712fa70b2">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+					</reportElement>
+					<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+				</image>
+			</frame>
+			<line>
+				<reportElement x="74" y="1" width="1" height="52" uuid="2b73b754-59c1-49de-b9aa-ad801818e42a"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement x="444" y="1" width="1" height="52" uuid="22821892-5179-42ad-8852-075d2d6a9d33"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<frame>
+				<reportElement style="bordered" x="0" y="64" width="555" height="15" uuid="82334008-2392-4371-9a32-1cc7cdc1ceb5"/>
+				<staticText>
+					<reportElement x="6" y="0" width="118" height="15" uuid="eb0f1613-1148-4f0a-9087-5d71d7de0a11"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Vigência do PCMSO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="129" y="0" width="100" height="15" uuid="f9790a66-a4cf-495b-aa72-3918b66360c1"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[12 meses]]></text>
+				</staticText>
+			</frame>
+			<line>
+				<reportElement x="124" y="64" width="1" height="15" uuid="c64f7963-d671-4a0a-8de0-b792db72d86a"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<frame>
+				<reportElement style="bordered" x="0" y="89" width="555" height="101" isRemoveLineWhenBlank="true" uuid="951d790c-4810-4007-a9a9-1565de29a5ed"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="2df0cf4e-8940-4428-88a9-7d514fbeb040"/>
+					<staticText>
+						<reportElement x="5" y="0" width="124" height="15" uuid="ec29e339-9a2f-48a7-88bd-d732b620b1d1"/>
+						<textElement verticalAlignment="Middle">
+							<font size="8" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Identificação da Empresa]]></text>
+					</staticText>
+				</frame>
+				<staticText>
+					<reportElement x="5" y="15" width="100" height="10" uuid="e47c3d7b-7171-4405-a1b8-9260e5d5e1b0"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Razão Social]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="37" width="555" height="1" uuid="97f47f6d-8286-4a87-a2da-860d227b08e2"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="657f5350-5b62-4da2-8c27-cbc47ef6823e"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="58" width="555" height="1" uuid="f7de2ff2-4c5f-4b4b-8c5f-fd72982f3d0f"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="38" width="100" height="10" uuid="ecd8f26d-6f19-48d2-ad33-a3bb56cf0c57"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Endereço]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="38" width="1" height="21" uuid="ebbc556b-0ab3-4734-9908-5f89eb5d23be"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="38" width="100" height="10" uuid="fe9381d6-00aa-448f-96dc-d3a29d0b2aa7"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Complemento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="429" y="38" width="100" height="10" uuid="b2781e0b-048b-420c-b5f8-aad73450089c"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNPJ]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="38" width="1" height="21" uuid="232b9939-ada7-4f64-a07d-5f436d19cfbb"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="59" width="100" height="10" uuid="5493e664-95f3-4d41-9b3a-994a2e4b6153"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Bairro]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="59" width="1" height="20" uuid="6de99a8f-c464-4317-a798-ffd30c79d419"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="79" width="555" height="1" uuid="9d1aa885-0f45-496c-b717-e72f14017215"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="429" y="59" width="100" height="10" uuid="ffde67ea-f250-427a-a56c-a223d2f80357"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[UF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="59" width="100" height="10" uuid="f2753c51-60e3-44ea-b28c-087d141ca869"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CEP]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="59" width="1" height="20" uuid="8ea3d020-f8de-44f4-a422-092c73bef47c"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="59" width="1" height="21" uuid="538b25e8-0105-4883-a0ed-452396aca419"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="129" y="59" width="100" height="10" uuid="93f46091-fc9e-4d7c-9337-f81277e80532"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Cidade]]></text>
+				</staticText>
+				<line>
+					<reportElement x="232" y="80" width="1" height="21" uuid="88d5f263-6fe5-4959-a4b7-3acab67a3f07"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="80" width="1" height="21" uuid="3c50f0e8-5cfb-41e4-ab89-6d3b3a2b2e35"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="80" width="100" height="10" uuid="6c4e6c00-947c-49af-ab03-3910f7a69549"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNAE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="129" y="80" width="100" height="10" uuid="d10b3630-c52b-459a-ab7d-6d651901e185"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Grau de Risco]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="237" y="80" width="100" height="10" uuid="cbff3699-c532-4627-b6e2-9c8a192f7d2d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Descrição CNAE]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="5" y="25" width="550" height="10" uuid="a7e97046-606b-483f-82b9-b19674836c17"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="68" width="100" height="10" uuid="e21badbe-bcc9-4d58-92fc-d58a8bbde7a0"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cidade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="68" width="100" height="10" uuid="7af8afe3-e8e2-4699-ad3b-9488ddb318fb"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_bairro}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="68" width="100" height="10" uuid="957b3bee-ee98-46f0-bc7d-1b060a6fce74"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_estado}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="89" width="100" height="10" uuid="5ccccde7-f0cb-4c23-a146-f846f33fb032"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cnae}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="238" y="89" width="312" height="10" uuid="f802d94e-5c57-4b7d-a109-8f408d9608d9"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cnae_descricao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="89" width="100" height="10" uuid="ba723c7c-09c8-4754-9450-d24b9691bafc"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_cnae_grau_risco}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="47" width="100" height="10" uuid="d322975f-3c35-4843-9384-3ff76d528159"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_codigo_documento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="6" y="47" width="287" height="10" uuid="0d0708d2-e6de-4f04-87a2-f7923089b717"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_endereco} +", "+ $F{matriz_numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="47" width="100" height="10" uuid="d5d22dbd-8c29-4213-b428-b0bbf7ec2078"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{matriz_complemento}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="313" width="555" height="103" uuid="a51d64ce-fcb1-4ec0-84ac-7ae2914d12c2"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="ff6e9419-5393-4803-ae76-d63684d024cc"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="2e5cf72f-9793-45d6-ae54-4bdbb42806ce"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[1. INTRODUÇÃO]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="d715da23-766b-47be-a41b-d4aa1c8a477d"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="82" uuid="74a357eb-56a4-4c16-9166-f0f1e4b8419e"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Passaremos a descrever em seguida o Programa de Controle Médico e Saúde Ocupacional, que orientará nossas atividades na Medicina do Trabalho, no decorrer dos próximos 12 meses, cuja finalidade é promover e preservar a saúde dos trabalhadores, conforme o previsto na NR-07 da Portaria 3.214 de 1978.
+
+O Programa é desenvolvido em concordância com os dispositivos legais do capítulo V do título II da CLT e demais normas que compõem o ordenamento jurídico e Normas Regulamentadoras aprovadas pela Portaria 3.214 de 08 de junho de 1978, considerando sua última atualização.
+
+O Programa está em permanente manutenção, identificando e estabelecendo as ações necessárias para corrigir as deficiências constatadas e indicar alterações nas ações previstas, inclusive àquelas provocadas por mudanças no processo produtivo, na legislação e introdução de novas tecnologias.
+
+Na viabilização do PCMSO, estão envolvidos os profissionais da área de Segurança e Saúde, Gerências de todos os setores, Diretorias, CIPA e demais empregados. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="426" width="555" height="116" uuid="6d0326d8-de7e-41a4-a673-d2923fe20ca1"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="25f06c1d-271a-4e40-8772-d41c5b92e1ed"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="f2d177ab-e270-4b9f-8804-ec4aff44161b"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[2. OBJETIVOS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="29eddd6a-e99e-4e53-aaeb-cca6b7c2ac37"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="95" uuid="fd0a28d7-86c0-4477-801e-eb4b0819ee86"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[O PROGRAMA DE CONTROLE MÉDICO E SAÚDE OCUPACIONAL - PCMSO tem como objetivo promover,  prevenir e conservar a saúde dos trabalhadores; estabelecer diretrizes e parâmetros mínimos para avaliação e acompanhamento das diversas exposições a agentes com potencial nocivo.
+
+Esse acompanhamento é realizado através da sistematização de exames de monitoração biológica, estabelecendo a uniformização de critérios e de procedimentos nas atividades médicas de saúde ocupacional, possibilitando a realização de estudos epidemiológicos.
+
+O programa tem ainda inteira consonância com o PPRA - Programa de Prevenção de Riscos Ambientais, seu Planejamento Anual e as metas estabelecidas, visando à adoção de medidas para eliminação e/ou a minimização e o controle dos riscos ambientais.
+
+Essas medidas são adotadas considerando as viabilidades técnicas de implantação, através da busca em suas múltiplas causas e as consequentes ações coletivas de intervenção sobre as fontes emissoras, associadas à modalidade de atenuação dos agentes, avaliando em seguida cada uma das medidas adotadas e implantadas, através de nova realização de análises quantitativas dos agentes presentes, comparando-os aos resultados anteriores. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="552" width="555" height="57" uuid="69a37867-5626-4e68-91bf-064aa4b3cc66"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="2ad6c9e9-67a6-493d-a82e-83cd2210517f"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="cc0bf17f-3dd4-4e62-9899-9779505b2e40"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[3. DIRETRIZES GERAIS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="0e6b4448-629e-423f-b7ac-d7457d09acf1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="36" uuid="575bf361-ae25-4e4c-9bc3-8c6bb6962a07"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[1. DESENVOLVIMENTO DO PCMSO
+
+Um profundo conhecimento das atividades desenvolvidas por cada trabalhador e dos riscos a que estão expostos é fundamental para o desenvolvimento do PCMSO. Portanto, é de grande importância um estudo da descrição das atividades e um levantamento das exigências das funções, podendo assim compreender a relação de cada atividade ou ambiente de trabalho com a saúde do trabalhador. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="619" width="555" height="238" uuid="8eee1192-1079-452c-938d-d3d0e85b57da"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="d87ce2cc-f31a-421c-bf68-8c9bef906406"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="c87d0538-87ec-4d42-aa20-072fc2b74b7d"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[4. EXAMES MEDICOS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="726a50f0-598e-4c8c-b51c-b6d9e2f6c815"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="217" uuid="06dd3526-9937-4f0e-a016-eb9bd2c28ff2"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Os exames complementares designados nesse Programa estão divididos em três categorias, conforme os seus objetivos, a saber:
+
+Exames de Benefício: Exames que a empresa oferece a todos os seus funcionários com a intenção de proporcionar melhor qualidade de vida, detecção preventiva de doenças crônicas, redução do absenteísmo, diminuição da sinistralidade dos planos de saúde e direcionamento das campanhas programadas. São exames de realização recomendável, não devendo estar vinculados à liberação do Atestado de Saúde Ocupacional.
+
+Exames de capacitação: Exames que tem o objetivo de seletividade para a função, de forma a comprovar a capacitação para uma determinada tarefa. São exames de realização obrigatória por exigência legal. Devem estar discriminados no A.S.O. com suas respectivas datas de realização.
+
+Exames ocupacionais propriamente ditos: Exames para o monitoramento biológico dos agentes de risco de cada setor / atividade. São exames de realização obrigatória por exigência legal, devendo estar discriminados no A.S.O. com suas respectivas datas de realização.
+
+a. Exame Pré Admissional
+
+Será realizado em todos os novos funcionários antes que os mesmos iniciem suas atividades. É de responsabilidade do RH enviar os candidatos a novas vagas para a realização dos exames que fazem parte da avaliação admissional.
+
+b. Exame Periódico
+
+Será realizado em intervalos de tempo estabelecidos pela lei e definido no cronograma de avaliação nos exames ocupacionais. Mensalmente, o Serviço Médico enviará ao responsável da área de Recursos Humanos, listagem contendo os nomes dos funcionários que deverão ser avaliados no mês seguinte.
+
+c. Retorno ao Trabalho
+
+Realizado obrigatoriamente no primeiro dia de volta ao trabalho, afastado por período igual ou superior a 30 (trinta) dias, por motivo de doença ou acidente, de natureza ocupacional ou não, ou parto. É de responsabilidade do RH encaminhar estes funcionários para o Serviço Médico.
+
+]]></text>
+				</staticText>
+			</frame>
+			<textField>
+				<reportElement x="75" y="27" width="369" height="25" uuid="3840cc98-1d3e-44c6-9985-8029062ba596"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{filial_razao_social}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="6" y="157" width="100" height="10" uuid="cf5a4c7f-c69f-40ee-b403-29389f3a3546"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{matriz_cep}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement style="bordered" x="0" y="200" width="555" height="101" isRemoveLineWhenBlank="true" uuid="2402bf87-17e3-49db-99a5-22b560b42368">
+					<printWhenExpression><![CDATA[$F{filial_e_tomador}]]></printWhenExpression>
+				</reportElement>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="87e4d1d0-f7fb-4962-b735-3d3bc64b5090"/>
+					<staticText>
+						<reportElement x="5" y="0" width="171" height="15" uuid="4b2c40bf-b05e-4709-975a-80dbc3ee7540"/>
+						<textElement verticalAlignment="Middle">
+							<font size="8" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Identificação do Posto de Trabalho]]></text>
+					</staticText>
+				</frame>
+				<staticText>
+					<reportElement x="5" y="15" width="100" height="10" uuid="9f7a46ad-dbae-4b92-bdaf-ec2dbca0e14d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Razão Social]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="37" width="555" height="1" uuid="17df4852-7a28-49e3-ba43-ec349d776936"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="a61b5928-4b7c-4938-8577-35106e4aa400"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="58" width="555" height="1" uuid="54c6265c-7f88-4249-b812-7e8b01890bf7"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="38" width="100" height="10" uuid="ab3b3d64-8a31-4e73-857c-c44ac164f20e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Endereço]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="38" width="1" height="21" uuid="cce08ba0-3a8c-4098-b230-cdd186a19437"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="38" width="100" height="10" uuid="c21dd114-fcaa-4669-b3a6-656634b713dc"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Complemento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="429" y="38" width="100" height="10" uuid="159ddd97-1ffb-4a69-ae8f-556a77380fb1"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNPJ]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="38" width="1" height="21" uuid="fed65b70-f8d4-43bc-b2ec-2f3b4c98f2a4"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="299" y="59" width="100" height="10" uuid="c582862f-2a40-44b7-825e-970bad6b69e4"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Bairro]]></text>
+				</staticText>
+				<line>
+					<reportElement x="293" y="59" width="1" height="20" uuid="2a84da74-adad-4979-ac21-f8deaf508010"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="79" width="555" height="1" uuid="6d163ca0-2c76-47ac-803a-baf7a6da4a03"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="429" y="59" width="100" height="10" uuid="19c8a263-8d87-4317-9a3d-4f6acbbffc66"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[UF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="59" width="100" height="10" uuid="791d66af-9f2f-4dc2-937e-2566a7a0eaca"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CEP]]></text>
+				</staticText>
+				<line>
+					<reportElement x="423" y="59" width="1" height="20" uuid="dc765956-7894-4041-b6fd-2ecba2385727"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="59" width="1" height="21" uuid="14ffc419-1e6a-4058-ad37-68d86ee782d9"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="129" y="59" width="100" height="10" uuid="d5a4b5a6-978c-4601-81d5-43528312e1a3"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Cidade]]></text>
+				</staticText>
+				<line>
+					<reportElement x="232" y="80" width="1" height="21" uuid="f91c5f85-be7c-4eee-b7bf-64569eb34a6a"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="123" y="80" width="1" height="21" uuid="62f2b9ff-d91e-45d2-a49f-e0470e41ea36"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="80" width="100" height="10" uuid="b04b6b75-fcd9-4608-820a-6d38f17d6f8f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[CNAE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="129" y="80" width="100" height="10" uuid="6cf72285-a933-44b1-aa6f-fe0a76778906"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Grau de Risco]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="237" y="80" width="100" height="10" uuid="641479fd-452b-4dcc-ba7e-512492c8a8c5"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Descrição CNAE]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="5" y="25" width="550" height="10" uuid="3e7340cd-3cde-4853-977b-f4d863f3ffa0"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="68" width="100" height="10" uuid="ba99516c-4bbb-40a4-879a-9b2298f957b8"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_cidade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="68" width="100" height="10" uuid="6de6ae6a-903d-4fdc-9361-6ea5ac6cb98c"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_bairro}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="68" width="100" height="10" uuid="e7a88c1c-38c2-4b54-96bd-a092a6867976"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_estado}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="89" width="100" height="10" uuid="ac943db8-2399-4f16-b54c-cb7840ea91c0"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cnae}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="238" y="89" width="312" height="10" uuid="5f5779cd-8e2e-4a9d-81fc-fe0623ff6068"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ramo_atividade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="129" y="89" width="100" height="10" uuid="22913b25-f9d4-4ea1-86cf-4a32ecb4a553"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{grau_risco}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="429" y="47" width="100" height="10" uuid="6c06f487-d855-4559-a1cd-fa5a04fa841e"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_codigo_documento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="6" y="47" width="287" height="10" uuid="d1f7d720-30d0-4e33-a15b-2e778260af2f"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_endereco} +", "+ $F{filial_numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="299" y="47" width="100" height="10" uuid="08bd52d1-4d21-41ed-b8d8-60eee225c09d"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_complemento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="69" width="100" height="10" uuid="87ccb3e9-c09b-4099-8a6c-6e48ade322e5"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{filial_cep}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="856">
+			<frame>
+				<reportElement style="bordered" x="0" y="0" width="555" height="108" uuid="2e7321f6-6eda-435c-ac1b-5480a00cc6c9"/>
+				<staticText>
+					<reportElement x="6" y="0" width="549" height="107" uuid="14759ece-64ec-41b8-93b0-6b4a77838a09"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[d. Mudança de Função
+
+Realizado em funcionários que têm alteração em sua atividade, posto de trabalho ou setor, que implique em exposição a risco diferente daquele a que estava exposto anteriormente. Deve ser realizado antes da data da mudança. Os exames complementares e o direcionamento do exame clínico terão como referência a antiga e a nova função.
+
+e. Exame Demissional
+
+Será realizado até a data da homologação, desde que o último exame médico ocupacional tenha sido realizado há mais de 135 dias, para empresas de grau de risco 1 ou 2 e 90 dias para empresas de risco 3 ou 4.
+
+f. Exame Monitoração Pontual
+
+Será realizado em intervalos de tempo estabelecidos pela lei e definido no cronograma de avaliação nos exames ocupacionais. Mensalmente, o Serviço Médico enviará ao responsável da área de Recursos Humanos, listagem contendo os nomes dos funcionários que deverão ser avaliados no mês seguinte. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="116" width="555" height="133" uuid="4a6d25f7-7ee5-4f81-a3b9-39423e2a06e8"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="079a5d1f-e97f-403a-87be-7745fe9a6237"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="48139056-690b-422e-871e-bd7618404f0f"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[5. ATESTADO DE SAÚDE OCUPACIONAL]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="af509a20-ecdb-4e0f-aa43-ee0f862308bb"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="112" uuid="1b680e38-2ea4-41da-9d9d-36a6a57f48f3"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Será emitido após a realização de cada exame médico, em três vias, ficando a primeira com o funcionário, a segunda junto ao dossiê do empregado no Departamento de Pessoal, e a terceira, como cópia de segurança, com o Serviço Médico. O ASO devera conter, no mínimo:
+
+a. Nome do trabalhador, o número do CPF, sua função e setor;
+
+b. Os riscos ocupacionais existentes ou declarada a ausência deles;
+
+c. Os procedimentos médicos a que foi submetido o trabalhador, incluindo os exames complementares e a data em que foram realizados;
+
+d. Nome do médico coordenador com o respectivo CRM;
+
+e. Definição de apto ou inapto para a função específica que o trabalhador irá exercer, estiver exercendo ou exerceu;
+
+f. Nome do médico encarregado do exame e endereço ou forma de contato. Data, assinatura e CRM do médico encarregado do exame. ]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="258" width="555" height="42" uuid="a844e922-19f7-4596-97ce-11693ee86fe5"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="7e38c244-ffb9-42e2-b34a-73c00457f00d"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="6715fbd8-0e7b-433c-a3eb-489cbbf20d64"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[6. PRONTUÁRIO CLÍNICO INDIVIDUAL]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="f809fde3-a3e6-4f02-8670-a67cf7276e52"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="21" uuid="b8e7b6b8-7d50-4312-8e7f-bffa52ea67f0"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Os dados obtidos nos exames médicos e complementares deverão ser registrados em prontuário clínico individual que ficará sob a responsabilidade do médico coordenador. Deverão ser mantidos por um período de 20 anos ou transferidos para o novo coordenador, no caso de substituição.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="309" width="555" height="42" uuid="d77cbc63-bad6-43b5-aa45-84775a9c34dd"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="9f261e45-f7a4-4bf1-88da-d9e9cd17b45d"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="dbd0858b-e3fc-4da5-b063-bd013a348c63"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[7. PRIMEIROS SOCORROS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="46a622c9-9263-424e-b0e1-8a5898b1193a"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="21" uuid="8d999ea5-6f88-491d-9f0c-027708b991a7"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[A NR 7 estabelece que "todo estabelecimento deverá estar equipado com material necessário a prestação de primeiros socorros, considerando-se as características das atividades desenvolvidas". Determina ainda a guarda desse material em local adequado e a existência de pessoal treinado para esse fim.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" stretchType="RelativeToTallestObject" x="0" y="360" width="555" height="97" uuid="5c5ef36c-582e-4bd2-9ffd-c1aa36318396"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="5ea4802d-d121-4a86-a814-a7113259c4cd"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="d7f94ebd-cdad-4ccf-94bd-91098fa7ddea"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[ MATERIAIS PARA A CAIXA DE PRIMEIROS SOCORROS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="c4733303-faf3-4c41-8f1e-8e8d7cb49aef"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+			<subreport isUsingCache="true">
+				<reportElement isPrintRepeatedValues="false" x="0" y="375" width="555" height="82" uuid="86d9f9e5-af4b-41e1-8065-e77e61a319e5"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_materiais_pronto_socorro.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="72">
+			<frame>
+				<reportElement style="bordered" x="1" y="6" width="554" height="14" uuid="c27c6ebb-d61e-46f6-bb73-f8c4fdbc4f15"/>
+				<textField>
+					<reportElement x="57" y="0" width="492" height="14" uuid="d40bf9ef-c612-4f0f-b2d6-f11f73c774c6"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{filial_nome_fantasia}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="6" y="0" width="61" height="14" uuid="eb9ab2c3-e4e2-44f4-a32b-a680350c7e4c"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Unidade:]]></text>
+				</staticText>
+			</frame>
+			<subreport>
+				<reportElement x="0" y="30" width="555" height="41" uuid="c6868886-0d07-499c-b3f3-3555cfc6cb45"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="IMP_SETOR_CARGO_VAZIO">
+					<subreportParameterExpression><![CDATA[$P{IMP_SETOR_CARGO_VAZIO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:relatorio_unidades.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="344">
+			<frame>
+				<reportElement style="bordered" x="0" y="18" width="555" height="56" uuid="6ac57485-c598-4286-8da0-6ad5912a7c54"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="fb0643a2-85aa-43a6-8d72-bfbc4585d96e"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="d6f3a92a-be46-4099-8f41-8df9a9a6f6fe"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[OBSERVAÇÃO]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="2ea4331d-f4c8-46b3-b74d-b53bf66f96f4"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="21" width="549" height="35" uuid="648c30de-9bb2-4bae-9d4f-bbda68bf3516"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Todos os funcionários com idade entre 18 e 45 anos poderão realizar o exame periódico a cada dois anos, desde que não estejam expostos a riscos no ambiente de trabalho e que não sejam portadores de doenças crônicas.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="79" width="555" height="192" uuid="ce90e1ef-8734-4fd2-a7be-7bd9e34e6926"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="8f925518-c85f-4634-8885-fe36c14a74aa"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="628dc6ee-6881-4a53-bfd9-073793ec651b"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[ATIVIDADES E PROGRAMAS SUPLEMENTARES]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="8fbc31b2-6a88-40df-bbbe-3427a0be01d5"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="6" y="33" width="549" height="35" uuid="0043fc49-472d-4528-bfc2-61b27ab5992e"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[A medicina do trabalho ministra, palestras sobre temas atuais relacionados à saúde e o bem estar pessoal, com a finalidade de orientar os trabalhadores sobre os riscos à sua saúde existentes em seu local de trabalho. Estas palestras visam conscientizar a população trabalhadora a respeito das regras de Saúde e Segurança no trabalho, prevenindo assim possíveis danos a sua saúde.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="23" width="170" height="8" uuid="dbfb0c3e-7778-44d5-9aed-a2df21b93c05"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE PALESTRAS EDUCATIVAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="93" width="549" height="35" uuid="b8c77ed1-f1e4-40d6-a5a9-51f613f5ff34"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Os funcionários portadores dessas doenças passam a ter uma ficha de acompanhamento clínico em separado, sendo examinados no Serviço Médico, para verificação. Esses funcionários são encaminhados para seus médicos clínicos assistentes para avaliação, tratamento e acompanhamento. Os resultados das avaliações, assim como as alterações / trocas de medicamentos serão informadas ao Serviço Médico e inseridas nas fichas de acompanhamento.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="83" width="287" height="8" uuid="5131323c-5af5-4a43-8e50-dde92fa26888"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE ACOMPANHAMENTO DE DOENÇAS CRÔNICAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="145" width="287" height="8" uuid="30cd154f-c64e-4b86-87e0-9ed0b5acc954"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE PREVENÇÃO DE D.O.R.T]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="6" y="155" width="549" height="35" uuid="3d9f5701-e337-4945-a803-9539e82baa23"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Serão realizadas vistorias nos postos de trabalho com riscos ergonômicos (movimentos repetitivos, posições forçadas etc.). Para orientação geral dos trabalhadores, serão realizados palestras e treinamentos com orientações específicas para neutralizar ou reduzir os efeitos mórbidos dos constrangimentos posturais.]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="277" width="555" height="56" uuid="b6b92045-45d1-4f62-a2cc-bdab2297e72d"/>
+				<frame>
+					<reportElement style="background-gray" x="0" y="0" width="555" height="15" uuid="49edb295-12ce-4a66-a7a8-43d45b52adc0"/>
+					<staticText>
+						<reportElement x="5" y="0" width="550" height="15" uuid="6907d1de-8739-462b-b378-6a970b6dfd94"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[TOTAL DE FUNCIONARIOS]]></text>
+					</staticText>
+				</frame>
+				<line>
+					<reportElement x="0" y="14" width="555" height="1" uuid="2ca55c58-daa6-4336-b639-2a1a87cfd4cf"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<frame>
+					<reportElement style="bordered" x="155" y="15" width="100" height="41" uuid="b8c83174-4aa6-4475-865d-031ddb12c2d6"/>
+					<staticText>
+						<reportElement x="0" y="10" width="100" height="10" uuid="f25d208d-4430-4e49-b424-0c627e24760f"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Masculino]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="21" y="26" width="62" height="10" uuid="2b6ef3a4-00ba-4422-9b3c-a851bb2bf32a"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{quant_funcionario_masculino}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="bordered" x="355" y="15" width="100" height="41" uuid="79ea32d9-7b2e-44f4-8839-1855537fbede"/>
+					<staticText>
+						<reportElement x="0" y="10" width="100" height="10" uuid="935e83a1-6716-43e1-9624-7db399112b21"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Menor]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="20" y="26" width="62" height="10" uuid="3fd8f0f2-2d05-4f38-99b6-3f160d8fa99c"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{quant_menor_idade}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement style="bordered" x="455" y="15" width="100" height="41" uuid="c874ff67-b18d-4444-9d65-722270e29d25"/>
+					<staticText>
+						<reportElement x="0" y="10" width="100" height="10" uuid="74ba0bf4-d7ff-42c0-8da6-d57d31de7501"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<text><![CDATA[Total]]></text>
+					</staticText>
+					<textField>
+						<reportElement x="20" y="26" width="62" height="10" uuid="e3f71a8a-c12d-4383-b9ec-2ada0ef66062"/>
+						<textElement textAlignment="Center">
+							<font size="6" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[($F{quant_funcionario_masculino} + $F{quant_funcionario_feminino} + $F{quant_menor_idade})]]></textFieldExpression>
+					</textField>
+				</frame>
+				<staticText>
+					<reportElement x="40" y="41" width="100" height="10" uuid="8eeccd6d-2c1d-4d48-a777-c907fce6c899"/>
+					<textElement textAlignment="Center">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Funcionarios]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="255" y="292" width="100" height="41" uuid="cd4e3e18-5044-4272-aef5-6e0f88742d22"/>
+				<staticText>
+					<reportElement x="0" y="10" width="100" height="10" uuid="34227f5c-30ca-4382-ad5d-fc978c65c6bd"/>
+					<textElement textAlignment="Center">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Feminino]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="20" y="26" width="62" height="10" uuid="7a536a68-97ea-4ec4-9459-de0bca7d4ddb"/>
+					<textElement textAlignment="Center">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{quant_funcionario_feminino}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="44">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="44" uuid="5873b108-1c32-44ee-a2e3-451a48bc90fc"/>
+				<subreport isUsingCache="false">
+					<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="44" isRemoveLineWhenBlank="true" uuid="1ae6e637-5a0f-43a4-8366-394dbfdb0029"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_hospitais_emergencia.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="90">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="90" uuid="12156d9a-4605-40a2-bede-0ab1b9806d48"/>
+				<textField isBlankWhenNull="true">
+					<reportElement x="217" y="73" width="121" height="11" uuid="c6202c64-8ffe-4ef3-8136-a460c1f10424"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA["CRM/UF:"+$F{numero_conselho}+"/"+$F{conselho_uf}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="216" y="62" width="122" height="11" uuid="8b756750-9a18-49e5-ac02-4bbf4076a76c"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome_medico}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="215" y="50" width="124" height="10" uuid="6458aa33-769c-4765-9b1a-6fd9e757ceff"/>
+					<textElement textAlignment="Center">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Médico Coordenador do PCMSO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="216" y="47" width="122" height="1" uuid="7bff6e4c-50ef-492a-8c85-d30865193ae7"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+			<break>
+				<reportElement x="0" y="89" width="555" height="1" uuid="084ba89f-3f25-4ff6-8ecd-18220397d55d"/>
+			</break>
+		</band>
+		<band height="49">
+			<subreport isUsingCache="false">
+				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="41" uuid="0aebf913-b437-4bbd-a82c-8b2c90f974b0"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cronogramas_acoes.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="44">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="44" uuid="775eb598-01bc-4630-9d27-7b663fc0ae28"/>
+				<subreport isUsingCache="false">
+					<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="44" isRemoveLineWhenBlank="true" uuid="f38a5798-7115-4769-8484-f08562a29865"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_corpo_clinico.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="38">
+			<textField>
+				<reportElement x="455" y="9" width="100" height="20" uuid="a075b28c-e5d9-4b5b-b33c-fe5cc09a8899"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

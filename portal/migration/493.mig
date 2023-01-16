@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Subperfil
+create;buonny/Subperfil;index
+create;buonny/Subperfil;listagem
+create;buonny/Subperfil;editar
+create;buonny/Subperfil;incluir
+create;buonny/Painel;modulo_plano_de_acao

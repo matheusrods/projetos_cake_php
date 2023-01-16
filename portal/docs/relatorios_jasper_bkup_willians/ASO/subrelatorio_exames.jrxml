@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subrelatorio_exames" language="groovy" columnCount="2" printOrder="Horizontal" pageWidth="595" pageHeight="360" columnWidth="297" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ASO"/>
+	<property name="ireport.jasperserver.url" value="http:// jasperprd.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="CODIGO_CLIENTE_FUNCIONARIO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+    RHHealth.publico.Ufn_decode_utf8_string(ex.descricao) AS exame_descricao,
+    CONVERT(VARCHAR(10), ipeb.data_realizacao_exame, 103) AS data_agendamento
+FROM RHHealth.dbo.pedidos_exames  pe
+    LEFT JOIN RHHealth.dbo.itens_pedidos_exames ipe
+        ON(ipe.codigo_pedidos_exames = pe.codigo)
+    LEFT JOIN RHHealth.dbo.itens_pedidos_exames_baixa ipeb
+        ON(ipeb.codigo_itens_pedidos_exames = ipe.codigo)
+     LEFT JOIN RHHealth.dbo.exames ex
+        ON(ex.codigo = ipe.codigo_exame)
+WHERE pe.codigo = $P{CODIGO_PEDIDO_EXAME}]]>
+	</queryString>
+	<field name="exame_descricao" class="java.lang.String"/>
+	<field name="data_agendamento" class="java.lang.String"/>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement  x="4" y="1" width="145" height="22"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exame_descricao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement  x="149" y="1" width="108" height="22"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA['Data: ' + (($F{data_agendamento} != null)? $F{data_agendamento} : '_____/_____/_______')]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

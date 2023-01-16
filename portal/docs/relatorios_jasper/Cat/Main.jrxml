@@ -1,0 +1,1807 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/cat"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.zoom" value="1.652892561983471"/>
+	<property name="ireport.x" value="38"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="CODIGO_CAT" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select
+	(case
+		when cat.codigo_emitente = 1 then 'Empregador'
+		when cat.codigo_emitente = 2 then 'Cooperativa'
+		when cat.codigo_emitente = 3 then 'Sindicato de trabalhadores avulsos não portuários'
+		when cat.codigo_emitente = 4 then 'Órgão Gestor de Mão de Obra'
+		when cat.codigo_emitente = 5 then 'Empregado'
+		when cat.codigo_emitente = 6 then 'Dependente do Empregado'
+		when cat.codigo_emitente = 7 then 'Entidade Sindical competente'
+		when cat.codigo_emitente = 8 then 'Médico assistente'
+	else 'Autoridade Pública' end) as emitente,
+	(case
+		when cat.tipo_cat_codigo = 1 then 'Inicial'
+        when cat.tipo_cat_codigo = 2 then 'Reabertura'
+        when cat.tipo_cat_codigo = 3 then 'Comunicação de óbito'
+	end) as tipo_cat,
+	cli.razao_social,
+	(case when cli.codigo_documento_real <> '' then cli.codigo_documento_real else cli.codigo_documento end) as cnpj,
+	cli.cnae,
+	RHHealth.publico.Ufn_decode_utf8_string(concat(clie.logradouro,', ', clie.numero, ', ',clie.complemento)) as cliente_endereco,
+	RHHealth.publico.Ufn_decode_utf8_string(clie.bairro) as cliente_bairro,
+	clie.cep as cliente_cep,
+	RHHealth.publico.Ufn_decode_utf8_string(clie.cidade) as cliente_cidade,
+	clie.estado_abreviacao as cliente_estado,
+	isnull(clic.descricao,'') as cliente_telefone,
+	f.nome,
+	f.nome_mae,
+	'' as escolaridade,
+	convert(varchar, f.data_nascimento, 103) as data_nascimento,
+	(case when f.sexo = 'M' then '1-Masculino' else '2-Feminino' end) as sexo,
+	(case
+		when f.estado_civil = 1 then 'Solteiro'
+		when f.estado_civil = 2 then 'Casado'
+		when f.estado_civil = 3 then 'Separado'
+		when f.estado_civil = 4 then 'Divorciado'
+		when f.estado_civil = 5 then 'Viúvo'
+		else 'Outros' end) as estado_civil,
+	f.ctps,
+	f.ctps_serie,
+	isnull(convert(varchar, f.ctps_data_emissao, 103),'') as ctps_data_emissao,
+	f.ctps_uf,
+	f.rg,
+	f.rg_data_emissao,
+	f.rg_orgao,
+	f.rg_uf,
+	f.nit,
+	RHHealth.publico.Ufn_decode_utf8_string(concat(fe.logradouro,', ',fe.numero, ', ', fe.complemento)) as func_endereco,
+	RHHealth.publico.Ufn_decode_utf8_string(fe.bairro) as func_bairro,
+	fe.cep as func_cep,
+	RHHealth.publico.Ufn_decode_utf8_string(fe.cidade) as func_cidade,
+	fe.estado_abreviacao as func_estado,
+	fc.descricao as func_telefone,
+	RHHealth.publico.Ufn_decode_utf8_string(car.descricao) as cargo,
+	(case
+		when cat.fil_prev_social_codigo = 1 then 'Empregado'
+		when cat.fil_prev_social_codigo = 2 then 'Tra.Avulso'
+		when cat.fil_prev_social_codigo = 3 then 'Seg.especial'
+		else 'Médico Residente'
+	end) as filiacao_previdencia_social,
+	car.codigo_cbo,
+	(case when cat.aposentado = 1 then 'Sim' else 'Não' end) as aposentado,
+	(case when cat.area_codigo = 1 then 'Urbana' else 'Rural' end) as area,
+
+	convert(varchar, cat.data_acidente, 103) as data_acidente,
+	convert(varchar, cat.hora_acidente,8) as hora_acidente,
+	convert(varchar, cat.apos_qts_hs_trabalho, 8) as apos_qts_hs_trabalho,
+	tab24.descricao as tipo,
+	(case when cat.houve_afastamento = 1 then 'Sim' else 'Não' end) as houve_afastamento,
+	convert(varchar,cat.ultimo_dia_trabalhado, 103) as ultimo_dia_trabalhado,
+	RHHealth.publico.Ufn_decode_utf8_string(cat.local_acidente) as local_acidente,
+	RHHealth.publico.Ufn_decode_utf8_string(cat.especificacao_local_acidente) as especificacao_local_acidente,
+	cat.codigo_documento as cnpj39,
+	cat.uf_documento,
+	'' as municipio_acidente,
+	tab13.descricao as parte_corpo,
+	tab1415.descricao as agente_causador,
+	tab16.descricao as situacao_geradora,
+	(case when cat.resistro_policial = 1 then 'Sim' else 'Não' end) as registro_policial,
+	(case when cat.morte = 1 then 'Sim' else 'Não' end) as houve_morte,
+	cat.t1_nome,
+	(case when cat.t1_endereco <> '' then RHHealth.publico.Ufn_decode_utf8_string(concat(cat.t1_endereco,', ',cat.t1_numero,' ',cat.t1_complemento)) end) as t1_endereco,
+	cat.t1_bairro,
+	cat.t1_cep,
+	isnull(RHHealth.publico.Ufn_decode_utf8_string(cat.t1_cidade),'') as t1_cidade,
+	cat.t1_estado,
+	cat.t1_telefone,
+	RHHealth.publico.Ufn_decode_utf8_string(cat.t2_nome) as t2_nome,
+	isnull((case when cat.t2_endereco <> '' then RHHealth.publico.Ufn_decode_utf8_string(concat(cat.t2_endereco,', ',cat.t2_numero,' ',cat.t2_complemento)) end),'') as t2_endereco,
+	cat.t2_bairro,
+	cat.t2_cep,
+	isnull(RHHealth.publico.Ufn_decode_utf8_string(cat.t2_cidade),'') as t2_cidade,
+	cat.t2_estado,
+	cat.t2_telefone,
+	RHHealth.publico.Ufn_decode_utf8_string(cat.local) as local,
+	convert(varchar, cat.data, 103) as data,
+	cat.cnes,
+	convert(varchar,cat.data_atendimento,103) as data_atendimento,
+	convert(varchar,cat.hora_atendimento,8) as hora_atendimento,
+	(case when cat.indicativo_internacao = 'S' then 'Sim' else 'Não' end) as indicativo_internacao,
+	cat.duracao_estimada_tratamento,
+	(case when cat.houve_afastamento = 1 then 'Sim' else 'Não' end) as houve_afastamento,
+	cat.descricao_complementar_lesao,
+	cat.diagnostico_provavel,
+	isnull(cat.cid10,'') as cid10,
+	cat.observacao,
+	med.nome,
+	concat(med.numero_conselho,'-',med.conselho_uf) as conselho,
+	cat.codigo as numero_cat,
+	cf.matricula
+from RHHealth.dbo.cat cat
+	inner join RHHealth.dbo.cliente cli on cat.codigo_cliente = cli.codigo
+	inner join RHHealth.dbo.cliente_endereco clie on cli.codigo = clie.codigo_cliente
+	left join RHHealth.dbo.cliente_contato clic on clic.codigo_cliente = cli.codigo and clic.codigo_tipo_contato = 2
+	inner join RHHealth.dbo.funcionarios f on cat.codigo_funcionario = f.codigo
+	inner join RHHealth.dbo.funcionarios_enderecos fe on fe.codigo = (select top 1 codigo from RHHealth.dbo.funcionarios_enderecos where codigo_funcionario = f.codigo order by 1 desc )
+	left join RHHealth.dbo.funcionarios_contatos fc on f.codigo = fc.codigo_funcionario and fc.codigo_tipo_contato = 2
+	inner join RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo = cat.codigo_funcionario_setor_cargo
+	inner join RHHealth.dbo.cargos car on fsc.codigo_cargo = car.codigo
+	inner join RHHealth.dbo.cliente_funcionario cf on fsc.codigo_cliente_funcionario = cf.codigo
+	left join RHHealth.dbo.esocial tab24 on tab24.codigo = cat.codigo_esocial_24
+	left join RHHealth.dbo.esocial tab13 on tab13.codigo = cat.codigo_esocial_13
+	left join RHHealth.dbo.esocial tab1415 on tab1415.codigo = cat.codigo_esocial_14_15
+	left join RHHealth.dbo.esocial tab16 on tab16.codigo = cat.codigo_esocial_16
+	left join RHHealth.dbo.medicos med on med.codigo = cat.codigo_medico
+where cat.codigo = $P{CODIGO_CAT}]]>
+	</queryString>
+	<field name="emitente" class="java.lang.String"/>
+	<field name="tipo_cat" class="java.lang.String"/>
+	<field name="razao_social" class="java.lang.String"/>
+	<field name="cnpj" class="java.lang.String"/>
+	<field name="cnae" class="java.lang.String"/>
+	<field name="cliente_endereco" class="java.lang.String"/>
+	<field name="cliente_bairro" class="java.lang.String"/>
+	<field name="cliente_cep" class="java.lang.String"/>
+	<field name="cliente_cidade" class="java.lang.String"/>
+	<field name="cliente_estado" class="java.lang.String"/>
+	<field name="cliente_telefone" class="java.lang.String"/>
+	<field name="nome" class="java.lang.String"/>
+	<field name="nome_mae" class="java.lang.String"/>
+	<field name="escolaridade" class="java.lang.String"/>
+	<field name="data_nascimento" class="java.lang.String"/>
+	<field name="sexo" class="java.lang.String"/>
+	<field name="estado_civil" class="java.lang.String"/>
+	<field name="ctps" class="java.lang.String"/>
+	<field name="ctps_serie" class="java.lang.String"/>
+	<field name="ctps_data_emissao" class="java.lang.String"/>
+	<field name="ctps_uf" class="java.lang.String"/>
+	<field name="rg" class="java.lang.String"/>
+	<field name="rg_data_emissao" class="java.lang.String"/>
+	<field name="rg_orgao" class="java.lang.String"/>
+	<field name="rg_uf" class="java.lang.String"/>
+	<field name="nit" class="java.lang.String"/>
+	<field name="func_endereco" class="java.lang.String"/>
+	<field name="func_bairro" class="java.lang.String"/>
+	<field name="func_cep" class="java.lang.String"/>
+	<field name="func_cidade" class="java.lang.String"/>
+	<field name="func_estado" class="java.lang.String"/>
+	<field name="func_telefone" class="java.lang.String"/>
+	<field name="cargo" class="java.lang.String"/>
+	<field name="filiacao_previdencia_social" class="java.lang.String"/>
+	<field name="codigo_cbo" class="java.lang.String"/>
+	<field name="aposentado" class="java.lang.String"/>
+	<field name="area" class="java.lang.String"/>
+	<field name="data_acidente" class="java.lang.String"/>
+	<field name="hora_acidente" class="java.lang.String"/>
+	<field name="apos_qts_hs_trabalho" class="java.lang.String"/>
+	<field name="tipo" class="java.lang.String"/>
+	<field name="houve_afastamento" class="java.lang.String"/>
+	<field name="ultimo_dia_trabalhado" class="java.lang.String"/>
+	<field name="local_acidente" class="java.lang.String"/>
+	<field name="especificacao_local_acidente" class="java.lang.String"/>
+	<field name="cnpj39" class="java.lang.String"/>
+	<field name="uf_documento" class="java.lang.String"/>
+	<field name="municipio_acidente" class="java.lang.String"/>
+	<field name="parte_corpo" class="java.lang.String"/>
+	<field name="agente_causador" class="java.lang.String"/>
+	<field name="situacao_geradora" class="java.lang.String"/>
+	<field name="registro_policial" class="java.lang.String"/>
+	<field name="houve_morte" class="java.lang.String"/>
+	<field name="t1_nome" class="java.lang.String"/>
+	<field name="t1_endereco" class="java.lang.String"/>
+	<field name="t1_bairro" class="java.lang.String"/>
+	<field name="t1_cep" class="java.lang.String"/>
+	<field name="t1_cidade" class="java.lang.String"/>
+	<field name="t1_estado" class="java.lang.String"/>
+	<field name="t1_telefone" class="java.lang.String"/>
+	<field name="t2_nome" class="java.lang.String"/>
+	<field name="t2_endereco" class="java.lang.String"/>
+	<field name="t2_bairro" class="java.lang.String"/>
+	<field name="t2_cep" class="java.lang.String"/>
+	<field name="t2_cidade" class="java.lang.String"/>
+	<field name="t2_estado" class="java.lang.String"/>
+	<field name="t2_telefone" class="java.lang.String"/>
+	<field name="local" class="java.lang.String"/>
+	<field name="data" class="java.lang.String"/>
+	<field name="cnes" class="java.lang.String"/>
+	<field name="data_atendimento" class="java.lang.String"/>
+	<field name="hora_atendimento" class="java.lang.String"/>
+	<field name="indicativo_internacao" class="java.lang.String"/>
+	<field name="duracao_estimada_tratamento" class="java.lang.Integer"/>
+	<field name="descricao_complementar_lesao" class="java.lang.String"/>
+	<field name="diagnostico_provavel" class="java.lang.String"/>
+	<field name="cid10" class="java.lang.String"/>
+	<field name="observacao" class="java.lang.String"/>
+	<field name="conselho" class="java.lang.String"/>
+	<field name="numero_cat" class="java.lang.Integer"/>
+	<field name="matricula" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="35" splitType="Stretch">
+			<staticText>
+				<reportElement x="90" y="7" width="356" height="20" forecolor="#009999"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[CAT - Comunicado de Acidente de Trabalho (CAT)]]></text>
+			</staticText>
+			<image onErrorType="Blank">
+				<reportElement x="0" y="0" width="90" height="35"/>
+				<imageExpression><![CDATA["repo:/reports/RHHealth/cat_files/logo_previdencia.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="452" y="3" width="100" height="30">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="767" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="619" width="555" height="120"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="243" width="124" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="3" width="555" height="460"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="3" width="282" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="3" width="273" height="48"/>
+			</rectangle>
+			<textField>
+				<reportElement x="278" y="15" width="276" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{emitente}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="273" y="27" width="282" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="278" y="4" width="277" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[1. Emitente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="278" y="28" width="276" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[2. Tipo de CAT]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="278" y="39" width="276" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo_cat}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="0" y="51" width="20" height="384"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="20" y="51" width="10" height="48"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="17" width="273" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[CAT - COMUNICADO  DE ACIDENTE DE TRABALHO]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="30" y="51" width="243" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="20" y="51" width="10" height="47"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Empregador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="30" y="52" width="242" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 3. Razão Social/Nome]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="35" y="63" width="238" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="273" y="51" width="169" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="278" y="52" width="166" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[4. Tipo]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="278" y="63" width="166" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cnpj}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="442" y="51" width="113" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="444" y="52" width="110" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 5. CNAE]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="446" y="63" width="108" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cnae}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="30" y="75" width="157" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="187" y="75" width="86" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="30" y="76" width="157" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 6. Endereço]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="187" y="76" width="85" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Bairro]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="273" y="75" width="84" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="357" y="75" width="85" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="75" width="37" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="479" y="75" width="76" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="278" y="76" width="79" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Cep]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="357" y="76" width="85" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 7. Município]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="442" y="76" width="37" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 8. UF]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="479" y="76" width="75" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 9. Telefone]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="34" y="87" width="153" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente_endereco}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="189" y="87" width="83" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente_bairro}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="278" y="88" width="80" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente_cep}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="357" y="88" width="85" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente_cidade}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="88" width="35" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente_estado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="479" y="88" width="75" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cliente_telefone}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="30" y="99" width="243" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="20" y="99" width="10" height="120"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="123" width="243" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="147" width="243" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="171" width="243" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="195" width="243" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="20" y="101" width="10" height="118"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Acidentado]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="30" y="99" width="242" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 10. Nome]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="34" y="110" width="238" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="30" y="171" width="157" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="30" y="171" width="157" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 22. Endereço]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="30" y="182" width="157" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{func_endereco}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="188" y="171" width="85" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Bairro]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="188" y="183" width="84" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{func_bairro}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="273" y="99" width="282" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="123" width="282" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="147" width="282" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="171" width="282" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="195" width="282" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="171" width="85" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="358" y="171" width="85" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="443" y="171" width="37" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="478" y="171" width="77" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="273" y="171" width="85" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Cep]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="277" y="182" width="80" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{func_cep}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="359" y="171" width="83" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 23. Município]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="361" y="182" width="81" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{func_cidade}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="444" y="171" width="34" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 24. UF]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="446" y="182" width="32" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{func_estado}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="480" y="171" width="74" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 25. Telefone]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="480" y="182" width="73" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{func_telefone}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="30" y="123" width="81" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="111" y="123" width="81" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="192" y="123" width="81" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="99" width="180" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="123" width="70" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="343" y="123" width="70" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="485" y="123" width="70" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="278" y="99" width="175" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 11. Nome da mãe]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="278" y="110" width="175" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome_mae}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="455" y="99" width="100" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 12. Escolaridade]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="455" y="110" width="98" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{escolaridade}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="34" y="123" width="77" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[13. Data Nasc.]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="35" y="134" width="76" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data_nascimento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="115" y="123" width="77" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[14. Sexo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="196" y="123" width="77" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[15. Estado Civil]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="116" y="134" width="76" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sexo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="197" y="134" width="76" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estado_civil}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="278" y="123" width="65" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[16. CTPS]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="278" y="134" width="65" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ctps}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="348" y="123" width="65" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Série]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="348" y="134" width="65" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ctps_serie}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="420" y="123" width="65" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data de Emissão]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="420" y="135" width="65" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ctps_data_emissao}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="490" y="123" width="65" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[17. UF]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="490" y="134" width="65" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ctps_uf}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="30" y="147" width="102" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="131" y="147" width="61" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="192" y="147" width="47" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="30" y="147" width="101" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[18. Carteira de Identidade]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="35" y="158" width="96" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rg}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="131" y="147" width="61" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="131" y="158" width="61" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rg_data_emissao}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="192" y="147" width="47" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Orgão Exp.]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="192" y="158" width="47" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rg_orgao}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="239" y="147" width="33" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[19. UF]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="239" y="158" width="34" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rg_uf}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="278" y="147" width="276" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[20. NIT(PIS/PASEP)]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="278" y="159" width="276" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nit}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="30" y="195" width="122" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="31" y="195" width="121" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 26. Nome Ocupação]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="34" y="206" width="118" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cargo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="152" y="195" width="120" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[28. Filiação à Previdencia Social]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="154" y="207" width="118" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{filiacao_previdencia_social}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="273" y="195" width="94" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="367" y="195" width="94" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="274" y="195" width="93" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[27. CBO]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="280" y="206" width="87" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo_cbo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="367" y="195" width="93" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[29. Aposentado?]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="374" y="206" width="87" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{aposentado}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="462" y="195" width="93" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[30. Área]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="468" y="207" width="87" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{area}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="20" y="219" width="10" height="120"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="219" width="243" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="243" width="243" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="267" width="243" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="291" width="243" height="48"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="20" y="219" width="10" height="118"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Acidente ou doença]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="273" y="219" width="282" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="243" width="282" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="267" width="282" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="291" width="282" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="315" width="282" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="219" width="81" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="111" y="219" width="78" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="34" y="219" width="77" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[31. Data do Acidente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="112" y="219" width="77" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[32. Hora do Acidente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="190" y="219" width="82" height="12"/>
+				<textElement>
+					<font size="5" isBold="true"/>
+				</textElement>
+				<text><![CDATA[33. Após qnts hrs de trab.?]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="35" y="231" width="76" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data_acidente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="112" y="231" width="76" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hora_acidente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="196" y="231" width="76" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{apos_qts_hs_trabalho}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="273" y="219" width="141" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="278" y="219" width="135" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[34. Tipo]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="278" y="231" width="135" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="419" y="219" width="135" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[35. Houve Afastamento?]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="419" y="231" width="135" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{houve_afastamento}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="30" y="243" width="102" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="31" y="243" width="100" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[36. Ultimo dia Trabalhado]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="34" y="255" width="98" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ultimo_dia_trabalhado}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="132" y="243" width="140" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[37. Local do Acidente]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="132" y="255" width="141" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{local_acidente}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="442" y="243" width="79" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="278" y="243" width="164" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[38. Especificação do Local do Acidente]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="280" y="254" width="162" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{especificacao_local_acidente}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="445" y="243" width="76" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[39. CPNJ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="445" y="254" width="76" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cnpj39}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="524" y="243" width="30" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[40. UF]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="524" y="254" width="30" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{uf_documento}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="30" y="267" width="122" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="34" y="267" width="118" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[41. Municipio do Acidente]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="35" y="279" width="117" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{municipio_acidente}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="155" y="267" width="118" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[42. Parte(s) do corpo atingida(s)]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="155" y="279" width="114" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{parte_corpo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="278" y="267" width="275" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[43. Agente Causador]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="278" y="278" width="276" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{agente_causador}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="34" y="291" width="238" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[44. Desc. da situação geradora do acid. / doença]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="34" y="303" width="238" height="34"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{situacao_geradora}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="278" y="291" width="275" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[45. Houve Registro Policial?]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="278" y="315" width="275" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[46. Houve Morte?]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="280" y="302" width="276" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{registro_policial}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="278" y="326" width="276" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{houve_morte}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="20" y="339" width="10" height="96"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="339" width="525" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="363" width="525" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="387" width="525" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="411" width="525" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="20" y="343" width="10" height="86"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Testemunhas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="34" y="339" width="242" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[47. Nome]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="35" y="351" width="518" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t1_nome}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="35" y="387" width="242" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[51. Nome]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="34" y="399" width="518" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t2_nome}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="30" y="363" width="157" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="187" y="363" width="86" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="363" width="85" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="358" y="363" width="85" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="363" width="36" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="34" y="363" width="153" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[48. Endereço]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="34" y="374" width="153" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t1_endereco}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="30" y="411" width="157" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="187" y="411" width="86" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="273" y="411" width="85" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="357" y="411" width="85" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="411" width="36" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="188" y="363" width="85" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Bairro]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="188" y="411" width="85" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Bairro]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="34" y="411" width="154" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[52. Endereço]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="34" y="422" width="153" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t2_endereco}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="374" width="85" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t1_bairro}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="422" width="85" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t2_bairro}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="273" y="363" width="85" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Cep]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="273" y="411" width="85" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Cep]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="277" y="374" width="80" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t1_cep}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="277" y="422" width="80" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t2_cep}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="359" y="363" width="83" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 49. Município]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="359" y="411" width="83" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 53. Município]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="361" y="374" width="81" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t1_cidade}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="361" y="422" width="81" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t2_cidade}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="444" y="363" width="34" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 50. UF]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="445" y="411" width="34" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ 54. UF]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="445" y="374" width="32" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t1_estado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="445" y="422" width="32" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t2_estado}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="481" y="363" width="74" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Telefone]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="481" y="411" width="74" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Telefone]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="480" y="374" width="75" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t1_telefone}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="480" y="422" width="75" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{t2_telefone}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="52" width="20" height="383"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left"/>
+				<text><![CDATA[I - EMITENTE]]></text>
+			</staticText>
+			<line>
+				<reportElement x="76" y="452" width="128" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="76" y="453" width="128" height="10"/>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Local e Data]]></text>
+			</staticText>
+			<line>
+				<reportElement x="359" y="452" width="128" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="359" y="453" width="128" height="10"/>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Assinatura e Carimbo do Emitente]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="463" width="555" height="120"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="463" width="525" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="487" width="525" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="511" width="525" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="535" width="525" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="559" width="525" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="463" width="20" height="120"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="20" y="463" width="10" height="48"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="20" y="535" width="10" height="48"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="463" width="20" height="120"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left"/>
+				<text><![CDATA[II-ATESTADO MÉDICO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="463" width="10" height="48"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Atendimento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="535" width="10" height="48"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Diagnóstico]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="20" y="511" width="10" height="24"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Lesão]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="470" y="463" width="85" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="385" y="463" width="85" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="30" y="487" width="121" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="151" y="487" width="143" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="434" y="535" width="121" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="35" y="463" width="350" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[55. Unidade de Atendimento Médico]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="34" y="474" width="350" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cnes}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="388" y="463" width="82" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[56. Data]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="388" y="475" width="80" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data_atendimento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="473" y="463" width="81" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[57. Hora]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="474" y="475" width="80" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hora_atendimento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="34" y="487" width="117" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[58. Houve Internação?]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="35" y="499" width="117" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{indicativo_internacao}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="155" y="487" width="140" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[59. Duração provavel do tratamento]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="157" y="499" width="140" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{duracao_estimada_tratamento}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="299" y="487" width="253" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[60. Deverá o acidentado afastar-se do trab. durante o tratamento?]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="34" y="523" width="518" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descricao_complementar_lesao}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="34" y="511" width="400" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[61. Descrição e Natureza da Lesao]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="34" y="535" width="400" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[62. Diagnóstico provavel]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="34" y="547" width="399" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{diagnostico_provavel}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="437" y="535" width="117" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[63. CID-10]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="437" y="547" width="116" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cid10}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="37" y="559" width="400" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[64. Observações:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="36" y="571" width="518" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{observacao}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="0" y="583" width="555" height="36"/>
+			</rectangle>
+			<line>
+				<reportElement x="76" y="605" width="128" height="1"/>
+			</line>
+			<line>
+				<reportElement x="359" y="605" width="128" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="76" y="608" width="128" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Local e Data]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="359" y="607" width="128" height="14"/>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Assinatura e Carimbo do Médico CRM]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="619" width="20" height="120"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="619" width="20" height="120"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="Left"/>
+				<text><![CDATA[III - INSS]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="20" y="619" width="337" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="20" y="643" width="337" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="20" y="667" width="337" height="72"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="20" y="619" width="143" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="163" y="619" width="92" height="24"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="254" y="619" width="103" height="24"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="21" y="619" width="131" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[65. Recebida em]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="166" y="619" width="88" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[66. Código da Unidade]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="258" y="619" width="97" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[67. Número da CAT]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="258" y="631" width="99" height="12"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero_cat}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="21" y="643" width="334" height="12"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[68. Matrícula do Servidor]]></text>
+			</staticText>
+			<line>
+				<reportElement x="38" y="707" width="128" height="1"/>
+			</line>
+			<line>
+				<reportElement x="220" y="708" width="128" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="38" y="707" width="128" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Matrícula]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="220" y="709" width="128" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Assinatura do Servidor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="359" y="621" width="196" height="10"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Notas:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="359" y="631" width="196" height="77"/>
+				<textElement>
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[1 - A inexatidão das declarações desta comunicação implicará nas sanções previstas nos artigos. 171 e 299 do Código Penal.
+
+2 - A comunicação de acidente do trabalho deverá ser feita até o 1º dia útil após o acidente, sob pena de multa, na forma prevista no art. 22 da Lei nº 8.231/91]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="739" width="553" height="10"/>
+				<textElement textAlignment="Center">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[A COMUNICAÇÃO DO ACIDENTE É OBRIGATÓRIA, MESMO NO CASO EM QUE NÃO HAJA AFASTAMENTO DO TRABALHO]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>

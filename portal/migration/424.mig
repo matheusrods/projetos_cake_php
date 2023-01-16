@@ -1,0 +1,5 @@
+[ACO]
+create;buonny;Processamentos
+create;buonny/Processamentos;index
+create;buonny/Processamentos;listagem
+create;buonny/Processamentos;contagem

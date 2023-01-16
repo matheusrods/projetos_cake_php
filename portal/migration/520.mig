@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;CriacaoLayouts
+create;buonny/CriacaoLayouts;index
+create;buonny/CriacaoLayouts;incluir
+create;buonny/CriacaoLayouts;editar
+create;buonny/CriacaoLayouts;listagem

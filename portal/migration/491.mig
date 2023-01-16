@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/FontesGeradoras;busca_cliente_externo
+create;buonny/FontesGeradoras;gerenciar_externo
+create;buonny/FontesGeradoras;listagem_clientes
+create;buonny/FontesGeradoras;incluir_externo

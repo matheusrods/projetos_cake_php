@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Demonstrativo de Serviços" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8fcbbae6-d658-4e4d-8c41-62410e0cc041">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/demostrativo_exame_complementar"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="DATA_FIM" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_INICIAL" class="java.lang.String"/>
+	<parameter name="CODIGO_CLIENTE_PAGADOR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\DEMONSTRATIVO_EXAMES_COMPLEMENTAR\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+CASE WHEN acps2.codigo_cliente_pagador IS NOT NULL THEN acli.nome_fantasia ELSE mcli.nome_fantasia END AS nome_pagador,
+CONVERT(varchar(10),CONVERT(date,$P{DATA_INICIAL},106),103) as data_inicial,
+CONVERT(varchar(10),CONVERT(date,$P{DATA_FIM},106),103) as data_fim,
+SUM(ISNULL(acps2.valor, mcps2.valor)) as valor_assinatura,
+ISNULL((ISNULL(acpd.valor,mcpd.valor)),'0') as valor_desconto,
+ISNULL((SUM(ISNULL(acps2.valor, mcps2.valor)) - ISNULL(acpd.valor,mcpd.valor)),SUM(ISNULL(acps2.valor, mcps2.valor))) as valor_liquido
+from RHHealth.dbo.pedidos_exames pe
+left join RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo = pe.codigo_func_setor_cargo
+left join RHHealth.dbo.cliente_funcionario cf on cf.codigo = fsc.codigo_cliente_funcionario
+left join RHHealth.dbo.cliente mcli on mcli.codigo = cf.codigo_cliente_matricula
+left join RHHealth.dbo.cliente acli on acli.codigo = fsc.codigo_cliente_alocacao
+left join RHHealth.dbo.funcionarios f on f.codigo = cf.codigo_funcionario
+inner join RHHealth.dbo.itens_pedidos_exames ipe on ipe.codigo_pedidos_exames = pe.codigo
+left join RHHealth.dbo.itens_pedidos_exames_baixa ipeb on ipeb.codigo_itens_pedidos_exames = ipe.codigo
+inner join RHHealth.dbo.exames e on e.codigo = ipe.codigo_exame
+left join RHHealth.dbo.cliente_produto acp on acp.codigo_cliente = fsc.codigo_cliente_alocacao and acp.codigo_produto = 59
+
+LEFT JOIN RHHealth.dbo.cliente_produto_desconto acpd on acp.codigo_cliente = acpd.codigo_cliente
+	AND acp.codigo_produto = acpd.codigo_produto
+	AND acpd.mes_ano BETWEEN $P{DATA_INICIAL} AND $P{DATA_FIM}
+
+left join RHHealth.dbo.cliente_produto_servico2 acps2 on acps2.codigo_cliente_produto = acp.codigo and acps2.codigo_servico = e.codigo_servico
+left join RHHealth.dbo.cliente_produto mcp on mcp.codigo_cliente = cf.codigo_cliente_matricula and mcp.codigo_produto = 59
+
+LEFT JOIN RHHealth.dbo.cliente_produto_desconto mcpd on mcp.codigo_cliente = mcpd.codigo_cliente
+	AND mcp.codigo_produto = mcpd.codigo_produto
+	AND mcpd.mes_ano BETWEEN $P{DATA_INICIAL} AND $P{DATA_FIM}
+
+left join RHHealth.dbo.cliente_produto_servico2 mcps2 on mcps2.codigo_cliente_produto = mcp.codigo and mcps2.codigo_servico = e.codigo_servico
+where ipeb.data_inclusao between $P{DATA_INICIAL} and $P{DATA_FIM}
+	and isnull(acps2.valor, mcps2.valor)>0
+	and isnull(acps2.codigo_cliente_pagador, mcps2.codigo_cliente_pagador) = $P{CODIGO_CLIENTE_PAGADOR}
+	and ipeb.fornecedor_particular = 0
+	AND ipeb.pedido_importado <> 1
+GROUP BY ISNULL(acpd.valor,mcpd.valor), CASE WHEN acps2.codigo_cliente_pagador IS NOT NULL THEN acli.nome_fantasia ELSE mcli.nome_fantasia END;]]>
+	</queryString>
+	<field name="nome_pagador" class="java.lang.String"/>
+	<field name="data_inicial" class="java.lang.String"/>
+	<field name="data_fim" class="java.lang.String"/>
+	<field name="valor_assinatura" class="java.math.BigDecimal"/>
+	<field name="valor_desconto" class="java.lang.Double"/>
+	<field name="valor_liquido" class="java.lang.Double"/>
+	<group name="grp_cliente_pagador">
+		<groupExpression><![CDATA[$P{CODIGO_CLIENTE_PAGADOR}]]></groupExpression>
+		<groupHeader>
+			<band height="54">
+				<textField pattern="dd/MM/yyyy">
+					<reportElement isPrintRepeatedValues="false" x="0" y="2" width="555" height="14" uuid="47472912-782e-4746-a5f5-425ea69333a6"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Periodo de " + $F{data_inicial} +" até " + $F{data_fim}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement mode="Transparent" x="79" y="16" width="476" height="14" uuid="049edd50-3cba-48c9-8cf3-00f55ce4cebe"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{CODIGO_CLIENTE_PAGADOR} + " - " + $F{nome_pagador}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Transparent" x="0" y="16" width="79" height="14" forecolor="#646464" uuid="cc67167d-78ec-47a4-8b40-a251c738e7b2"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Cliente Pagador:]]></text>
+				</staticText>
+				<line>
+					<reportElement mode="Opaque" x="0" y="51" width="555" height="1" forecolor="#646464" uuid="652a0a99-f470-4899-8d9b-6df6b5debac5"/>
+				</line>
+				<staticText>
+					<reportElement mode="Transparent" x="0" y="36" width="79" height="14" forecolor="#646464" uuid="6be1f216-a6e4-458d-97e5-3e22b619515c"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Produto:]]></text>
+				</staticText>
+				<line>
+					<reportElement mode="Opaque" x="0" y="31" width="555" height="1" forecolor="#646464" uuid="51325613-ccb7-42e4-b304-a9f2112e5c08"/>
+				</line>
+				<staticText>
+					<reportElement mode="Transparent" x="79" y="36" width="219" height="14" forecolor="#000000" uuid="c52a69ed-f605-4b82-988b-3bbcd9af5c54"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" isItalic="false"/>
+					</textElement>
+					<text><![CDATA[Exames Complementares]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="87">
+				<staticText>
+					<reportElement x="354" y="5" width="118" height="20" uuid="ccb1ab16-2417-479b-af43-b952f90c66ce"/>
+					<textElement>
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total Serviços:]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="446" y="5" width="109" height="20" uuid="edaa54d9-bc89-4cc2-b22f-777feeb54eca"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{valor_assinatura}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement mode="Opaque" x="0" y="69" width="555" height="1" forecolor="#646464" uuid="cb24b28e-29f8-4c4e-a6c3-ca8a6e61baa0"/>
+				</line>
+				<staticText>
+					<reportElement x="354" y="25" width="118" height="20" uuid="29b6d7a3-c28e-40ce-a281-c8e922023e47"/>
+					<textElement>
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Desconto:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="354" y="45" width="118" height="20" uuid="6559861e-e3ea-4cb5-b717-ec9c9e48e076"/>
+					<textElement>
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total A Pagar:]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="446" y="25" width="109" height="20" uuid="ea2c59ac-9b9d-4086-b13d-d35f80ad9109"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{valor_desconto}]]></textFieldExpression>
+				</textField>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="446" y="45" width="109" height="20" uuid="63780c2c-c82e-4804-a951-7ad6d6ddaf68"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{valor_liquido}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="37" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="0" width="555" height="21" uuid="ca86813b-d059-4995-92d8-de5d13f53f2d"/>
+				<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="18" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Demonstrativo de Serviços]]></text>
+			</staticText>
+			<line>
+				<reportElement mode="Opaque" x="0" y="31" width="555" height="1" uuid="1c3cb110-0d55-4021-b4c0-24569fd5a094"/>
+			</line>
+			<textField>
+				<reportElement mode="Transparent" x="455" y="21" width="100" height="10" forecolor="#646464" uuid="2b93c458-fba5-4262-b321-ac38d9c4da46"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isItalic="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="2" y="0" width="79" height="32" uuid="367cff2a-2274-4c5f-ad9b-533ee2bdf1f9"/>
+				<imageExpression><![CDATA["repo:file_1506606255695.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="59">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="59" uuid="28e0be03-e86b-41f8-bad3-02740336bc94"/>
+				<subreportParameter name="DATA_FIM">
+					<subreportParameterExpression><![CDATA[$P{DATA_FIM}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATA_INICIAL">
+					<subreportParameterExpression><![CDATA[$P{DATA_INICIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE_PAGADOR">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE_PAGADOR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:unidade_funcionario_exame.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="42" splitType="Stretch">
+			<textField>
+				<reportElement mode="Transparent" x="455" y="2" width="100" height="10" uuid="759409b5-c27c-4e80-aa7a-aa2ad5662144"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}.toString()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement mode="Opaque" x="0" y="1" width="555" height="1" uuid="3cb6cb0f-2156-424c-8abd-45c6405b9bf5"/>
+			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="2" width="229" height="10" uuid="caf98058-132b-42da-a638-00fe0924b672"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[RH HEALTH]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

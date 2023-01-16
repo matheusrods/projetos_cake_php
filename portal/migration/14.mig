@@ -1,0 +1,13 @@
+[ACO]
+create;buonny;ObjetosAcl
+create;buonny/ObjetosAcl;index
+create;buonny/ObjetosAcl;incluir
+create;buonny/ObjetosAcl;editar
+create;buonny/ObjetosAcl;excluir
+create;buonny/ObjetosAcl;mudar_status
+create;buonny/ObjetosAcl;ver_perfis
+create;buonny;DependenciasObjAcl
+create;buonny/DependenciasObjAcl;index
+create;buonny/DependenciasObjAcl;incluir
+create;buonny/DependenciasObjAcl;editar
+create;buonny/DependenciasObjAcl;excluir

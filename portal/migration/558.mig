@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;AutoAvaliacaoPerguntas
+create;buonny/AutoAvaliacaoPerguntas;index_clientes
+create;buonny/AutoAvaliacaoPerguntas;listagem_clientes
+create;buonny/AutoAvaliacaoPerguntas;index_perguntas
+create;buonny/AutoAvaliacaoPerguntas;listagem_perguntas 
+create;buonny/AutoAvaliacaoPerguntas;incluir
+create;buonny/AutoAvaliacaoPerguntas;editar
+create;buonny/AutoAvaliacaoPerguntas;atualiza_status_pergunta

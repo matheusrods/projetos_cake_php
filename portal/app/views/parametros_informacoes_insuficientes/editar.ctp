@@ -1,0 +1,2 @@
+<?php echo $this->BForm->create('ParametroInfoInsuficiente', array('url' => array('controller' => 'parametros_informacoes_insuficientes', 'action' => 'editar'))); ?>
+<?php echo $this->element('parametros_informacoes_insuficientes/fields'); ?>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_efr_epi" language="groovy" pageWidth="131" pageHeight="15" columnWidth="131" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="3.797498335832415"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="CODIGO_GRUPOS_EXPOSICAO_RISCO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+RHHealth.publico.Ufn_decode_utf8_string(EPI.nome) AS nome,
+CASE
+WHEN ISNULL(GERI.epi_eficaz, 0) > 0 THEN 'Eficaz'
+ELSE 'Não eficaz'
+END AS eficaz,
+CONVERT(VARCHAR(10), EPI.data_validade_ca, 103) AS validade_ca
+FROM RHHealth.dbo.grupos_exposicao_risco_epi GERI
+    INNER JOIN RHHealth.dbo.epi EPI
+        ON(EPI.codigo = GERI.codigo_epi)
+WHERE GERI.codigo_grupos_exposicao_risco = $P{CODIGO_GRUPOS_EXPOSICAO_RISCO}]]>
+	</queryString>
+	<field name="nome" class="java.lang.String"/>
+	<field name="eficaz" class="java.lang.String"/>
+	<field name="validade_ca" class="java.lang.String"/>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement  x="1" y="0" width="69" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome} + ' - ' + $F{eficaz}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement  x="70" y="0" width="1" height="15"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement  x="71" y="0" width="59" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{validade_ca}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

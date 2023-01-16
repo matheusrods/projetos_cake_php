@@ -1,0 +1,10 @@
+[ACO]
+create;buonny;FuncionariosContatos
+create;buonny/FuncionariosContatos;contatos_por_cliente
+create;buonny/FuncionariosContatos;contatos_por_cliente_visualizar
+create;buonny/FuncionariosContatos;incluir
+create;buonny/FuncionariosContatos;excluir
+create;buonny/FuncionariosContatos;editar
+create;buonny/FuncionariosContatos;listagem_data_cadastro
+create;buonny/FuncionariosContatos;lista_contatos_cliente
+

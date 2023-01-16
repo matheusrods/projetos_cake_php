@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;DadosSaudeConsultas
+create;buonny/DadosSaudeConsultas;relatorio_fatores_risco
+create;buonny/DadosSaudeConsultas;relatorio_imc
+create;buonny/DadosSaudeConsultas;relatorio_genero
+create;buonny/DadosSaudeConsultas;relatorio_faixa_etaria
+create;buonny/DadosSaudeConsultas;relatorio_posicao_questionarios
+create;buonny/DadosSaudeConsultas;dashboard

@@ -1,0 +1,7 @@
+[ACO]
+create;buonny/TipoDigitalizacao;excluir
+create;buonny/TipoDigitalizacao;retorna_codigo_grupo_economico
+create;buonny/TipoDigitalizacao;autocomplete_funcionario
+create;buonny/TipoDigitalizacao;consulta_digitalizacao_terceiros
+create;buonny/TipoDigitalizacao;lista_digitalizacao_consulta_terceiros
+create;buonny/TipoDigitalizacao;excluir_digitalizacao_terceiros

@@ -1,0 +1,12 @@
+[ACO]
+create;buonny/ConsultasAgendas;modal_pedido_realizacao_data
+create;buonny/ConsultasAgendas;modal_pedido_realizacao_recebimento
+create;buonny/ConsultasAgendas;modal_anexo_exames
+create;buonny/ConsultasAgendas;modal_anexo_ficha_clinica
+create;buonny/ConsultasAgendas;modal_anexo_ficha_clinica
+create;buonny/ConsultasAgendas;salvar_realizacao_data
+create;buonny/ConsultasAgendas;salvar_realizacao_recebimento
+create;buonny/ConsultasAgendas;excluir_anexo_exame
+create;buonny/ConsultasAgendas;excluir_anexo_ficha_clinica
+create;buonny/ConsultasAgendas;listagem_log_item
+create;buonny/ConsultasAgendas;get_log_tabela

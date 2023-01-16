@@ -1,0 +1,8 @@
+[ACO]
+create;buonny/AuditoriasNcs;subperfil
+create;buonny/AuditoriasNcs;subperfil_incluir
+create;buonny/AuditoriasNcs;subperfil_editar
+create;buonny/AuditoriasNcs;subperfil_cliente_listagem
+create;buonny/AuditoriasNcs;subperfil_listagem
+create;buonny/AuditoriasNcs;subperfil_visualizar
+create;buonny/AuditoriasNcs;editar_status

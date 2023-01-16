@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/AplicacaoExames;vigencia_ppra_pcmso
+create;buonny/AplicacaoExames;vigencia_ppra_pcmso_listagem
+create;buonny/AplicacaoExames;exportBaixarVigencia

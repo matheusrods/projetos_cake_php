@@ -1,0 +1,10 @@
+[ACO]
+create;buonny/Medicos;corpo_clinico
+create;buonny/Medicos;corpo_clinico_listagem
+create;buonny/Medicos;corpo_clinico_imprimir
+create;buonny/ClientesImplantacao;gestao_cronograma_pcmso
+create;buonny/ClientesImplantacao;gestao_cronograma_pcmso_listagem
+create;buonny/ClientesImplantacao;gestao_cronograma_pcmso_store
+create;buonny/ClientesImplantacao;gestao_cronograma_ppra
+create;buonny/ClientesImplantacao;gestao_cronograma_ppra_listagem
+create;buonny/ClientesImplantacao;gestao_cronograma_ppra_store

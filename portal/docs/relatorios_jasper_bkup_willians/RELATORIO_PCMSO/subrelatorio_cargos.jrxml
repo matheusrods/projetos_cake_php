@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subrelatorio_cargos" language="groovy" pageWidth="555" pageHeight="842" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="1.7715610000000013"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_pcmso"/>
+	<property name="ireport.jasperserver.url" value="http:// jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_SETOR" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\fabio.potame\\Documents\\relatorio pcmso\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+distinct(se.codigo),
+RHHealth.publico.Ufn_decode_utf8_string(ca.descricao) as descricao,
+fsc.codigo_cargo,
+-- conta a quantidade de menores de idade
+(
+select
+count(sfu.codigo) as count
+from RHHealth.dbo.cliente_funcionario scf
+    INNER JOIN RHHealth.dbo.funcionarios sfu
+        ON (sfu.codigo = scf.codigo_funcionario)
+    INNER JOIN RHHealth.dbo.funcionario_setores_cargos fscc
+        ON(fscc.codigo_cliente_funcionario = scf.codigo AND (fscc.data_fim IS NULL OR fscc.data_fim = ''))
+where fscc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+AND fscc.codigo_setor = $P{CODIGO_SETOR}
+AND fscc.codigo_cargo = ca.codigo
+AND (FLOOR(DATEDIFF(DAY, sfu.data_nascimento, getdate()) / 365.25) < 18)
+) as quant_menor_idade,
+
+
+--conta a quant de mulheres
+(
+select
+count(sfu.codigo) as count
+from RHHealth.dbo.cliente_funcionario scf
+    INNER JOIN RHHealth.dbo.funcionarios sfu
+        ON (sfu.codigo = scf.codigo_funcionario)
+    INNER JOIN RHHealth.dbo.funcionario_setores_cargos fscc
+        ON(fscc.codigo_cliente_funcionario = scf.codigo AND (fscc.data_fim IS NULL OR fscc.data_fim = ''))
+where fscc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+AND fscc.codigo_setor = $P{CODIGO_SETOR}
+AND fscc.codigo_cargo = ca.codigo
+AND sfu.sexo = 'F'
+) as quant_funcionario_feminino,
+
+-- conta a quantidade de homens
+(
+select
+count(sfu.codigo) as count
+from RHHealth.dbo.cliente_funcionario scf
+    INNER JOIN RHHealth.dbo.funcionarios sfu
+        ON (sfu.codigo = scf.codigo_funcionario)
+    INNER JOIN RHHealth.dbo.funcionario_setores_cargos fscc
+        ON(fscc.codigo_cliente_funcionario = scf.codigo AND (fscc.data_fim IS NULL OR fscc.data_fim = ''))
+where fscc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+AND fscc.codigo_setor = $P{CODIGO_SETOR}
+AND fscc.codigo_cargo = ca.codigo
+AND sfu.sexo = 'M'
+) as quant_funcionario_masculino
+FROM RHHealth.dbo.clientes_setores cs
+    INNER JOIN RHHealth.dbo.setores se
+        ON (se.codigo = cs.codigo_setor)
+    INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc
+       ON(fsc.codigo_setor = se.codigo AND fsc.codigo_cliente_alocacao = cs.codigo_cliente_alocacao)
+    INNER JOIN RHHealth.dbo.cliente_funcionario cf
+       ON cf.codigo = fsc.codigo_cliente_funcionario
+    INNER JOIN RHHealth.dbo.funcionarios fu
+        ON (fu.codigo = cf.codigo_funcionario)
+    LEFT JOIN RHHealth.dbo.grupo_exposicao ge
+        ON (ge.codigo_cargo = fsc.codigo_cargo)
+    LEFT JOIN RHHealth.dbo.cargos ca
+        ON (ca.codigo = fsc.codigo_cargo)
+WHERE fsc.codigo_setor  = $P{CODIGO_SETOR}
+AND fsc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="descricao" class="java.lang.String"/>
+	<field name="codigo_cargo" class="java.lang.Integer"/>
+	<field name="quant_menor_idade" class="java.lang.Integer"/>
+	<field name="quant_funcionario_feminino" class="java.lang.Integer"/>
+	<field name="quant_funcionario_masculino" class="java.lang.Integer"/>
+	<variable name="CODIGO_CARGO" class="java.lang.Integer">
+		<variableExpression><![CDATA[$F{codigo_cargo}]]></variableExpression>
+	</variable>
+	<detail>
+		<band height="73">
+			<frame>
+				<reportElement  style="bordered" x="0" y="1" width="552" height="30"/>
+				<staticText>
+					<reportElement  x="4" y="1" width="48" height="29"/>
+					<textElement verticalAlignment="Middle"/>
+					<text><![CDATA[Cargo:]]></text>
+				</staticText>
+				<textField>
+					<reportElement  x="51" y="1" width="254" height="29"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement  x="305" y="0" width="1" height="30"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement  x="308" y="3" width="100" height="10"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Nº de funcionários]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="308" y="16" width="24" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Masc.:]]></text>
+				</staticText>
+				<textField>
+					<reportElement  x="332" y="16" width="23" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{quant_funcionario_masculino}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement  x="365" y="16" width="24" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fem.:]]></text>
+				</staticText>
+				<textField>
+					<reportElement  x="389" y="16" width="27" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{quant_funcionario_feminino}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement  x="454" y="16" width="27" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{quant_menor_idade}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement  x="425" y="16" width="29" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Menor:]]></text>
+				</staticText>
+				<textField>
+					<reportElement  x="524" y="16" width="27" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{quant_funcionario_masculino} + $F{quant_funcionario_feminino}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement  x="495" y="16" width="29" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total:]]></text>
+				</staticText>
+			</frame>
+			<subreport>
+				<reportElement  x="0" y="32" width="552" height="39" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_SETOR">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_SETOR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CARGO">
+					<subreportParameterExpression><![CDATA[$V{CODIGO_CARGO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:subrelatorio_riscos_agrupados.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="29">
+			<subreport>
+				<reportElement  stretchType="RelativeToBandHeight" x="0" y="0" width="552" height="22"/>
+				<subreportParameter name="CODIGO_SETOR">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_SETOR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CARGO">
+					<subreportParameterExpression><![CDATA[$F{codigo_cargo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:subrelatorio_exames.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

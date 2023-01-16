@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_riscos" language="groovy" pageWidth="417" pageHeight="144" columnWidth="417" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppp"/>
+	<property name="ireport.jasperserver.url" value="http:// jasperprd.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="CODIGO_GRUPO_EXPOSICAO" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\fabio.potame\\Documents\\relatorio ppp\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+GER.codigo,
+GR.descricao AS fator_risco,
+ISNULL(RAD.descricao, '') AS intensidade,
+ISNULL(TM.descricao, '') AS tecnica_medicao
+FROM RHHealth.dbo.grupos_exposicao_risco GER
+    INNER JOIN RHHealth.dbo.riscos RI
+        ON(RI.codigo = GER.codigo_risco)
+    INNER JOIN RHHealth.dbo.grupos_riscos GR
+        ON(GR.codigo = RI.codigo_grupo)
+    LEFT JOIN RHHealth.dbo.riscos_atributos_detalhes RAD
+        ON(RAD.codigo = GER.intensidade)
+    LEFT JOIN  RHHealth.dbo.tecnicas_medicao TM
+        ON(TM.codigo = GER.codigo_tecnica_medicao)
+WHERE GER.codigo_grupo_exposicao = $P{CODIGO_GRUPO_EXPOSICAO}]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="fator_risco" class="java.lang.String"/>
+	<field name="intensidade" class="java.lang.String"/>
+	<field name="tecnica_medicao" class="java.lang.String"/>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement  x="0" y="0" width="68" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fator_risco}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement  x="70" y="0" width="77" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{intensidade}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement  x="148" y="0" width="69" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tecnica_medicao}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement  x="68" y="0" width="1" height="15"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement  x="147" y="0" width="1" height="15"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<line>
+				<reportElement  x="217" y="0" width="1" height="15"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<subreport>
+				<reportElement  x="218" y="0" width="69" height="15"/>
+				<subreportParameter name="CODIGO_GRUPOS_EXPOSICAO_RISCO">
+					<subreportParameterExpression><![CDATA[$F{codigo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_epc.jrxml"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement  x="286" y="0" width="131" height="15"/>
+				<subreportParameter name="CODIGO_GRUPOS_EXPOSICAO_RISCO">
+					<subreportParameterExpression><![CDATA[$F{codigo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_efr_epi.jrxml"]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement  x="286" y="0" width="1" height="15"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Servicos
+create;buonny/Servicos;index
+create;buonny/Servicos;listagem
+create;buonny/Servicos;incluir
+create;buonny/Servicos;editar
+create;buonny/Servicos;excluir

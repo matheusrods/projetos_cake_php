@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_distribuicao_cargos" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.0526324729228267"/>
+	<property name="ireport.x" value="331"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppra_versoes"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/relatorio_ppra_versoes_files/relatorio_distribuicao_cargos.jrxml"/>
+	<style name="BORDER-DOWN" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.0"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="BORDERED" mode="Opaque">
+		<pen lineWidth="1.0"/>
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_PPRA_VERSOES" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+    COUNT(cf.codigo) AS count,
+    dbBuonny.publico.ufn_decode_utf8_string(ISNULL(ghe.descricao, '')) AS descricao_grupo_homogeneo,
+    dbBuonny.publico.ufn_decode_utf8_string(ISNULL(se.descricao, '')) AS descricao_setor,
+    dbBuonny.publico.ufn_decode_utf8_string(ISNULL(ca.descricao, '')) AS descricao_cargo
+FROM RHHealth.dbo.ppra_versoes pv
+    INNER JOIN RHHealth.dbo.cliente_funcionario cf ON cf.codigo_cliente = pv.codigo_cliente_alocacao
+    INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc
+        ON(fsc.codigo_cliente_funcionario = cf.codigo AND (fsc.data_fim IS NULL OR fsc.data_fim = ''))
+    INNER JOIN RHHealth.dbo.funcionarios fu
+        ON(fu.codigo = cf.codigo_funcionario)
+    LEFT JOIN RHHealth.dbo.grupos_homogeneos_exposicao_detalhes ghed
+        ON(ghed.codigo_setor = cf.codigo_setor AND ghed.codigo_cargo = cf.codigo_cargo)
+    LEFT JOIN RHHealth.dbo.grupos_homogeneos_exposicao ghe
+        ON(ghe.codigo = ghed.codigo_grupo_homogeneo)
+    INNER JOIN RHHealth.dbo.setores se
+        ON(se.codigo = fsc.codigo_setor)
+    INNER JOIN RHHealth.dbo.cargos ca
+        ON(ca.codigo = fsc.codigo_cargo)
+WHERE pv.codigo = $P{CODIGO_PPRA_VERSOES}
+GROUP BY cf.codigo_setor, cf.codigo_cargo, ghe.descricao, se.descricao, ca.descricao]]>
+	</queryString>
+	<field name="count" class="java.lang.Integer"/>
+	<field name="descricao_grupo_homogeneo" class="java.lang.String"/>
+	<field name="descricao_setor" class="java.lang.String"/>
+	<field name="descricao_cargo" class="java.lang.String"/>
+	<columnHeader>
+		<band height="22">
+			<frame>
+				<reportElement style="BORDERED" mode="Transparent" x="0" y="0" width="555" height="21"/>
+				<line>
+					<reportElement x="154" y="0" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="311" y="0" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="451" y="0" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="0" y="0" width="155" height="21"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SETOR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="156" y="0" width="155" height="21"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CARGO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="313" y="0" width="138" height="21"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[GHE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="452" y="0" width="103" height="21"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[QUANT. FUNCIONÁRIOS]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<frame>
+				<reportElement style="BORDER-DOWN" x="0" y="0" width="555" height="21"/>
+				<textField>
+					<reportElement x="156" y="0" width="155" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descricao_cargo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="313" y="0" width="138" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descricao_grupo_homogeneo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="451" y="0" width="104" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{count}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="154" y="0" width="1" height="21"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="311" y="0" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="451" y="0" width="1" height="20"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<textField>
+					<reportElement x="0" y="0" width="155" height="21"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descricao_setor}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

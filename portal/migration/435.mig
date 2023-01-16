@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;NotasFiscaisServico
+create;buonny/NotasFiscaisServico;index
+create;buonny/NotasFiscaisServico;listagem
+create;buonny/NotasFiscaisServico;incluir
+create;buonny/NotasFiscaisServico;editar
+create;buonny/NotasFiscaisServico;atualiza_status

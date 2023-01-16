@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 4.5.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_atestado_cid.jrxml" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ficha_assistencial_atestado_medico"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="CODIGO_ATESTADO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+	cid.codigo_cid10 as codigo_cid,
+	RHHealth.publico.Ufn_decode_utf8_string(cid.descricao) as cid
+FROM RHHealth.dbo.atestados_cid aci
+	INNER JOIN RHHealth.dbo.cid ON aci.codigo_cid = cid.codigo
+WHERE aci.codigo_atestado = $P{CODIGO_ATESTADO}]]>
+	</queryString>
+	<field name="codigo_cid" class="java.lang.String"/>
+	<field name="cid" class="java.lang.String"/>
+	<detail>
+		<band height="38" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="1" width="555" height="32"/>
+			</rectangle>
+			<textField>
+				<reportElement x="8" y="7" width="535" height="20"/>
+				<textFieldExpression><![CDATA[$F{codigo_cid}+": "+$F{cid}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

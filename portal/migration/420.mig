@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/Medicos;conselho_classe
+create;buonny/Medicos;listagem_conselho_classe
+create;buonny/Medicos;incluir_conselho_classe
+create;buonny/Medicos;editar_conselho_classe

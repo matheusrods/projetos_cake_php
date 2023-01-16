@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Absenteismo
+create;buonny/Absenteismo;index
+create;buonny/Absenteismo;listagem
+create;buonny/Absenteismo;retorna_codigo_grupo_economico
+create;buonny/Absenteismo;sub_filtro_cliente_funcionario
+create;buonny/Absenteismo;exportar

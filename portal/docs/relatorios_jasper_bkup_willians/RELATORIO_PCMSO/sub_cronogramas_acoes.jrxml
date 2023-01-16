@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_cronogramas_acoes" language="groovy" pageWidth="572" pageHeight="752" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[WITH validacao AS (
+    SELECT
+        os.inicio_vigencia_pcmso AS data_validacao_1,
+        DATEADD(MONTH, 1, os.inicio_vigencia_pcmso) AS data_validacao_2,
+        DATEADD(MONTH, 2, os.inicio_vigencia_pcmso) AS data_validacao_3,
+        DATEADD(MONTH, 3, os.inicio_vigencia_pcmso) AS data_validacao_4,
+        DATEADD(MONTH, 4, os.inicio_vigencia_pcmso) AS data_validacao_5,
+        DATEADD(MONTH, 5, os.inicio_vigencia_pcmso) AS data_validacao_6,
+        DATEADD(MONTH, 6, os.inicio_vigencia_pcmso) AS data_validacao_7,
+        DATEADD(MONTH, 7, os.inicio_vigencia_pcmso) AS data_validacao_8,
+        DATEADD(MONTH, 8, os.inicio_vigencia_pcmso) AS data_validacao_9,
+        DATEADD(MONTH, 9, os.inicio_vigencia_pcmso) AS data_validacao_10,
+        DATEADD(MONTH, 10, os.inicio_vigencia_pcmso) AS data_validacao_11,
+        DATEADD(MONTH, 11, os.inicio_vigencia_pcmso) AS data_validacao_12,
+        DATEADD(MONTH, 12, os.inicio_vigencia_pcmso) AS data_validacao_13,
+        CONCAT(MONTH(os.inicio_vigencia_pcmso), '/', RIGHT(YEAR(os.inicio_vigencia_pcmso), 2)) AS data_1,
+        CONCAT(MONTH(DATEADD(MONTH, 1, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 1, os.inicio_vigencia_pcmso)), 2)) AS data_2,
+        CONCAT(MONTH(DATEADD(MONTH, 2, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 2, os.inicio_vigencia_pcmso)), 2)) AS data_3,
+        CONCAT(MONTH(DATEADD(MONTH, 3, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 3, os.inicio_vigencia_pcmso)), 2)) AS data_4,
+        CONCAT(MONTH(DATEADD(MONTH, 4, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 4, os.inicio_vigencia_pcmso)), 2)) AS data_5,
+        CONCAT(MONTH(DATEADD(MONTH, 5, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 5, os.inicio_vigencia_pcmso)), 2)) AS data_6,
+        CONCAT(MONTH(DATEADD(MONTH, 6, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 6, os.inicio_vigencia_pcmso)), 2)) AS data_7,
+        CONCAT(MONTH(DATEADD(MONTH, 7, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 7, os.inicio_vigencia_pcmso)), 2)) AS data_8,
+        CONCAT(MONTH(DATEADD(MONTH, 8, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 8, os.inicio_vigencia_pcmso)), 2)) AS data_9,
+        CONCAT(MONTH(DATEADD(MONTH, 9, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 9, os.inicio_vigencia_pcmso)), 2)) AS data_10,
+        CONCAT(MONTH(DATEADD(MONTH, 10, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 10, os.inicio_vigencia_pcmso)), 2)) AS data_11,
+        CONCAT(MONTH(DATEADD(MONTH, 11, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 11, os.inicio_vigencia_pcmso)), 2)) AS data_12,
+        CONCAT(MONTH(DATEADD(MONTH, 12, os.inicio_vigencia_pcmso)), '/', RIGHT(YEAR(DATEADD(MONTH, 12, os.inicio_vigencia_pcmso)), 2)) AS data_13
+    FROM cronogramas_acoes ca
+    INNER JOIN ordem_servico os
+    ON ca.codigo_cliente_unidade = os.codigo_cliente
+    WHERE os.codigo = (SELECT TOP(1) MAX(codigo) FROM ordem_servico WHERE codigo_cliente = ca.codigo_cliente_unidade AND status_ordem_servico = 5)
+    AND ca.codigo_cliente_unidade = 10110 AND os.inicio_vigencia_pcmso IS NOT NULL
+)
+SELECT
+    ca.codigo,
+    CONCAT(YEAR(os.inicio_vigencia_pcmso), '/', YEAR(DATEADD(YEAR, 1, os.inicio_vigencia_pcmso))) AS vigencia,
+    ca.data_inicial,
+    ca.data_final,
+    s.descricao AS setor_descricao,
+    IIF(((SELECT TOP(1) data_validacao_1 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_1,
+    IIF(((SELECT TOP(1) data_validacao_2 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_2,
+    IIF(((SELECT TOP(1) data_validacao_3 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_3,
+    IIF(((SELECT TOP(1) data_validacao_4 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_4,
+    IIF(((SELECT TOP(1) data_validacao_5 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_5,
+    IIF(((SELECT TOP(1) data_validacao_6 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_6,
+    IIF(((SELECT TOP(1) data_validacao_7 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_7,
+    IIF(((SELECT TOP(1) data_validacao_8 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_8,
+    IIF(((SELECT TOP(1) data_validacao_9 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_9,
+    IIF(((SELECT TOP(1) data_validacao_10 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_10,
+    IIF(((SELECT TOP(1) data_validacao_11 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_11,
+    IIF(((SELECT TOP(1) data_validacao_12 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_12,
+    IIF(((SELECT TOP(1) data_validacao_13 FROM validacao) BETWEEN ca.data_inicial AND ca.data_final), 'X', '') AS data_13,
+    RHHealth.publico.Ufn_decode_utf8_string(s.descricao) AS descricao,
+    RHHealth.publico.Ufn_decode_utf8_string(tia.descricao) AS acao,
+    ca.responsavel,
+    IIF(ca.status = 1, 'Ativo', 'Inativo') AS status
+FROM cronogramas_acoes ca
+INNER JOIN ordem_servico os
+ON ca.codigo_cliente_unidade = os.codigo_cliente
+INNER JOIN setores s
+ON ca.codigo_setor = s.codigo
+INNER JOIN tipos_acoes tia
+ON ca.codigo_tipo_acao = tia.codigo
+WHERE ca.codigo_cliente_unidade = 10110 AND ca.[status] <> 0
+AND os.codigo = (SELECT TOP(1) MAX(codigo) FROM ordem_servico WHERE codigo_cliente = ca.codigo_cliente_unidade AND status_ordem_servico = 5)]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="vigencia" class="java.lang.String"/>
+	<field name="data_inicial" class="java.sql.Timestamp"/>
+	<field name="data_final" class="java.sql.Timestamp"/>
+	<field name="setor_descricao" class="java.lang.String"/>
+	<field name="data_1" class="java.lang.String"/>
+	<field name="data_2" class="java.lang.String"/>
+	<field name="data_3" class="java.lang.String"/>
+	<field name="data_4" class="java.lang.String"/>
+	<field name="data_5" class="java.lang.String"/>
+	<field name="data_6" class="java.lang.String"/>
+	<field name="data_7" class="java.lang.String"/>
+	<field name="data_8" class="java.lang.String"/>
+	<field name="data_9" class="java.lang.String"/>
+	<field name="data_10" class="java.lang.String"/>
+	<field name="data_11" class="java.lang.String"/>
+	<field name="data_12" class="java.lang.String"/>
+	<field name="data_13" class="java.lang.String"/>
+	<field name="descricao" class="java.lang.String"/>
+	<field name="acao" class="java.lang.String"/>
+	<field name="responsavel" class="java.lang.String"/>
+	<field name="status" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

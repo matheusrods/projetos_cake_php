@@ -1,0 +1,9 @@
+[ACO]
+create;buonny/Usuarios;incluir_veiculo_alerta
+create;buonny/Usuarios;listar_veiculo_alerta
+create;buonny/Usuarios;excluir_veiculo_alerta
+create;buonny;UsuariosContatos
+create;buonny/UsuariosContatos;contatos_por_usuario
+create;buonny/UsuariosContatos;incluir
+create;buonny/UsuariosContatos;excluir
+create;buonny/UsuariosContatos;editar

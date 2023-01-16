@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="unidade_funcionario_exame" pageWidth="802" pageHeight="555" orientation="Landscape" columnWidth="802" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/demostrativo_exame_complementar_1_1"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<property name="ireport.zoom" value="1.1269722013523664"/>
+	<property name="ireport.x" value="106"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="CODIGO_CLIENTE_PAGADOR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[20]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_INICIAL" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_FIM" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+  pe.codigo as codigo_exame,
+  fsc.codigo_cliente_alocacao as codigo_cliente_alocacao,
+  dbBuonny.publico.ufn_decode_utf8_string(cli.nome_fantasia) as nome_cliente_alocacao,
+  dbBuonny.publico.ufn_decode_utf8_string(fun.nome) as nome_funcionario,
+  dbBuonny.publico.ufn_decode_utf8_string(forn.nome) as nome_fornecedor,
+  CONVERT(varchar(10), ipeb.data_realizacao_exame, 103) as data_realizacao,
+  e.codigo_servico as codigo_servico,
+  dbBuonny.publico.ufn_decode_utf8_string(e.descricao) as exame_descricao,
+  det.valor as valor_assinatura,
+  ISNULL(cf.centro_custo, '-') as centro_custo
+FROM RHHealth.dbo.[detalhes_itens_pedidos_manuais] AS det
+INNER JOIN RHHealth.dbo.[itens_pedidos] AS [ItemPedido]  ON ([ItemPedido].[codigo] = det.[codigo_item_pedido])
+INNER JOIN RHHealth.dbo.[pedidos] AS [Pedido]  ON ([Pedido].[codigo] = [ItemPedido].[codigo_pedido]
+  AND [Pedido].[mes_referencia] = MONTH($P{DATA_INICIAL})
+  AND [Pedido].[ano_referencia] = YEAR($P{DATA_INICIAL})
+  AND [Pedido].[codigo_cliente_pagador] = $P{CODIGO_CLIENTE_PAGADOR})
+INNER JOIN RHHealth.dbo.[produto] AS [Produto]  ON ([Produto].[codigo] = [ItemPedido].[codigo_produto]
+  AND [Produto].[codigo] = 59)
+INNER JOIN RHHealth.dbo.[servico] AS [Servico]  ON ([Servico].[codigo] = det.[codigo_servico])
+INNER JOIN RHHealth.dbo.[cliente] AS cli  ON (cli.[codigo] = det.codigo_cliente_utilizador)
+inner join RHHealth.dbo.pedidos_exames pe on pe.codigo_cliente = det.codigo_cliente_utilizador
+inner join RHHealth.dbo.itens_pedidos_exames ipe on  pe.codigo = ipe.codigo_pedidos_exames
+inner join RHHealth.dbo.itens_pedidos_exames_baixa ipeb on ipe.codigo = ipeb.codigo_itens_pedidos_exames
+INNER JOIN RHHealth.dbo.fornecedores forn on forn.codigo = ipe.codigo_fornecedor
+inner join RHHealth.dbo.exames e on ipe.codigo_exame = e.codigo and e.codigo_servico = det.codigo_servico
+inner join RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo = pe.codigo_func_setor_cargo
+inner join RHHealth.dbo.cliente_funcionario cf on cf.codigo = pe.codigo_cliente_funcionario
+inner join RHHealth.dbo.funcionarios fun on fun.codigo = cf.codigo_funcionario
+WHERE ipeb.data_inclusao BETWEEN $P{DATA_INICIAL} AND $P{DATA_FIM}
+	AND ipeb.fornecedor_particular=0
+	AND ipeb.pedido_importado <> 1
+ORDER BY fsc.codigo_cliente_alocacao ASC,  fun.nome ASC;]]>
+	</queryString>
+	<field name="codigo_exame" class="java.lang.Integer"/>
+	<field name="codigo_cliente_alocacao" class="java.lang.Integer"/>
+	<field name="nome_cliente_alocacao" class="java.lang.String"/>
+	<field name="nome_funcionario" class="java.lang.String"/>
+	<field name="nome_fornecedor" class="java.lang.String"/>
+	<field name="data_realizacao" class="java.lang.String"/>
+	<field name="codigo_servico" class="java.lang.Short"/>
+	<field name="exame_descricao" class="java.lang.String"/>
+	<field name="valor_assinatura" class="java.math.BigDecimal"/>
+	<field name="centro_custo" class="java.lang.String"/>
+	<variable name="uni_anterior" class="java.lang.Integer" resetType="Page" incrementType="Page">
+		<variableExpression><![CDATA[$F{codigo_cliente_alocacao}]]></variableExpression>
+		<initialValueExpression><![CDATA[0]]></initialValueExpression>
+	</variable>
+	<variable name="sum_unidade" class="java.math.BigDecimal" resetType="Group" resetGroup="grp_codigo_alocacao" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor_assinatura}]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<group name="grp_codigo_alocacao">
+		<groupExpression><![CDATA[$F{codigo_cliente_alocacao}]]></groupExpression>
+		<groupHeader>
+			<band height="44">
+				<staticText>
+					<reportElement x="0" y="21" width="51" height="20" forecolor="#646464"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" size="8" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Data Resultado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="67" y="21" width="159" height="20" forecolor="#646464"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" size="8" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Funcionário]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="242" y="21" width="144" height="20" forecolor="#646464"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" size="8" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Clínica]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="402" y="21" width="149" height="20" forecolor="#646464"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" size="8" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Exame]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="750" y="21" width="52" height="20" forecolor="#646464"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" size="8" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Valor]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="41" width="802" height="1" forecolor="#646464"/>
+				</line>
+				<frame>
+					<reportElement x="0" y="0" width="555" height="25"/>
+				</frame>
+				<staticText>
+					<reportElement x="0" y="0" width="55" height="20" forecolor="#646464"/>
+					<textElement>
+						<font fontName="Arial" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Unidade:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="55" y="0" width="489" height="20"/>
+					<textElement/>
+					<textFieldExpression><![CDATA[$F{codigo_cliente_alocacao}+" - "+$F{nome_cliente_alocacao}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="567" y="21" width="163" height="20" forecolor="#646464"/>
+					<textElement textAlignment="Center">
+						<font fontName="Arial" size="8" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Centro de Custo]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="24">
+				<line>
+					<reportElement x="542" y="19" width="260" height="1" forecolor="#646464"/>
+				</line>
+				<staticText>
+					<reportElement x="604" y="0" width="149" height="20"/>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Sub-Total:]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="670" y="0" width="132" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Bottom">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sum_unidade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="546" y="0" width="60" height="20"/>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Arial"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{codigo_cliente_alocacao}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField pattern="">
+				<reportElement x="1" y="0" width="48" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data_realizacao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="67" y="0" width="159" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome_funcionario}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="244" y="0" width="142" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome_fornecedor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="404" y="0" width="151" height="20"/>
+				<textElement>
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exame_descricao}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="752" y="0" width="47" height="20"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_assinatura}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="573" y="0" width="163" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{centro_custo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

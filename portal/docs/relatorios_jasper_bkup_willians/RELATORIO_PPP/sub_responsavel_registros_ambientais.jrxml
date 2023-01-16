@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_responsavel_registros_ambientais" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="1.9487171000000019"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="style2" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.0"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+CONVERT(VARCHAR(10), CRRA.data_inicial, 103) AS data_inicial,
+CONVERT(VARCHAR(10), CRRA.data_final, 103) AS data_final,
+CONCAT(CP.descricao, ': ', ME.numero_conselho) AS conselho_classe,
+RHHealth.publico.Ufn_decode_utf8_string(ME.nome) AS nome_profissional
+FROM RHHealth.dbo.clientes_responsaveis_registros_ambientais CRRA
+    INNER JOIN RHHealth.dbo.medicos ME
+        ON(ME.codigo = CRRA.codigo_medico)
+    INNER JOIN RHHealth.dbo.conselho_profissional CP
+        ON(CP.codigo = ME.codigo_conselho_profissional)
+WHERE codigo_cliente = $P{CODIGO_CLIENTE}]]>
+	</queryString>
+	<field name="data_inicial" class="java.lang.String"/>
+	<field name="data_final" class="java.lang.String"/>
+	<field name="conselho_classe" class="java.lang.String"/>
+	<field name="nome_profissional" class="java.lang.String"/>
+	<columnHeader>
+		<band height="22" splitType="Stretch">
+			<frame>
+				<reportElement  style="style1" x="0" y="0" width="555" height="22"/>
+				<staticText>
+					<reportElement  x="5" y="0" width="131" height="22"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[16.1- Período]]></text>
+				</staticText>
+				<line>
+					<reportElement  x="136" y="0" width="1" height="22"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement  x="141" y="0" width="132" height="22"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[16.2 - NIT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="282" y="0" width="131" height="22"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[16.3 - Registro Conselho de Classe]]></text>
+				</staticText>
+				<line>
+					<reportElement  x="277" y="0" width="1" height="22"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement  x="421" y="0" width="132" height="22"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[16.4- Nome do Profissional
+Legalmente habilitado]]></text>
+				</staticText>
+				<line>
+					<reportElement  x="417" y="0" width="1" height="22"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<frame>
+				<reportElement  style="style2" x="0" y="1" width="555" height="14"/>
+				<textField>
+					<reportElement  x="3" y="1" width="133" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_inicial} + ' até ' + $F{data_final}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement  x="142" y="1" width="133" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA['N/D']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement  x="282" y="1" width="133" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{conselho_classe}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement  x="422" y="1" width="133" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome_profissional}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement  x="136" y="0" width="1" height="14"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement  x="277" y="0" width="1" height="14"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement  x="417" y="0" width="1" height="14"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

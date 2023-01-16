@@ -1,0 +1,7 @@
+[ACO]
+create;buonny/Importar;importar_atestado
+create;buonny/Importar;exportar_importacao_atestados_processada
+create;buonny/Importar;eliminar_importacao_atestado
+create;buonny/Importar;gerenciar_importacao_atestados
+create;buonny/Importar;importacao_atestados_listagem
+create;buonny/Importar;importacao_atestados

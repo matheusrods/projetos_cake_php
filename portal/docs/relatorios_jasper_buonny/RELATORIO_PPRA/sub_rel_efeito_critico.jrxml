@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_rel_efeito_critico.jrxml" language="groovy" pageWidth="117" pageHeight="802" columnWidth="117" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="4.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="CODIGO_GRUPOS_EXPOSICAO_RISCO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[$P{CODIGO_GRUPOS_EXPOSICAO_RISCO}]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+rad.descricao
+FROM RHHealth.dbo.grupo_exposicao_riscos_atributos_detalhes gerad
+    INNER JOIN RHHealth.dbo.riscos_atributos_detalhes rad
+        ON (rad.codigo = gerad.codigo_riscos_atributos_detalhes)
+WHERE gerad.codigo_grupos_exposicao_risco = $P{CODIGO_GRUPOS_EXPOSICAO_RISCO}]]>
+	</queryString>
+	<field name="descricao" class="java.lang.String"/>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<textField>
+				<reportElement x="11" y="0" width="106" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

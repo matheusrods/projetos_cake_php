@@ -1,0 +1,7 @@
+[ACO]
+create;buonny/GruposEconomicos;por_cliente
+create;buonny/GruposEconomicos;monta_arquivo_enviar_funcionarios
+create;buonny/GruposEconomicos;obter_multiclientes
+create;buonny/GruposEconomicos;index_grupos_economicos
+create;buonny/GruposEconomicos;lista_unidades_grupo_economico
+create;buonny/GruposEconomicos;carrega_combos_grupo_economico

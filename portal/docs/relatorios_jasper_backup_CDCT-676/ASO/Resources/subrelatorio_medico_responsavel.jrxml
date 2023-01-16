@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subrelatorio_medico_responsavel" language="groovy" pageWidth="595" pageHeight="842" columnWidth="585" leftMargin="5" rightMargin="5" topMargin="0" bottomMargin="0" uuid="3617ea84-c4ce-4d94-b59b-71349991fc24">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ASO"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="CODIGO_CLIENTE_FUNCIONARIO" class="java.lang.Integer"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[191996]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EXIBE_RQE_ASO" class="java.lang.String"/>
+	<parameter name="NOME_MEDICO" class="java.lang.String"/>
+	<parameter name="ENDERECO_MEDICO" class="java.lang.String"/>
+	<parameter name="NUMERO" class="java.lang.String"/>
+	<parameter name="COMPLEMENTO" class="java.lang.String"/>
+	<parameter name="CIDADE_MEDICO" class="java.lang.String"/>
+	<parameter name="UF" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select
+        isnull(m_alo.nome,m.nome) as medico_nome,
+		isnull(m_alo.numero_conselho,m.numero_conselho) as medico_numero_conselho,
+		isnull(m_alo.rqe,m.rqe) as rqe,
+		(CASE
+			WHEN ge.codigo_idioma = '1,2' THEN CONCAT(isnull(cp_alo.descricao,cp.descricao),'/', isnull(cp_alo.descricao_ingles,cp.descricao_ingles))
+			ELSE isnull(cp_alo.descricao,cp.descricao)
+			END) AS medico_conselho,
+		isnull(RHHealth.publico.Ufn_decode_utf8_string(me_alo.logradouro),
+		RHHealth.publico.Ufn_decode_utf8_string(me.logradouro)) as medico_endereco_logradouro,
+        isnull(me_alo.numero,me.numero) as medico_endereco_numero,
+        isnull(me_alo.bairro,me.bairro) as medico_endereco_bairro,
+        isnull(me_alo.complemento,me.complemento) as medico_endereco_complemento,
+        isnull(ec_alo.descricao,ec.descricao) as medico_endereco_cidade,
+        CONCAT('', isnull(ee_alo.abreviacao,ee.abreviacao), ' ') as medico_endereco_uf,
+        CONCAT('', isnull(m_alo.conselho_uf,m.conselho_uf), ' ') as medico_uf
+
+FROM rhhealth.dbo.pedidos_exames pe
+	INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = pe.codigo_func_setor_cargo
+	INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = fsc.codigo_cliente_funcionario
+
+	INNER JOIN rhhealth.dbo.cliente c ON c.codigo = cf.codigo_cliente_matricula
+	INNER JOIN rhhealth.dbo.medicos m ON c.codigo_medico_pcmso = m.codigo
+	INNER JOIN rhhealth.dbo.conselho_profissional cp ON cp.codigo = m.codigo_conselho_profissional
+
+    INNER JOIN RHHealth.dbo.grupos_economicos_clientes gec on gec.codigo_cliente = pe.codigo_cliente
+	INNER JOIN RHHealth.dbo.grupos_economicos ge on ge.codigo = gec.codigo_grupo_economico
+
+    LEFT JOIN rhhealth.dbo.medicos_endereco me ON me.codigo_medico = m.codigo
+	LEFT JOIN RHHealth.dbo.endereco_cidade ec ON (ec.codigo = me.codigo_cidade_endereco)
+	LEFT JOIN RHHealth.dbo.endereco_estado ee ON (ee.codigo = me.codigo_estado_endereco)
+
+	left JOIN rhhealth.dbo.cliente c_alo ON c_alo.codigo = fsc.codigo_cliente_alocacao
+	left JOIN rhhealth.dbo.medicos m_alo ON c_alo.codigo_medico_pcmso = m_alo.codigo
+	left JOIN rhhealth.dbo.conselho_profissional cp_alo ON cp_alo.codigo = m_alo.codigo_conselho_profissional
+	LEFT JOIN rhhealth.dbo.medicos_endereco me_alo ON me_alo.codigo_medico = m_alo.codigo
+	LEFT JOIN RHHealth.dbo.endereco_cidade ec_alo ON (ec_alo.codigo = me_alo.codigo_cidade_endereco)
+	LEFT JOIN RHHealth.dbo.endereco_estado ee_alo ON (ee_alo.codigo = me_alo.codigo_estado_endereco)
+WHERE pe.codigo = $P{CODIGO_PEDIDO_EXAME} and me_alo.cep is not null]]>
+	</queryString>
+	<field name="medico_nome" class="java.lang.String"/>
+	<field name="medico_numero_conselho" class="java.lang.String"/>
+	<field name="rqe" class="java.lang.String"/>
+	<field name="medico_conselho" class="java.lang.String"/>
+	<field name="medico_endereco_logradouro" class="java.lang.String"/>
+	<field name="medico_endereco_numero" class="java.lang.String"/>
+	<field name="medico_endereco_bairro" class="java.lang.String"/>
+	<field name="medico_endereco_complemento" class="java.lang.String"/>
+	<field name="medico_endereco_cidade" class="java.lang.String"/>
+	<field name="medico_endereco_uf" class="java.lang.String"/>
+	<field name="medico_uf" class="java.lang.String"/>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField>
+				<reportElement x="101" y="1" width="293" height="10" uuid="7c59976b-09a6-42ff-b4ac-56616daa4fce"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_nome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="395" y="1" width="54" height="10" uuid="0fbefb60-24c9-4ba4-a424-9db1ac8b258b"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_conselho} + ":"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="449" y="1" width="50" height="10" uuid="fa5284d0-0e8a-49b2-84c8-0846cf61370d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_numero_conselho}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="527" y="1" width="49" height="10" uuid="8b1f167f-87e6-4413-8e8a-386275877e83"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_uf}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="101" y="10" width="293" height="10" uuid="75955756-63b2-48c9-ba50-19966f609484"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_endereco_logradouro}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="449" y="9" width="127" height="10" uuid="4efcfc45-155b-4adb-997b-71b239ab92b2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_endereco_numero}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="101" y="19" width="116" height="10" uuid="52da3508-213a-4b29-adfd-7702cf4dec0c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_endereco_complemento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="288" y="19" width="106" height="10" uuid="4b614c70-9917-431c-8ea3-d40734d5b3bc"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_endereco_cidade} + " / " + $F{medico_endereco_uf}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="449" y="19" width="127" height="10" uuid="9b59e6e3-8f44-41ca-a9e7-95f88afbd674">
+					<printWhenExpression><![CDATA[$P{EXIBE_RQE_ASO}.toString().equals("true") ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rqe}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="395" y="19" width="54" height="10" uuid="3eca2520-d55f-443d-9cb8-f0bb86a8e7fc">
+					<printWhenExpression><![CDATA[$P{EXIBE_RQE_ASO}.toString().equals("true") ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RQE:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="1" y="1" width="100" height="10" uuid="3c837329-bd11-46f0-8612-8c98db5dd602"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{NOME_MEDICO} ? $P{NOME_MEDICO} : 'Nome:']]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="10" width="100" height="10" uuid="74fcecb8-9d89-44c3-b10b-8ba3e0fa21d4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{ENDERECO_MEDICO} ? $P{ENDERECO_MEDICO} : 'Endereço:']]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="19" width="100" height="10" uuid="63257473-82ba-4af5-9274-5a377c5674ac"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{COMPLEMENTO} ? $P{COMPLEMENTO} : 'Complemento:']]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="217" y="19" width="71" height="10" uuid="bdd5df10-e187-4d9d-b623-0d87f76b02b9"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CIDADE_MEDICO} ? $P{CIDADE_MEDICO} : 'Cidade/UF:']]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="395" y="10" width="81" height="10" uuid="35ebffd2-e2ab-4c33-b255-c260a768c54d"/>
+				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{NUMERO} ? $P{NUMERO} : 'Número:']]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="499" y="2" width="53" height="10" uuid="07d7b883-78dc-44bf-a776-2520a2a5a16c"/>
+				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{UF} ? $P{UF} : 'UF:']]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;Chamados
+create;buonny/Chamados;index
+create;buonny/Chamados;comboChamadoTipo
+create;buonny/Chamados;comboChamadoStatus
+create;buonny/Chamados;listagem
+create;buonny/Chamados;incluir
+create;buonny/Chamados;editar

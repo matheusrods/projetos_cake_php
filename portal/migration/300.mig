@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/Audiometrias;visualizar
+create;buonny/Audiometrias;obtem_aparelhos_por_ajax
+create;buonny/Audiometrias;imprimir_relatorio
+create;buonny/Audiometrias;ver_relatorio

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_grupos_homogeneos" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.4641000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppra"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Program Files (x86)\\Jaspersoft\\iReport-4.7.1\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT DISTINCT
+RHHealth.publico.Ufn_decode_utf8_string(se.descricao) AS setor,
+ge.codigo AS codigo_grupo_exposicao,
+RHHealth.publico.Ufn_decode_utf8_string(ghe.descricao) AS grupo_homogeneo,
+cl.codigo_setor,
+ISNULL((SELECT descricao FROM RHHealth.dbo.setores_caracteristicas_atributo WHERE codigo = cl.pe_direito), '') pe_direito,
+ISNULL((SELECT descricao FROM RHHealth.dbo.setores_caracteristicas_atributo WHERE codigo = cl.cobertura), '') cobertura,
+ISNULL((SELECT descricao FROM RHHealth.dbo.setores_caracteristicas_atributo WHERE codigo = cl.iluminacao), '') iluminacao,
+ISNULL((SELECT descricao FROM RHHealth.dbo.setores_caracteristicas_atributo WHERE codigo = cl.estrutura), '') estrutura,
+ISNULL((SELECT descricao FROM RHHealth.dbo.setores_caracteristicas_atributo WHERE codigo = cl.ventilacao), '') ventilacao,
+ISNULL((SELECT descricao FROM RHHealth.dbo.setores_caracteristicas_atributo WHERE codigo = cl.piso), '') piso,
+RHHealth.publico.Ufn_decode_utf8_string(ca.descricao) as cargo,
+ISNULL(RHHealth.publico.Ufn_decode_utf8_string(ge.descricao_atividade), '') AS descricao_atividade
+FROM    RHHealth.dbo.clientes_setores cl
+    INNER JOIN RHHealth.dbo.grupo_exposicao ge
+        ON (ge.codigo_cliente_setor = cl.codigo)
+    INNER JOIN RHHealth.dbo.cargos ca
+        ON (ca.codigo = ge.codigo_cargo)
+    INNER JOIN RHHealth.dbo.setores se
+        ON (se.codigo = cl.codigo_setor)
+    INNER JOIN RHHealth.dbo.clientes_setores_cargos csc
+        ON (csc.codigo_cliente_alocacao = cl.codigo_cliente_alocacao AND csc.codigo_cargo = ca.codigo AND csc.codigo_setor = se.codigo)
+    LEFT JOIN RHHealth.dbo.grupos_homogeneos_exposicao_detalhes ghed
+        ON  (ghed.codigo_setor = se.codigo AND ghed.codigo_cargo = ca.codigo)
+    LEFT JOIN RHHealth.dbo.grupos_homogeneos_exposicao ghe
+        ON (ghe.codigo = ghed.codigo_grupo_homogeneo)
+WHERE csc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE} AND ca.ativo = 1 AND se.ativo = 1]]>
+	</queryString>
+	<field name="setor" class="java.lang.String"/>
+	<field name="codigo_grupo_exposicao" class="java.lang.Integer"/>
+	<field name="grupo_homogeneo" class="java.lang.String"/>
+	<field name="codigo_setor" class="java.lang.Integer"/>
+	<field name="pe_direito" class="java.lang.String"/>
+	<field name="cobertura" class="java.lang.String"/>
+	<field name="iluminacao" class="java.lang.String"/>
+	<field name="estrutura" class="java.lang.String"/>
+	<field name="ventilacao" class="java.lang.String"/>
+	<field name="piso" class="java.lang.String"/>
+	<field name="cargo" class="java.lang.String"/>
+	<field name="descricao_atividade" class="java.lang.String"/>
+	<detail>
+		<band height="277" splitType="Stretch">
+			<rectangle>
+				<reportElement x="19" y="13" width="516" height="14"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="19" y="99" width="516" height="57"/>
+			</rectangle>
+			<textField>
+				<reportElement x="19" y="13" width="514" height="14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SETOR: " + $F{setor}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="19" y="33" width="516" height="59"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="24" y="39" width="67" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pé direito:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="24" y="56" width="67" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Iluminação:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="24" y="73" width="67" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ventilação:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="279" y="56" width="61" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Estrutura:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="279" y="39" width="61" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cobertura:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="279" y="73" width="61" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Piso:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="92" y="39" width="179" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pe_direito}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="92" y="56" width="179" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{iluminacao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="92" y="73" width="179" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ventilacao}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="340" y="39" width="193" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cobertura}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="340" y="56" width="193" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estrutura}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="340" y="73" width="193" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{piso}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="25" y="104" width="43" height="14"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CARGO:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="69" y="104" width="464" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cargo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="25" y="122" width="169" height="14">
+					<printWhenExpression><![CDATA[$F{descricao_atividade} != '']]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Descrição das atividades:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="25" y="137" width="508" height="14"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descricao_atividade}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="168" width="555" height="109"/>
+				<subreportParameter name="CODIGO_GRUPO_EXPOSICAO">
+					<subreportParameterExpression><![CDATA[$F{codigo_grupo_exposicao}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_SETOR">
+					<subreportParameterExpression><![CDATA[$F{codigo_setor}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:relatorio_exposicoes.jrxml"]]></subreportExpression>
+			</subreport>
+			<textField>
+				<reportElement x="216" y="122" width="131" height="14"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{grupo_homogeneo} != null) ? "Grupo Homogêneo:" : ""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="352" y="122" width="181" height="14"/>
+				<textElement>
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{grupo_homogeneo} != null) ?$F{grupo_homogeneo} : ""]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

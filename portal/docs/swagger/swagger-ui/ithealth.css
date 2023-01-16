@@ -1,0 +1,73 @@
+html
+{
+box-sizing: border-box;
+overflow: -moz-scrollbars-vertical;
+overflow-y: scroll;
+}
+
+*,
+*:before,
+*:after
+{
+box-sizing: inherit;
+}
+
+body
+{
+margin:0;
+background: #fafafa;        
+}
+
+.topo_ithealth
+{
+  background: #fff;
+  -webkit-box-shadow: 0 0 7px 7px #BEBEBE;
+  box-shadow: 0 0 7px 7px #BEBEBE;
+  position: 'fixed';
+  
+}
+
+.logo
+{
+margin: 4em;
+}
+
+#main {	
+	width:600px;
+	margin:25px auto;
+}
+#main h2 {	
+	font-size: 36px;
+	margin: 0;
+	font-family: Open Sans,sans-serif;
+	color: #3b4151;
+}
+
+#yamls-menu {
+	list-style: none;
+}
+
+#yamls-menu li {
+	font-weight:bold;
+	font-size:18px;	
+	display: inline;
+	margin:0;
+}
+
+#yamls-menu li a {
+	text-decoration: none;
+	color:#555;	
+	padding:7px;
+}
+
+#yamls-menu li a:hover {
+	/* display: inline;*/
+	text-decoration: none;
+	background-color: #ddd;
+	color:#333;
+}
+
+/*Remove tag de validação indesejada do Swagger */
+#swagger-ui > section > div.wrapper > section > span {
+    display: none;
+}

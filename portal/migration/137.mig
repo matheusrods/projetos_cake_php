@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;RiscosExames
+create;buonny/RiscosExames;index
+create;buonny/RiscosExames;incluir
+create;buonny/RiscosExames;editar
+create;buonny/RiscosExames;listagem

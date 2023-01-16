@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;AgentesRiscos
+create;buonny/AgentesRiscos;index
+create;buonny/AgentesRiscos;listagem
+create;buonny/AgentesRiscos;incluir
+create;buonny/AgentesRiscos;editar
+create;buonny/AgentesRiscos;editar_status

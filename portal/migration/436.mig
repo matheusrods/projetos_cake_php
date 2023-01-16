@@ -1,0 +1,7 @@
+[ACO]
+create;buonny/NotasFiscaisServico;consolida_nfs_exame
+create;buonny/NotasFiscaisServico;consolida_nfs_exame_listagem
+create;buonny/NotasFiscaisServico;reverte_consolidado
+create;buonny/NotasFiscaisServico;grava_nfs_exame
+create;buonny/NotasFiscaisServico;consolida_dados
+create;buonny/NotasFiscaisServico;export_consolidado

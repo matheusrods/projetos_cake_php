@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_corpo_clinico" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="18385d5c-2a21-4b01-a798-691569d4d698">
+	<property name="ireport.zoom" value="1.3310000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_corpo_clinico"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/relatorio_corpo_clinico_files/relatorio_corpo_clinico_jrxml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="0"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="1000"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\RELATORIO_CORPO_CLINICO\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_FORNECEDOR" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT TOP(1) * FROM RHHealth.dbo.cliente;]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="codigo_documento" class="java.lang.String"/>
+	<field name="codigo_corporacao" class="java.lang.Short"/>
+	<field name="codigo_corretora" class="java.lang.Short"/>
+	<field name="razao_social" class="java.lang.String"/>
+	<field name="nome_fantasia" class="java.lang.String"/>
+	<field name="inscricao_estadual" class="java.lang.String"/>
+	<field name="ccm" class="java.lang.String"/>
+	<field name="iss" class="java.math.BigDecimal"/>
+	<field name="codigo_endereco_regiao" class="java.lang.Short"/>
+	<field name="regiao_tipo_faturamento" class="java.lang.Boolean"/>
+	<field name="ativo" class="java.lang.Boolean"/>
+	<field name="uso_interno" class="java.lang.Boolean"/>
+	<field name="data_inclusao" class="java.sql.Timestamp"/>
+	<field name="codigo_usuario_inclusao" class="java.lang.Integer"/>
+	<field name="comissao_gestor" class="java.lang.Double"/>
+	<field name="comissao_representante" class="java.lang.Double"/>
+	<field name="cnae" class="java.lang.String"/>
+	<field name="codigo_gestor" class="java.lang.Integer"/>
+	<field name="data_inativacao" class="java.sql.Timestamp"/>
+	<field name="data_ativacao" class="java.sql.Timestamp"/>
+	<field name="codigo_area_atuacao" class="java.lang.Integer"/>
+	<field name="codigo_sistema_monitoramento" class="java.lang.Integer"/>
+	<field name="obrigar_loadplan" class="java.lang.Boolean"/>
+	<field name="iniciar_por_checklist" class="java.lang.Boolean"/>
+	<field name="monitorar_retorno" class="java.lang.Boolean"/>
+	<field name="temperatura_de" class="java.lang.Short"/>
+	<field name="temperatura_ate" class="java.lang.Short"/>
+	<field name="data_alteracao" class="java.sql.Timestamp"/>
+	<field name="codigo_usuario_alteracao" class="java.lang.Integer"/>
+	<field name="codigo_gestor_npe" class="java.lang.Integer"/>
+	<field name="codigo_regime_tributario" class="java.lang.Short"/>
+	<field name="utiliza_mopp" class="java.lang.Boolean"/>
+	<field name="tempo_minimo_mopp" class="java.lang.Short"/>
+	<field name="codigo_gestor_operacao" class="java.lang.Integer"/>
+	<field name="codigo_gestor_contrato" class="java.lang.Integer"/>
+	<field name="codigo_cliente_sub_tipo" class="java.lang.Short"/>
+	<field name="suframa" class="java.lang.String"/>
+	<field name="codigo_seguradora" class="java.lang.Integer"/>
+	<field name="codigo_plano_saude" class="java.lang.Integer"/>
+	<field name="codigo_empresa" class="java.lang.Integer"/>
+	<field name="codigo_medico_pcmso" class="java.lang.Integer"/>
+	<field name="codigo_medico_responsavel" class="java.lang.Integer"/>
+	<field name="codigo_externo" class="java.lang.String"/>
+	<field name="codigo_documento_real" class="java.lang.String"/>
+	<field name="tipo_unidade" class="java.lang.String"/>
+	<field name="codigo_naveg" class="java.lang.Integer"/>
+	<field name="e_tomador" class="java.lang.Boolean"/>
+	<field name="aguardar_liberacao" class="java.lang.Integer"/>
+	<field name="codigo_nina_validacao" class="java.lang.String"/>
+	<field name="caminho_arquivo_logo" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="70" splitType="Stretch">
+			<image>
+				<reportElement x="450" y="5" width="100" height="40" uuid="c2caba60-730e-43b3-8b7a-e800c94c4119">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+			<line>
+				<reportElement x="2" y="60" width="553" height="1" uuid="35b393d9-ce51-4bb4-8bcb-bd57e794155a"/>
+			</line>
+			<staticText>
+				<reportElement x="115" y="25" width="324" height="20" forecolor="#009999" uuid="5b882a07-c970-4abf-acc4-4d34e61ca741"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Corpo Clínico]]></text>
+			</staticText>
+			<image>
+				<reportElement x="2" y="5" width="100" height="40" uuid="402dfe8e-7c6a-410d-9793-7e8808eb552e"/>
+				<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<detail>
+		<band height="86" splitType="Stretch">
+			<subreport isUsingCache="false">
+				<reportElement isPrintRepeatedValues="false" x="2" y="0" width="553" height="86" uuid="33983b31-f28d-4005-9eae-94943c91f96b"/>
+				<subreportParameter name="CODIGO_FORNECEDOR">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FORNECEDOR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cc_listagem.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

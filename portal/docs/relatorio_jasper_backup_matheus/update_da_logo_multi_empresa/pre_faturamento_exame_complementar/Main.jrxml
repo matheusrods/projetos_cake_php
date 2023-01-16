@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Demonstrativo de Serviços" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0245201830476087"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/pre_faturamento_exame_complementar"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="MES" class="java.lang.String">
+		<defaultValueExpression><![CDATA[12]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ANO" class="java.lang.String">
+		<defaultValueExpression><![CDATA[2020]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[51321]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\DEMONSTRATIVO_EXAMES_COMPLEMENTAR\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_UNIDADE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[51604]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT distinct
+	clientePagadorAlocacao.codigo as codigo_cliente_pagador,
+	clientePagadorAlocacao.nome_fantasia as nome_pagador,
+	pe.codigo as codigo_pedido_exame,
+	fsc.codigo_cliente_alocacao as codigo_unidade,
+	cf.codigo_cliente_matricula as cod_cliente,
+	cli.nome_fantasia as nome_cliente,
+	cli.razao_social as razao_cliente,
+	fun.nome as nome_funcionario,
+	forn.nome as nome_fornecedor,
+	CONVERT(varchar(10), ipeb.data_realizacao_exame, 103) as data_realizacao_do_exame,
+	e.codigo_servico as codigo_servico,
+	e.descricao as exame,
+	(
+	CASE
+	WHEN forn.ambulatorio = 1 THEN '0.00'
+	WHEN forn.prestador_particular = 1 THEN '0.00'
+	ELSE det.valor
+	END
+	) AS valor,
+	ISNULL(cf.centro_custo, '-') as centro_custo,
+	clientePagadorAlocacao.razao_social as razao_cliente_pagador,
+	clientePagadorAlocacao.nome_fantasia as nome_cliente_pagador,
+	Pedido.codigo_cliente_pagador as clientepagador_codigo,
+	(CONVERT(VARCHAR,ipeb.data_inclusao, 103)) AS data_baixa_exame,
+	'EXAMES COMPLEMENTARES' as forma_de_cobranca
+FROM RHHealth.dbo.[detalhes_itens_pedidos_manuais] AS det
+	INNER JOIN RHHealth.dbo.itens_pedidos AS [ItemPedido]  ON ([ItemPedido].[codigo] = det.[codigo_item_pedido])
+	INNER JOIN RHHealth.dbo.[pedidos] AS [Pedido]  ON ([Pedido].[codigo] = [ItemPedido].[codigo_pedido])
+	INNER JOIN RHHealth.dbo.[produto] AS [Produto]  ON ([Produto].[codigo] = [ItemPedido].[codigo_produto]
+	AND [Produto].[codigo] = 59)
+	INNER JOIN RHHealth.dbo.[servico] AS [Servico]  ON ([Servico].[codigo] = det.[codigo_servico])
+	INNER JOIN RHHealth.dbo.[cliente] AS cli  ON (cli.[codigo] = det.codigo_cliente_utilizador)
+
+	inner join RHHealth.dbo.exames e on e.codigo_servico = det.codigo_servico
+	inner join RHHealth.dbo.itens_pedidos_exames_baixa ipeb on (MONTH(ipeb.data_inclusao) = $P{MES}) AND (YEAR(ipeb.data_inclusao) = $P{ANO})
+		AND ipeb.fornecedor_particular = 0
+		AND ipeb.pedido_importado <> 1
+		AND ipeb.codigo_itens_pedidos_exames IN (
+			select ipes.codigo
+			from RHHealth.dbo.itens_pedidos_exames  ipes
+				inner join RHHealth.dbo.pedidos_exames pes on pes.codigo = ipes.codigo_pedidos_exames
+			where pes.codigo_cliente = det.codigo_cliente_utilizador
+				AND ipes.codigo_exame = e.codigo
+		)
+	-- ipe.codigo = ipeb.codigo_itens_pedidos_exames
+	inner join RHHealth.dbo.itens_pedidos_exames ipe on ipe.codigo = ipeb.codigo_itens_pedidos_exames AND ipe.codigo_exame = e.codigo
+	inner join RHHealth.dbo.pedidos_exames AS pe on pe.codigo_cliente = det.codigo_cliente_utilizador AND pe.codigo = ipe.codigo_pedidos_exames
+	inner join RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo = pe.codigo_func_setor_cargo
+	inner join RHHealth.dbo.cliente_funcionario cf on cf.codigo = pe.codigo_cliente_funcionario
+	INNER JOIN RHHealth.dbo.fornecedores forn on forn.codigo = ipe.codigo_fornecedor
+	inner join RHHealth.dbo.funcionarios fun on fun.codigo = pe.codigo_funcionario
+	left join cliente clientePagadorAlocacao on clientePagadorAlocacao.codigo = Pedido.codigo_cliente_pagador
+WHERE 1=1
+	AND cf.codigo_cliente_matricula = $P{CODIGO_CLIENTE}
+	AND fsc.codigo_cliente_alocacao = $P{CODIGO_UNIDADE}
+ORDER BY
+	fsc.codigo_cliente_alocacao ASC,
+	fun.nome ASC]]>
+	</queryString>
+	<field name="codigo_cliente_pagador" class="java.lang.Integer"/>
+	<field name="nome_pagador" class="java.lang.String"/>
+	<field name="codigo_pedido_exame" class="java.lang.Integer"/>
+	<field name="codigo_unidade" class="java.lang.Integer"/>
+	<field name="cod_cliente" class="java.lang.Integer"/>
+	<field name="nome_cliente" class="java.lang.String"/>
+	<field name="razao_cliente" class="java.lang.String"/>
+	<field name="nome_funcionario" class="java.lang.String"/>
+	<field name="nome_fornecedor" class="java.lang.String"/>
+	<field name="data_realizacao_do_exame" class="java.lang.String"/>
+	<field name="codigo_servico" class="java.lang.Integer"/>
+	<field name="exame" class="java.lang.String"/>
+	<field name="valor" class="java.math.BigDecimal"/>
+	<field name="centro_custo" class="java.lang.String"/>
+	<field name="razao_cliente_pagador" class="java.lang.String"/>
+	<field name="nome_cliente_pagador" class="java.lang.String"/>
+	<field name="clientepagador_codigo" class="java.lang.Integer"/>
+	<field name="data_baixa_exame" class="java.lang.String"/>
+	<field name="forma_de_cobranca" class="java.lang.String"/>
+	<variable name="sum_valor_total" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{valor}]]></variableExpression>
+	</variable>
+	<group name="grp_cliente_pagador">
+		<groupExpression><![CDATA[$P{CODIGO_CLIENTE}]]></groupExpression>
+		<groupHeader>
+			<band height="54">
+				<textField>
+					<reportElement mode="Transparent" x="79" y="16" width="476" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{codigo_cliente_pagador} + " - " + $F{nome_pagador}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Transparent" x="0" y="16" width="79" height="14" forecolor="#646464"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Cliente Pagador:]]></text>
+				</staticText>
+				<line>
+					<reportElement mode="Opaque" x="0" y="50" width="802" height="2" forecolor="#646464"/>
+				</line>
+				<staticText>
+					<reportElement mode="Transparent" x="0" y="36" width="79" height="14" forecolor="#646464"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Produto:]]></text>
+				</staticText>
+				<line>
+					<reportElement mode="Opaque" x="0" y="30" width="802" height="2" forecolor="#646464"/>
+				</line>
+				<staticText>
+					<reportElement mode="Transparent" x="79" y="36" width="219" height="14" forecolor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" isItalic="false"/>
+					</textElement>
+					<text><![CDATA[Exames Complementares]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="87">
+				<staticText>
+					<reportElement x="628" y="5" width="118" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total A Pagar:]]></text>
+				</staticText>
+				<line>
+					<reportElement mode="Opaque" x="0" y="69" width="802" height="1" forecolor="#646464"/>
+				</line>
+				<textField pattern="¤ #,##0.00" isBlankWhenNull="false">
+					<reportElement x="701" y="5" width="100" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sum_valor_total}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="37" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="0" width="802" height="21"/>
+				<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="18" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Demonstrativo de Serviços]]></text>
+			</staticText>
+			<line>
+				<reportElement mode="Opaque" x="0" y="31" width="802" height="1"/>
+			</line>
+			<textField>
+				<reportElement mode="Transparent" x="702" y="21" width="100" height="10" forecolor="#646464"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isItalic="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="2" y="0" width="79" height="32"/>
+				<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="59">
+			<subreport>
+				<reportElement x="0" y="0" width="802" height="59" printWhenGroupChanges="grp_cliente_pagador"/>
+				<subreportParameter name="CODIGO_UNIDADE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_UNIDADE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="MES">
+					<subreportParameterExpression><![CDATA[$P{MES}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ANO">
+					<subreportParameterExpression><![CDATA[$P{ANO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:unidade_funcionario_exame.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="42" splitType="Stretch">
+			<textField>
+				<reportElement mode="Transparent" x="455" y="2" width="100" height="10"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}.toString()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement mode="Opaque" x="0" y="2" width="802" height="1"/>
+			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="2" width="229" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[RH HEALTH]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

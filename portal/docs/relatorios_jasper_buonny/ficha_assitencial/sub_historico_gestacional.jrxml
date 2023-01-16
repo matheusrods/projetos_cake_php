@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 4.5.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_historico_gestacional" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.9487171000000014"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository/"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/ficha_assitencial_files/sub_historico_gestacional.jrxml"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ficha_assitencial"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<style name="style1">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FICHA_ASSISTENCIAL" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[DECLARE @MaxCount INT;
+DECLARE @Cod INT;
+SELECT @MaxCount = max(cnt)
+FROM (
+    SELECT
+        count(codigo) AS cnt
+    FROM RHHealth.dbo.fichas_assistenciais_questoes fcq
+    ) X;
+DECLARE @SQL NVARCHAR(max)
+    ,@i INT;
+SET @i = 0;
+WHILE @i < @MaxCount
+BEGIN
+    SET @i = @i + 1;
+    SELECT @Cod = codigo from (
+    SELECT codigo, CAST(row_number() OVER (ORDER BY codigo) AS Varchar(10)) AS RowNo FROM RHHealth.dbo.fichas_assistenciais_questoes
+    ) pv WHERE RowNo = @i
+    SET @SQL = COALESCE(@Sql + ', ', '') + 'questao_' + CONVERT(VARCHAR(10), @Cod);
+END
+;SET @SQL = N';WITH CTE AS (
+        SELECT
+        CONCAT(dbBuonny.publico.ufn_decode_utf8_string(fichas_assistenciais_respostas.resposta) COLLATE SQL_Latin1_General_CP1_CI_AS, ''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+            ISNULL(CASE fichas_assistenciais_respostas.parentesco
+            WHEN '''' THEN '' ''
+            ELSE dbBuonny.publico.ufn_decode_utf8_string(fichas_assistenciais_respostas.parentesco) COLLATE SQL_Latin1_General_CP1_CI_AS
+            END, '' '') COLLATE SQL_Latin1_General_CP1_CI_AS,
+        ''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+        dbBuonny.publico.ufn_decode_utf8_string(fichas_assistenciais_respostas.campo_livre)) COLLATE SQL_Latin1_General_CP1_CI_AS AS resposta,
+        ''questao_'' +  CONVERT(VARCHAR(10), fichas_assistenciais_questoes.codigo) COLLATE SQL_Latin1_General_CP1_CI_AS AS RowNo
+        FROM RHHealth.dbo.fichas_assistenciais_questoes
+        LEFT JOIN RHHealth.dbo.fichas_assistenciais_respostas ON(fichas_assistenciais_respostas.codigo_ficha_assistencial_questao = fichas_assistenciais_questoes.codigo)
+        WHERE fichas_assistenciais_questoes.codigo_ficha_assistencial_grupo_questao = 4
+            AND fichas_assistenciais_respostas.codigo_ficha_assistencial = ' + $P{CODIGO_FICHA_ASSISTENCIAL} + ' )
+SELECT *
+FROM   CTE
+PIVOT (MAX(resposta) FOR RowNo IN (' + @SQL + N')) pvt';
+EXECUTE (@SQL)]]>
+	</queryString>
+	<field name="questao_7" class="java.lang.String"/>
+	<field name="questao_8" class="java.lang.String"/>
+	<field name="questao_9" class="java.lang.String"/>
+	<field name="questao_10" class="java.lang.String"/>
+	<field name="questao_11" class="java.lang.String"/>
+	<field name="questao_12" class="java.lang.String"/>
+	<field name="questao_13" class="java.lang.String"/>
+	<field name="questao_15" class="java.lang.String"/>
+	<field name="questao_16" class="java.lang.String"/>
+	<field name="questao_17" class="java.lang.String"/>
+	<field name="questao_18" class="java.lang.String"/>
+	<field name="questao_19" class="java.lang.String"/>
+	<field name="questao_20" class="java.lang.String"/>
+	<field name="questao_21" class="java.lang.String"/>
+	<field name="questao_22" class="java.lang.String"/>
+	<field name="questao_23" class="java.lang.String"/>
+	<field name="questao_24" class="java.lang.String"/>
+	<field name="questao_25" class="java.lang.String"/>
+	<field name="questao_26" class="java.lang.String"/>
+	<field name="questao_31" class="java.lang.String"/>
+	<field name="questao_35" class="java.lang.String"/>
+	<field name="questao_36" class="java.lang.String"/>
+	<field name="questao_37" class="java.lang.String"/>
+	<field name="questao_38" class="java.lang.String"/>
+	<field name="questao_39" class="java.lang.String"/>
+	<field name="questao_40" class="java.lang.String"/>
+	<field name="questao_41" class="java.lang.String"/>
+	<field name="questao_42" class="java.lang.String"/>
+	<field name="questao_43" class="java.lang.String"/>
+	<field name="questao_44" class="java.lang.String"/>
+	<field name="questao_49" class="java.lang.String"/>
+	<field name="questao_50" class="java.lang.String"/>
+	<field name="questao_53" class="java.lang.String"/>
+	<field name="questao_54" class="java.lang.String"/>
+	<field name="questao_55" class="java.lang.String"/>
+	<field name="questao_56" class="java.lang.String"/>
+	<field name="questao_61" class="java.lang.String"/>
+	<field name="questao_62" class="java.lang.String"/>
+	<field name="questao_63" class="java.lang.String"/>
+	<field name="questao_64" class="java.lang.String"/>
+	<field name="questao_65" class="java.lang.String"/>
+	<field name="questao_70" class="java.lang.String"/>
+	<field name="questao_71" class="java.lang.String"/>
+	<field name="questao_72" class="java.lang.String"/>
+	<field name="questao_73" class="java.lang.String"/>
+	<field name="questao_74" class="java.lang.String"/>
+	<field name="questao_75" class="java.lang.String"/>
+	<field name="questao_76" class="java.lang.String"/>
+	<field name="questao_81" class="java.lang.String"/>
+	<field name="questao_82" class="java.lang.String"/>
+	<field name="questao_83" class="java.lang.String"/>
+	<field name="questao_84" class="java.lang.String"/>
+	<field name="questao_109" class="java.lang.String"/>
+	<field name="questao_110" class="java.lang.String"/>
+	<field name="questao_111" class="java.lang.String"/>
+	<field name="questao_112" class="java.lang.String"/>
+	<field name="questao_117" class="java.lang.String"/>
+	<field name="questao_118" class="java.lang.String"/>
+	<field name="questao_119" class="java.lang.String"/>
+	<field name="questao_120" class="java.lang.String"/>
+	<field name="questao_122" class="java.lang.String"/>
+	<field name="questao_123" class="java.lang.String"/>
+	<field name="questao_124" class="java.lang.String"/>
+	<field name="questao_126" class="java.lang.String"/>
+	<field name="questao_127" class="java.lang.String"/>
+	<field name="questao_128" class="java.lang.String"/>
+	<field name="questao_129" class="java.lang.String"/>
+	<field name="questao_130" class="java.lang.String"/>
+	<field name="questao_131" class="java.lang.String"/>
+	<field name="questao_132" class="java.lang.String"/>
+	<field name="questao_137" class="java.lang.String"/>
+	<field name="questao_138" class="java.lang.String"/>
+	<field name="questao_139" class="java.lang.String"/>
+	<field name="questao_140" class="java.lang.String"/>
+	<field name="questao_141" class="java.lang.String"/>
+	<field name="questao_143" class="java.lang.String"/>
+	<field name="questao_148" class="java.lang.String"/>
+	<field name="questao_150" class="java.lang.String"/>
+	<field name="questao_152" class="java.lang.String"/>
+	<field name="questao_153" class="java.lang.String"/>
+	<field name="questao_154" class="java.lang.String"/>
+	<field name="questao_155" class="java.lang.String"/>
+	<field name="questao_156" class="java.lang.String"/>
+	<field name="questao_157" class="java.lang.String"/>
+	<field name="questao_158" class="java.lang.String"/>
+	<field name="questao_159" class="java.lang.String"/>
+	<field name="questao_160" class="java.lang.String"/>
+	<field name="questao_161" class="java.lang.String"/>
+	<field name="questao_162" class="java.lang.String"/>
+	<field name="questao_163" class="java.lang.String"/>
+	<field name="questao_164" class="java.lang.String"/>
+	<field name="questao_165" class="java.lang.String"/>
+	<field name="questao_166" class="java.lang.String"/>
+	<field name="questao_168" class="java.lang.String"/>
+	<field name="questao_169" class="java.lang.String"/>
+	<field name="questao_170" class="java.lang.String"/>
+	<field name="questao_171" class="java.lang.String"/>
+	<field name="questao_172" class="java.lang.String"/>
+	<field name="questao_173" class="java.lang.String"/>
+	<field name="questao_174" class="java.lang.String"/>
+	<title>
+		<band height="20">
+			<staticText>
+				<reportElement x="207" y="0" width="140" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HISTÓRICO GESTACIONAL]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="49" splitType="Stretch">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="555" height="12"/>
+				<textField>
+					<reportElement x="93" y="0" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_152}.split('#')[0]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="88" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[GESTAÇÕES:]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="style1" x="0" y="12" width="555" height="12"/>
+				<textField>
+					<reportElement x="93" y="0" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_153}.split('#')[0]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="88" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ABORTOS:]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="style1" x="0" y="24" width="555" height="12"/>
+				<textField>
+					<reportElement x="93" y="0" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_154}.split('#')[0]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="88" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PARTOS:]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="style1" x="0" y="36" width="555" height="12"/>
+				<textField>
+					<reportElement x="93" y="0" width="95" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_155}.split('#')[0]]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="0" width="88" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ÚLTIMA MENSTRUAÇÃO:]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

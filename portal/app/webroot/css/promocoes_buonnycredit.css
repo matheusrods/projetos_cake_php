@@ -1,0 +1,66 @@
+/*para as telas de promoções, independentes do site Buoony*/
+input {height:auto}
+
+div#dia_do_amigo {
+	background:url('../img/buonnycredit/fundo.png') no-repeat;
+	text-align:center;
+	width:610px;
+	height:733px;
+	margin:20px auto 0 auto;
+	padding:20px;
+}
+
+div#dia_do_amigo p {
+	font-size:21px;
+	color:#4D4D4F;
+	width:500px;
+	margin:0 auto;
+	line-height:120%;
+	clear:both;
+}
+
+div#dia_do_amigo img {
+	margin:40px 0;
+}
+
+div#dia_do_amigo form {
+	width:450px;
+	margin:0 auto;
+}
+
+div#dia_do_amigo form input {
+	float:left;
+	margin:5px 12px 0 0;
+}
+
+div#dia_do_amigo p.italic {
+	font-size:20px;
+	font-style:oblique;
+	margin:10px auto;
+}
+
+div#dia_do_amigo p.obs {
+	font-size:15px;
+}
+
+div#dia_do_amigo p.contact {
+	font-size:18px;
+	margin-top:20px;
+}
+
+div#fotter_dia_do_amigo {
+	border:#ccc 1px solid;
+	width:648px;
+	height:110px;
+	margin:auto;
+}
+
+div#fotter_dia_do_amigo img.lg_buonny_credit {
+	float:left;
+	margin:20px 40px;
+}
+
+div#fotter_dia_do_amigo img.lg_serasa_experian {
+	float:right;
+	margin:20px 40px;
+}

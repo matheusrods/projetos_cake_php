@@ -1,0 +1,2255 @@
+swagger: "2.0"
+info:
+  description: "Api da rhhealth ***Obs:* O ambiente de Teste 'TST' fica fora todos os dias das 00:00 horas as 07:00 horas.**"
+  version: "1.0.0"
+  title: "API Portal"
+#  termsOfService: "http://swagger.io/terms/"
+#  contact:
+#    email: "apiteam@swagger.io"
+#  license:
+#    name: "Apache 2.0"
+#    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+# host: "api.rhhealth.com.br"
+# basePath: "/portal"
+tags:
+  - name: "estrutura"
+    description: "Módulo de Estrutura do sistema ITHealth da RHHealth"
+  - name: "segurança"
+    description: "Módulo de Segurança do sistema ITHealth da RHHealth (PPRA)"
+  - name: "saúde"
+    description: "Módulo de Saúde do sistema ITHealth da RHHealth (PCMSO/Atestados)"
+paths:
+  /api/cliente:
+    get:
+      tags:
+        - "estrutura"
+      summary: "Retorna as Unidades de um Cliente"
+      description: "Retorna as Unidades de um Cliente"
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [json, xml]
+          description: "Define o formato do retorno, json ou xml são valores disponíveis, json é o formato padrão para retorno."
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Cliente"
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+  /api/setor:
+    get:
+      tags:
+        - "estrutura"
+      summary: "Retorna os Setores de um Cliente"
+      description: "Retorna todas os Setores de um Cliente"
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [json, xml]
+          description: "Define o formato do retorno, json ou xml são valores disponíveis, json é o formato padrão para retorno."
+          required: false
+        - in: query
+          name: descricao
+          schema:
+            type: string
+          description: "Filtra Setor por sua respectiva descrição."
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Setor"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  /api/cargo:
+    get:
+      tags:
+        - "estrutura"
+      summary: "Retorna os Cargos de um Cliente"
+      description: "Retorna todas os Cargos de um Cliente"
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [json, xml]
+          description: "Define o formato do retorno, json ou xml são valores disponíveis, json é o formato padrão para retorno."
+          required: false
+        - in: query
+          name: descricao
+          schema:
+            type: string
+          description: "Filtra Cargo por sua respectiva descrição."
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Cargo"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  /api/tomador_servico:
+    post:
+      tags:
+        - "estrutura"
+      summary: "Inclui um novo tomador de serviços"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Inclui um novo tomador de serviço."
+          required: true
+          schema:
+            $ref: "#/definitions/TomadorServico"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+    get:
+      tags:
+        - "estrutura"
+      summary: "Consulta um tomador de serviços"
+      description: "Retorna dados de um tomador de serviço"
+      parameters:
+        - in: query
+          name: cnpj
+          type: string
+          description: "CNPJ do cliente para autenticação"
+          required: true
+        - in: query
+          name: token
+          type: string
+          description: "TOKEN cedido pela Buonny"
+          required: true
+        - in: query
+          name: cnpj_alocacao
+          type: string
+          description: "CNPJ ALOCACAO do tomador de serviços"
+          required: true
+      responses:
+        200:
+          description: "Exemplo abaixo do retorno"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/TomadorServicoReturn"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  /api/funcionario:
+    post:
+      tags:
+        - "estrutura"
+      summary: "Inclui um novo funcionário"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Inclui um novo funcionário. Os parâmetros prefixados \"_externo\" são opcionais, porém, deve-se incluir o seu correspondente. Exemplo: codigo ou codigo_externo, codigo_unidade_alocacao ou codigo_externo_unidade_alocacao."
+          required: true
+          schema:
+            $ref: "#/definitions/Funcionario"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+    put:
+      tags:
+        - "estrutura"
+      summary: "Atualiza um determinado funcionário"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Atualiza um funcionário existente. Os parâmetros prefixados \"_externo\" são opcionais, porém, deve-se incluir o seu correspondente. Exemplo: codigo ou codigo_externo, codigo_unidade_alocacao ou codigo_externo_unidade_alocacao."
+          required: true
+          schema:
+            $ref: "#/definitions/Funcionario"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+    get:
+      tags:
+        - "estrutura"
+      summary: "Consulta um determinado funcionário."
+      description: "Consulta um Funcionário"
+      parameters:
+        - name: "token"
+          in: "query"
+          description: "Fornecido pela Buonny"
+          required: true
+          type: "string"
+        - name: "cnpj"
+          in: "query"
+          description: "Cnpj do cliente da RHHealth"
+          required: true
+          type: "string"
+        - name: "cpf"
+          in: "query"
+          description: "Busca Funcionário pelo seu respectivo CPF"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+        403:
+          description: "Autorização negada"
+          schema:
+            $ref: "#/definitions/Funcionario"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  /api/funcionario_matricula:
+    post:
+      tags:
+        - "estrutura"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Incluir uma nova matrícula de funcionário. Os parâmetros prefixados \"_externo\" são opcionais, porém, deve-se incluir o seu correspondente. Exemplo: codigo ou codigo_externo, codigo_unidade_alocacao ou codigo_externo_unidade_alocacao."
+          required: true
+          schema:
+            $ref: "#/definitions/FuncionarioMatricula"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+    put:
+      tags:
+        - "estrutura"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Atualiza uma matrícula de funcionário existente. Os parâmetros prefixados \"_externo\" são opcionais, porém, deve-se incluir o seu correspondente. Exemplo: codigo ou codigo_externo, codigo_unidade_alocacao ou codigo_externo_unidade_alocacao."
+          required: true
+          schema:
+            $ref: "#/definitions/FuncionarioMatricula"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+    delete:
+      tags:
+        - "estrutura"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      description: "Excluir uma matrícula existente"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Atualiza uma matrícula de funcionário existente. Os parâmetros prefixados \"_externo\" são opcionais, porém, deve-se incluir o seu correspondente. Exemplo: codigo ou codigo_externo, codigo_unidade_alocacao ou codigo_externo_unidade_alocacao."
+          schema:
+            type: "object"
+            required:
+              - token
+              - cnpj
+              - cpf
+              - numero_matricula
+            properties:
+              token:
+                type: "string"
+              cnpj:
+                type: "string"
+              cpf:
+                type: "string"
+                maximun: 11
+              numero_matricula:
+                type: "string"
+                description: 'Obrigatório ou codigo_matricula'
+                maximun: 11
+              codigo_matricula:
+                type: "integer"
+                description: 'Obrigatório ou numero_matricula'
+
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+  /api/funcionario_setor_cargo:
+    post:
+      tags:
+        - "estrutura"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Incluir um novo cargo em matrícula de funcionário. Os parâmetros prefixados \"_externo\" são opcionais, porém, deve-se incluir o seu correspondente. Exemplo: codigo ou codigo_externo, codigo_unidade_alocacao ou codigo_externo_unidade_alocacao."
+          required: true
+          schema:
+            $ref: "#/definitions/FuncionarioSetorCargo"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+    delete:
+      tags:
+        - "estrutura"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      description: "Excluir uma função unidade/setor/cargo existente"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Excluir uma função unidade/setor/cargo existente"
+          required: true
+          schema:
+            type: "object"
+            required:
+              - token
+              - cnpj
+            properties:
+              token:
+                type: "string"
+              cnpj:
+                type: "string"
+              codigo_matricula:
+                type: "integer"
+                description: 'Obrigatório ou numero_matricula'
+              numero_matricula:
+                type: "string"
+                maximum: 11
+                description: 'Obrigatório ou codigo_matricula'
+              codigo_cargo:
+                type: "integer"
+                description: 'Obrigatório ou codigo_externo_cargo'
+              codigo_externo_cargo:
+                type: "string"
+                maximum: '60'
+                description: 'Obrigatório ou codigo_cargo'
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  # Grupo de Risco ou Agente
+  # Prazo de Desenvolvimento estimado na estrutura do Cake, utilizando 2 recursos (4 horas)
+  /api/grupo_risco:
+    get:
+      tags:
+        - "segurança"
+      summary: "Retorna os Grupos de Riscos disponíveis"
+      description: "Retorna todos os Grupos de Riscos disponíveis"
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [json, xml]
+          description: "Define o formato do retorno, json ou xml são valores disponíveis, json é o formato padrão para retorno."
+          required: false
+        - in: query
+          name: descricao
+          schema:
+            type: string
+          description: "Filtra Grupo por sua respectiva descrição."
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/GrupoRisco"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  # Consulta Grupos Homogêneos de Exposição
+  # Prazo de Desenvolvimento estimado na estrutura do Cake, utilizando 2 recursos (4 horas)
+  /api/ghe:
+    get:
+      tags:
+        - "segurança"
+      summary: "Retorna os Grupos Homogêneos de Exposição disponíveis"
+      description: "Retorna Grupos Homogêneos de Exposição disponíveis."
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [json, xml]
+          description: "Define o formato do retorno, json ou xml são valores disponíveis, json é o formato padrão para retorno."
+          required: false
+        - in: query
+          name: descricao
+          schema:
+            type: string
+          description: "Filtra GHE por sua respectiva descrição."
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/GrupoHomogeneoExposicao"
+      security:
+        - token: []
+        - cnpj_cliente: []
+    post:
+      tags:
+        - "segurança"
+      summary: "Inclui Grupos Homogêneos de Exposição"
+      description: "Inclui Grupos Homogêneos de Exposição. Os parâmetros prefixados \"_externo\" são opcionais, porém, deve-se incluir o seu correspondente. Exemplo: codigo ou codigo_externo, codigo_unidade_alocacao ou codigo_externo_unidade_alocacao."
+      consumes:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - in: "body"
+          name: "GrupoHomogeneoItem"
+          description: "Item do Grupo Homogêneo"
+          schema:
+            $ref: "#/definitions/GrupoHomogeneoExposicao"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+    put:
+      tags:
+        - "segurança"
+      summary: "Atualiza os grupos Homogêneos de Exposição"
+      description: "Atualiza os grupos Homogêneos de Exposição. Os parâmetros prefixados \"_externo\" são opcionais, porém, deve-se incluir o seu correspondente. Exemplo: codigo ou codigo_externo, codigo_unidade_alocacao ou codigo_externo_unidade_alocacao."
+      consumes:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - in: "body"
+          name: "GrupoHomogeneoItem"
+          description: "Item do Grupo Homogêneo"
+          schema:
+            $ref: "#/definitions/GrupoHomogeneoExposicao"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  # Risco
+  # Prazo de Desenvolvimento estimado na estrutura do Cake, utilizando 2 recursos (4 horas)
+  /api/risco:
+    get:
+      tags:
+        - "segurança"
+      summary: "Retorna todos os Riscos disponíveis para um Grupo de Risco"
+      description: "Retorna todos os Riscos disponíveis para um Grupo de Risco"
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [json, xml]
+          description: "Define o formato do retorno, json ou xml são valores disponíveis, json é o formato padrão para retorno."
+          required: false
+
+        - name: "codigo_externo_grupo_risco"
+          in: "query"
+          description: "Busca por riscos"
+          required: false
+          type: "string"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Risco"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  # Máquinas ou Ambiente no qual é produzido o risco
+  # Prazo de Desenvolvimento estimado na estrutura do Cake, utilizando 2 recursos (4 horas)
+  /api/fonte_geradora:
+    get:
+      tags:
+        - "segurança"
+      summary: "Retorna todos os Riscos disponíveis para um Grupo de Risco"
+      description: "Retorna todos os Riscos disponíveis para um Grupo de Risco"
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [json, xml]
+          description: "Define o formato do retorno, json ou xml são valores disponíveis, json é o formato padrão para retorno."
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/FonteGeradora"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  # Efeito Crítico
+  # Prazo de Desenvolvimento estimado na estrutura do Cake, utilizando 2 recursos (4 horas)
+  /api/efeito_critico:
+    get:
+      tags:
+        - "segurança"
+      summary: "Retorna Efeitos Críticos cadastrados"
+      description: "Retorna Efeitos Críticos cadastrados"
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [json, xml]
+          description: "Define o formato do retorno, json ou xml são valores disponíveis, json é o formato padrão para retorno."
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/EfeitoCritico"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  # EPI
+  # Prazo de Desenvolvimento estimado na estrutura do Cake, utilizando 2 recursos (4 horas)
+  /api/epi:
+    get:
+      tags:
+        - "segurança"
+      summary: "Retorna epis cadastradas"
+      description: "Retorna epis cadastradas"
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [json, xml]
+          description: "Define o formato do retorno, json ou xml são valores disponíveis, json é o formato padrão para retorno."
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Epi"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  # EPC
+  # Prazo de Desenvolvimento estimado na estrutura do Cake, utilizando 2 recursos (4 horas)
+  /api/epc:
+    get:
+      tags:
+        - "segurança"
+      summary: "Retorna epcs cadastradas"
+      description: "Retorna epcs cadastradas"
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [json, xml]
+          description: "Define o formato do retorno, json ou xml são valores disponíveis, json é o formato padrão para retorno."
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Epc"
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+  # Método para sincronizar dados no sistema
+  # Prazo de Desenvolvimento estimado na estrutura do Cake, utilizando 2 recursos (30 horas)
+  /api/ppra/sincronizar:
+    post:
+      tags:
+        - "segurança"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      summary: "Atualiza os registros de grupo de exposição"
+      description: "Atualiza os registros de grupo de exposição. Os parâmetros prefixados \"_externo\" são opcionais, porém, deve-se incluir o seu correspondente. Exemplo: codigo ou codigo_externo, codigo_unidade_alocacao ou codigo_externo_unidade_alocacao."
+      parameters:
+        - in: "body"
+          name: "grupoExposicaoItem"
+          description: "Item de grupo de exposição"
+          schema:
+            $ref: "#/definitions/GrupoExposicao"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+  ###############atestados##############
+  #motivo_licenca
+  /api/motivo_licenca?cnpj={cnpj}&token={token}:
+    get:
+      tags:
+        - "saúde"
+      summary: "Método para buscar os dados do motivo de licenças cadastradas no sistema"
+      description: "Método para buscar os dados do motivo de licenças cadastradas no sistema"
+      parameters:
+        - in: "query"
+          name: cnpj
+          type: integer
+          description: "CNPJ do cliente"
+          required: true
+        - in: "query"
+          name: token
+          type: string
+          description: "Token do usuário"
+          required: true
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/MotivoAfastamento"
+      security:
+        - token: []
+        - cnpj_cliente: []
+  #motivo_licenca_esocial
+  /api/motivo_licenca_esocial?cnpj={cnpj}&token={token}:
+    get:
+      tags:
+        - "saúde"
+      summary: "Método para consumo dos dados das licenças do eSocial."
+      description: "Método para consumo dos dados das licenças do eSocial."
+      parameters:
+        - in: "query"
+          name: cnpj
+          type: integer
+          description: "CNPJ do cliente"
+          required: true
+        - in: "query"
+          name: token
+          type: string
+          description: "Token do usuário"
+          required: true
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Esocial"
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+  #profissional
+  /api/profissional?cnpj={cnpj}&token={token}&numero_conselho={numero_conselho}&nome={nome}:
+    get:
+      tags:
+        - "saúde"
+      summary: "Busca o profissional."
+      description: "Neste método é possível informar o número do conselho e/ou nome do profissional. O nome do profissional pode ser parcial pois o sistema buscará nomes que começam com o nome informado."
+      parameters:
+        - in: "query"
+          name: cnpj
+          type: integer
+          description: "CNPJ do cliente"
+          required: true
+        - in: "query"
+          name: token
+          type: string
+          description: "Token do usuário"
+          required: true
+        - in: "query"
+          name: numero_conselho
+          type: string
+          description: "Filtra pelo número do conselho do profissional"
+          required: false
+        - in: "query"
+          name: nome
+          type: string
+          description: "Filtra pelo nome do profissional"
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Profissional"
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+  #cid10
+  /api/cid10?cnpj={cnpj}&token={token}&codigo_cid={codigo_cid}&descricao={descricao}:
+    get:
+      tags:
+        - "saúde"
+      summary: "Busca os Cids."
+      description: "Método para consulta dos Cids10 cadastrados no sistema."
+      parameters:
+        - in: "path"
+          name: cnpj
+          type: integer
+          description: "CNPJ do cliente"
+          required: true
+        - in: "path"
+          name: token
+          type: string
+          description: "Token do usuário"
+          required: true
+        - in: "query"
+          name: codigo_cid
+          type: string
+          description: "Filtra pelo codigo do cid"
+          required: false
+        - in: "query"
+          name: descricao
+          type: string
+          description: "Filtra pela descricao do cid"
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Cid10"
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+  #TipoLocalAtendimento
+  /api/tipo_local_atendimento?cnpj={cnpj}&token={token}:
+    get:
+      tags:
+        - "saúde"
+      summary: "Busca os Locais de Atendimento."
+      description: "Método para buscar os tipos de locais de atendimentos."
+      parameters:
+        - in: "path"
+          name: cnpj
+          type: integer
+          description: "CNPJ do cliente"
+          required: true
+        - in: "path"
+          name: token
+          type: string
+          description: "Token do usuário"
+          required: true
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/TipoLocalAtendimento"
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+  #Atestado
+  /api/atestado?cnpj={cnpj}&token={token}&cpf={cpf}&data={data}&pk_externo={pk_externo}:
+    get:
+      tags:
+        - "saúde"
+      summary: "Busca o Atestados."
+      description: "Método para consultar os atestados médicos dos funcionários."
+      parameters:
+        - in: "path"
+          name: cnpj
+          type: integer
+          description: "CNPJ do cliente"
+          required: true
+        - in: "path"
+          name: token
+          type: string
+          description: "Token do usuário"
+          required: true
+        - in: "path"
+          name: cpf
+          type: string
+          description: "Cpf do funcionário"
+          required: true
+        - in: "path"
+          name: data
+          type: string
+          description: "Data do inicio do atestado"
+          required: false
+        - in: "path"
+          name: pk_externo
+          type: string
+          description: "Chave primaria do sistema externo"
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Atestado"
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+  /api/atestado:
+    post:
+      tags:
+        - "saúde"
+      summary: "Inclui um novo Atestado"
+      description: "Método para incluir os dados de um novo atestado médico."
+      consumes:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Inclui um novo atestado médico. Os parâmetros prefixados \"_externo\" são opcionais, porém, deve-se incluir o seu correspondente. Exemplo: codigo_setor ou codigo_externo_setor, codigo_cargo ou codigo_externo_cargo."
+          required: true
+          schema:
+            $ref: "#/definitions/AtestadoIncluir"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+    delete:
+      tags:
+        - "saúde"
+      summary: "Deleta um Atestado"
+      description: "Método para exclusão de um atestado médico."
+      parameters:
+        - in: "body"
+          name: "body"
+          schema:
+            type: "object"
+            required:
+              - token
+              - cnpj
+              - cpf
+              - codigo_atestado
+            properties:
+              token:
+                type: "string"
+              cnpj:
+                type: "string"
+              cpf:
+                type: "integer"
+                maximun: 11
+                description: "Obrigatório o cpf somente os numeros"
+              codigo_atestado:
+                type: "integer"
+                description: "Obrigatório pegar no get de atestados"
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+  # Get Exames
+  # Prazo de Desenvolvimento estimado na estrutura do Cake, utilizando 2 recursos (4 horas)
+  /api/exames:
+    get:
+      tags:
+        - "saúde"
+      summary: "Retorna exames cadastrados"
+      description: "Retorna exames cadastrados"
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [json, xml]
+          description: "Define o formato do retorno, json ou xml são valores disponíveis, json é o formato padrão para retorno."
+          required: false
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Exames"
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+  # Método para sincronizar dados no sistema
+  # Prazo de Desenvolvimento estimado na estrutura do Cake, utilizando 2 recursos (26 horas)
+  /api/pcmso/sincronizar:
+    post:
+      tags:
+        - "saúde"
+      summary: "Atualiza os registros de Aplicação de Exames"
+      description: "Atualiza os registros de Aplicação de Exames. Os parâmetros prefixados \"_externo\" são opcionais, porém, deve-se incluir o seu correspondente. Exemplo: codigo ou codigo_externo, codigo_unidade_alocacao ou codigo_externo_unidade_alocacao."
+      consumes:
+        - "application/json"
+        - "application/xml"
+      parameters:
+        - name: "aplicacaoExameItem"
+          in: "body"
+          description: "Item de Aplicação de Exames"
+          schema:
+            $ref: "#/definitions/AplicacaoExame"
+
+      responses:
+        200:
+          description: "Retorno: {'status': ['0','1','2','3','4','5'], 'msg': 'Retorno com a mesagem'}"
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/RespostaPadrao'
+            application/xml:
+              schema:
+                $ref: '#/definitions/RespostaPadrao'
+              examples:
+                xml: "A sample XML response"
+                value: '<?xml version="1.1" encoding="UTF-8" ?><retorno><status>0</status><msg>Processo de atualização realizado com sucesso!</msg></retorno>'
+        403:
+          description: "Autorização negada"
+          content:
+            application/json:
+              schema:
+                $ref: '#/definitions/RespostaPadrao'
+            appplication/xml:
+              schema:
+                $ref: '#/definitions/RespostaPadrao'
+      security:
+        - token: []
+        - cnpj_cliente: []
+
+securityDefinitions:
+  token:
+    type: "apiKey"
+    name: "token"
+    in: "query"
+  cnpj_cliente:
+    type: "apiKey"
+    name: "cnpj"
+    in: "query"
+
+definitions:
+  GrupoRisco:
+    type: "object"
+    properties:
+      codigo:
+        type: "string"
+      codigo_externo:
+        type: "string"
+      descricao:
+        type: "string"
+
+  GrupoHomogeneoExposicao:
+    type: "object"
+    required:
+      - codigo_externo
+      - codigo_externo_unidade_alocacao
+      - cargo_setor_itens
+    properties:
+      codigo_externo:
+        type: "string"
+      codigo_externo_unidade_alocacao:
+        type: "string"
+      descricao:
+        type: "string"
+      cargo_setor_itens:
+        type: "array"
+        items:
+          $ref: "#/definitions/GrupoHomogeneoExposicaoItens"
+
+  GrupoHomogeneoExposicaoItens:
+    type: "object"
+    required:
+      - codigo_externo_setor
+      - codigo_externo_cargo
+    properties:
+      codigo_externo_setor:
+        type: "string"
+      codigo_externo_cargo:
+        type: "string"
+
+  Risco:
+    type: "object"
+    properties:
+      codigo:
+        type: "string"
+      codigo_externo:
+        type: "string"
+      descricao:
+        type: "string"
+
+  EfeitoCritico:
+    type: "object"
+    properties:
+      codigo:
+        type: "string"
+      codigo_externo:
+        type: "string"
+      descricao:
+        type: "string"
+
+  FonteGeradora:
+    type: "object"
+    properties:
+      codigo:
+        type: "string"
+      codigo_externo:
+        type: "string"
+      descricao:
+        type: "string"
+
+  Epi:
+    type: "object"
+    properties:
+      codigo:
+        type: "string"
+      codigo_externo:
+        type: "string"
+      descricao:
+        type: "string"
+      ca:
+        type: "string"
+      validade:
+        type: "string"
+
+  Epc:
+    type: "object"
+    properties:
+      codigo:
+        type: "string"
+      codigo_externo:
+        type: "string"
+      descricao:
+        type: "string"
+
+
+  GrupoExposicao:
+    type: "object"
+    required:
+      - token
+      - cnpj
+      - operacao
+      - codigo_unidade_alocacao
+      - codigo_externo_unidade_alocacao
+      - numero_documento_profissional_responsavel
+      - data_inicio_vigencia
+    properties:
+      token:
+        type: "string"
+        maximum: 32
+        description: "Token fornecido pela Buonny"
+      cnpj:
+        type: "integer"
+        maximum: 14
+        description: "CNPJ do Cliente"
+      operacao: #Define o tipo de operação a ser executada com o registro.
+        type: "string"
+        format: 'I: Inserção, A: Alteração' # -Inserção (I) -Alteração (A) -Exclusão (E) -Consulta (C)
+        maximum: 1
+      codigo_unidade_alocacao:
+        type: "integer"
+        description: 'Obrigatório ou codigo_externo_unidade_alocacao'
+      codigo_externo_unidade_alocacao:
+        type: "string"
+        maximum: 255
+        description: 'Obrigatório ou codigo_unidade_alocacao'
+      codigo_setor:
+        type: "integer"
+        description: 'Obrigatório ou codigo_externo_setor'
+      codigo_externo_setor:
+        type: "string"
+        maximum: 60
+        description: 'Obrigatório ou codigo_setor'
+      codigo_cargo:
+        type: "integer"
+        description: 'Obrigatório ou codigo_externo_cargo'
+      codigo_externo_cargo:
+        type: "string"
+        maximum: 60
+        description: 'Obrigatório ou codigo_cargo'
+      grupo_individual: # grupo individual (1) ou grupo homogêneo (2)
+        type: "string"
+        format: '1-> Individual, 2-> GHE(Grupo Homogêneos de Exposição)'
+        maximum: 1
+      codigo_grupo_homogeneo:
+        type: "integer"
+        maximum: 10
+        description: "Obrigatório ou o codigo_externo_grupo_homogeneo"
+      codigo_externo_grupo_homogeneo:
+        type: "string"
+        maximum: 255
+        description: "Obrigatório ou o codigo_grupo_homogeneo"
+      cpf_funcionario:
+        type: "integer"
+        maximum: 11
+      cpf_funcionario_entrevistado:
+        type: "integer"
+        maximum: 11
+      data_vistoria:
+        type: "date"
+        format: "AAAAMMDD"
+        maximum: 10
+      data_inicio_vigencia:
+        type: "date"
+        format: "AAAAMMDD"
+        maximum: 10
+      tipo_documento_profissional_responsavel:
+        type: "string"
+      numero_documento_profissional_responsavel:
+        type: "integer"
+        maximum: 10
+      atribuicoes:
+        type: "array"
+        items:
+          $ref: "#/definitions/Atribuicoes"
+      grupo_exposicao_itens:
+        type: "array"
+        items:
+          $ref: "#/definitions/GrupoExposicaoItens"
+
+  Atribuicoes:
+    type: "object"
+    required:
+      - codigo_atribuicao
+      - codigo_externo_atribuicao
+    properties:
+      codigo_atribuicao:
+        type: "integer"
+        maximum: 10
+        description: "Obrigatório ou o codigo_externo_atribuicao"
+      codigo_externo_atribuicao:
+        type: "string"
+        maximum: 255
+        description: "Obrigatório ou o codigo_atribuicao"
+
+  GrupoExposicaoItens:
+    type: "object"
+    required:
+      - codigo_risco
+      - codigo_externo_risco
+    properties:
+      codigo_risco:
+        type: "integer"
+        maximum: 10
+        description: "Obrigatório ou o codigo_externo_risco"
+      codigo_externo_risco:
+        type: "string"
+        maximum: 255
+        description: "Obrigatório ou o codigo_risco"
+      operacao:
+        format: "E-> Exclusão do risco"
+        type: "string"
+        maximum: 1
+      fonte_geradora_exposicao_itens:
+        type: "array"
+        items:
+          $ref: "#/definitions/FonteGeradoraExposicaoItens"
+      efeito_critico_itens:
+        type: "array"
+        items:
+          $ref: "#/definitions/EfeitoCriticoItens"
+      codigo_meio_propagacao: # Meio de propagação Ar (1) Ar / Contato (2) ou Contato (3)
+        format: "1: Ar, 2: Contato, 3: Ar / Contato"
+        type: "integer"
+        maximum: 10
+      avaliacao_ambiental: # (tipo_medicao) Quantitativo (1) Qualitativo (2)
+        type: "integer"
+        maximum: 1
+        format: "1: Quantitativo, 2: Qualitativo"
+      codigo_unidade_medida:
+        type: "integer"
+        maximum: 10
+        format: "1: º C, 3: dB(A), 4: dB©, 2: kgf/cm², 5: m/s², 8: mg/m³, 7: MHz ou GHz, 6: mSv, 9: ppm, 10: ppm e mg/m³"
+      limite_tolerancia: # (valor_maximo) Campo informado somente para tipo_medicao = 1
+        type: "string"
+        maximum: 25
+      valor_medido: # Campo informado somente para tipo_medicao = 1
+        type: "string"
+        maximum: 25
+      tipo_exposicao: # Permanente (1), Intermitente (2) ou Ocasional (3)
+        type: "integer"
+        format: '1: PERMANENTE, 2: INTERMITENTE, 3: OCASIONAL'
+        maximum: 1
+      tempo_exposicao: # Campo informado sommente se tipo_medicao = 2
+        type: "integer"
+        maximum: 10
+        description: 'Tempo em minutos'
+      jornada_trabalho: # Campo informado sommente se tipo_medicao = 2
+        type: "integer"
+        maximum: 10
+        description: 'Tempo em horas'
+      intensidade_exposicao: # Baixa (1), Média (2), Alta (3), Muito Alta (4)
+        type: "integer"
+        format: '4: BAIXA, 5: MÉDIA, 6: ALTA, 7: MUITO ALTA'
+        maximum: 10
+      potencial_de_dano: # Leve (1), Baixo (2), Médio (3), Alto (4), Iminente (5)
+        type: "integer"
+        format: '11->LEVE,12->BAIXO,13->MÉDIO,14->ALTO,15->IMINENTE'
+        maximum: 10
+      epi_itens: # No sistema o campo é chamado de e_r_descricao_individual
+        type: "array"
+        items:
+          $ref: "#/definitions/EpiItens"
+      epc_itens: # No sistema o campo é chamado de e_r_descricao_coletiva
+        type: "array"
+        items:
+          $ref: "#/definitions/EpcItens"
+      exposicao_resultante:
+        type: "integer"
+        maximum: 10
+        format: '8->IRRELEVANTE, 9->DE ATENÇÃO, 10->CRÍTICA, 19->INCERTA'
+      grau_risco:
+        type: "integer"
+        maximum: 10
+        format: '20->ACEITÁVEL,21->MODERADO,22->ALTO,23->MUITO ALTO'
+      setor_pe_direito:
+        type: "integer"
+        maximum: 10
+        format: '1->3 Metros,2->Menor que 3 Metros,3->Maior que 3 Metros,4->Outros'
+      setor_cobertura:
+        type: "integer"
+        maximum: 10
+        format: '27->Laje,28->Laje + Forro,29->Telhas Metálicas,30->Telhas Fibrocimento,31->Outros'
+      setor_iluminacao:
+        type: "integer"
+        maximum: 10
+        format: '5->Natural,6->Natural + Artificial (Florescentes),7->Natural + Artificial (Incandecentes),8->Natural + Artificial (Led),9->Natural + Artificial (Croica),10->Artificial (Florescentes),11->Artificial (Incandecentes),12->Artificial (Led),13->Artificial (Croica),14->Outros'
+      setor_estrutura:
+        type: "integer"
+        maximum: 10
+        format: '21->Alvenaria,22->Concreto,23->Metálico,24->Madeira,25->Fechamento Lateral,26->Outros'
+      setor_ventilacao:
+        type: "integer"
+        maximum: 10
+        format: '15->Natural,16->Natural + Ventiladores,17->Natural + Ar Condicionado Local,18->Natural + Ar condicionado Central,19->Ar Condicionado Central,20->Outros'
+      setor_piso:
+        type: "integer"
+        maximum: 10
+        format: '32->Industrial com revestimento,33->Industrial sem revestimento,34->Carpete de Madeira,35->Cerâmico,36->Outros'
+      medidas_controle_existente:
+        type: "string"
+        maximum: 255
+      medias_controle_recomendada:
+        type: "string"
+        maximum: 255
+      observacoes:
+        type: "string"
+        maximum: 255
+
+  FonteGeradoraExposicaoItens:
+    type: "object"
+    required:
+      - codigo_externo
+    properties:
+      codigo:
+        type: "integer"
+        maximum: 10
+        description: "Obrigatório ou o codigo_externo"
+      codigo_externo:
+        type: "string"
+        maximum: 255
+        description: "Obrigatório ou o codigo"
+
+  EfeitoCriticoItens:
+    type: "object"
+    required:
+      - codigo_externo
+    properties:
+      codigo:
+        type: "integer"
+        maximum: 10
+        description: "Obrigatório ou o codigo_externo"
+      codigo_externo:
+        type: "string"
+        maximum: 255
+        description: "Obrigatório ou o codigo"
+
+  EpiItens:
+    type: "object"
+    required:
+      - codigo_externo
+    properties:
+      codigo:
+        type: "integer"
+        maximum: 10
+        description: "Obrigatório ou o codigo_externo"
+      codigo_externo:
+        type: "string"
+        maximum: 255
+        description: "Obrigatório ou o codigo"
+
+  EpcItens:
+    type: "object"
+    required:
+      - codigo_externo
+    properties:
+      codigo:
+        type: "integer"
+        maximum: 10
+        description: "Obrigatório ou o codigo_externo"
+      codigo_externo:
+        type: "string"
+        maximum: 255
+        description: "Obrigatório ou o codigo"
+
+  # MotivoAfastamento
+  MotivoAfastamento:
+    type: "object"
+    required:
+      - codigo
+    properties:
+      codigo:
+        type: "string"
+      motivo:
+        type: "string"
+  # Esocial
+  Esocial:
+    type: "object"
+    required:
+      - codigo
+    properties:
+      codigo:
+        type: "string"
+      motivo:
+        type: "string"
+  #Profissional
+  Profissional:
+    type: "object"
+    required:
+      - codigo
+    properties:
+      codigo:
+        type: "string"
+      nome_profissional:
+        type: "string"
+      conselho:
+        type: "string"
+      numero_conselho:
+        type: "string"
+      uf_conselho:
+        type: "string"
+
+  #Cid10
+  Cid10:
+    type: "object"
+    required:
+      - codigo
+    properties:
+      codigo:
+        type: "string"
+      descricao:
+        type: "string"
+
+  #TipoLocalAtendimento
+  TipoLocalAtendimento:
+    type: "object"
+    required:
+      - codigo
+    properties:
+      codigo:
+        type: "string"
+      descricao:
+        type: "string"
+
+  #Atestado
+  Atestado:
+    type: "object"
+    required:
+      - codigo
+    properties:
+      codigo:
+        type: "string"
+      codigo_profissional:
+        type: "string"      
+      afastamento_em_horas:
+        type: "string"
+      data_inicio:
+        type: "string"
+      data_fim:
+        type: "string"
+      hora_inicio:
+        type: "string"
+      hora_fim:
+        type: "string"
+      codigo_motivo_licenca:
+        type: "integer"
+      codigo_externo_motivo_licenca:
+        type: "string"
+      codigo_motivo_licenca_esocial:
+        type: "string"
+      dias_afastamento:
+        type: "string"
+      minutos_afastamento:
+        type: "string"
+      codigo_cid10:
+        type: "string"
+      local_atendimento:
+        type: "string"
+      cep:
+        type: "string"
+      endereco:
+        type: "string"
+      numero:
+        type: "string"
+      complemento:
+        type: "string"
+      bairro:
+        type: "string"
+      cidade:
+        type: "string"
+      tipo_local:
+        type: "string"
+
+  #AtestadoIncluir
+  AtestadoIncluir:
+    type: "object"
+    required:
+      - cnpj
+      - token
+      - cpf
+      - cnpj_alocacao
+      - codigo_setor
+      - codigo_externo_setor
+      - codigo_cargo
+      - codigo_externo_cargo
+      - afastamento_em_horas
+      - data_inicio
+      - data_fim
+      - cid
+      - codigo_cid10
+      #- local_atendimento
+      #- cep
+      #- endereco
+      #- numero
+      #- bairro
+      #- cidade
+      #- estado
+      #- tipo_local
+      - codigo_profissional
+      - codigo_motivo_licenca
+      - codigo_externo_motivo_licenca
+    properties:
+      cnpj:
+        type: "integer"
+        maximum: 14
+        description: "CNPJ do cliente!"
+      token:
+        type: "string"
+        maximum: 32
+        description: "Token fornecido pela Buonny!"
+      cnpj_alocacao:
+        type: "integer"
+        maximum: 14
+        description: "CNPJ onde o funcionário está alocado!"
+      cpf:
+        type: "integer"
+        maximum: 11
+        description: "CPF opcional quando um exame tiver um relacionamento com funcionario."
+      codigo_setor:
+        type: "integer"
+        description: "Obrigatório ou codigo_externo_setor"
+      codigo_externo_setor:
+        type: "string"
+        maximum: 60
+        description: "Obrigatório ou codigo_setor"
+      codigo_cargo:
+        type: "integer"
+        description: "Obrigatório ou codigo_externo_cargo"
+      codigo_externo_cargo:
+        type: "string"
+        maximum: 60
+        description: "Consultar no endpoint codigo_cargo"
+      pk_externo:
+        type: "string"
+        maximum: 250
+        description: "Chave externa"
+      afastamento_em_horas:
+        type: "string"
+        maximum: 1
+        description: "Flag para avisar se é afastamento em horas ou não 1->sim/0->não"
+      data_inicio:
+        type: "date"
+        maximum: 10
+        description: "Data de inicio do afastamento YYYY-MM-DD"
+      data_fim:
+        type: "date"
+        maximum: 10
+        description: "Data de fim do afastamento YYYY-MM-DD"
+      cid:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            codigo_cid10:
+              type: "integer"
+              description: "Codigo do endpoint de Cid10"
+      local_atendimento:
+        type: "array"
+        items:
+          type: "object"
+          properties:
+            cep:
+              type: "string"
+              maximum: 8
+              description: "Cep do endreço"
+            endereco:
+              type: "string"
+              maximum: 80
+              description: "Endreço do atestado médico"
+            numero:
+              type: "string"
+              maximum: 20
+              description: "Número do endereço do atestado médico"
+            complemento:
+              type: "string"
+              maximum: 50
+              description: "Complemento do endereço do atestado médico"
+            bairro:
+              type: "string"
+              maximum: 80
+              description: "Bairro do endereço do atestado médico"
+            cidade:
+              type: "string"
+              maximum: 100
+              description: "Cidade do endreço do atestado médico"
+            estado:
+              type: "string"
+              maximum: 2
+              description: "Estado do endreço do atestado médico"
+            tipo_local:
+              type: "integer"
+              description: "Consultar API tipo_local_atendimento"
+      codigo_profissional:
+        type: "integer"
+        description: "Consultar API profissional"
+      hora_inicio:
+        type: "string"
+        maximum: 5
+        description: "24HH:MM"
+      hora_fim:
+        type: "string"
+        maximum: 5
+        description: "24HH:MM"
+      codigo_motivo_licenca:
+        type: "integer"
+        description: "Obrigatório codigo_motivo_licenca ou codigo_externo_motivo_licenca - Consultar API motivo_licenca"
+      codigo_externo_motivo_licenca:
+        type: "string"
+        description: "Obrigatório codigo_externo_motivo_licenca ou codigo_motivo_licenca"
+      codigo_motivo_licenca_esocial:
+        type: "string"
+        description: "Consultar API motivo_licenca_esocial"
+
+  # Exame
+  Exames:
+    type: "object"
+    required:
+      - codigo_externo
+    properties:
+      codigo:
+        type: "string"
+      codigo_externo:
+        type: "string"
+      descricao:
+        type: "string"
+
+  AplicacaoExame:
+    type: "object"
+    required:
+      - token
+      - cnpj
+      - operacao
+      - codigo_unidade_alocacao
+      - codigo_externo_unidade_alocacao
+      - codigo_setor
+      - codigo_externo_setor
+      - codigo_cargo
+      - codigo_externo_cargo
+      - aplicacao_exame_itens
+    properties:
+      token:
+        type: "string"
+        maximum: 32
+        description: "Token fornecido pela Buonny"
+      cnpj:
+        type: "integer"
+        maximum: 14
+        description: "CNPJ do Cliente"
+      operacao: # Define o tipo de operação a ser executada com o registro.
+        type: "string"
+        format: 'I: Inserção, A: Alteração' # -Inserção (I) -Alteração (A) -Exclusão (E) -Consulta (C)
+      codigo_unidade_alocacao:
+        type: "integer"
+        description: "Obrigatório ou codigo_externo_unidade_alocacao"
+      codigo_externo_unidade_alocacao:
+        type: "string"
+        maximum: 255
+        description: "Obrigatório ou codigo_unidade_alocacao"
+      codigo_setor:
+        type: "integer"
+        description: "Obrigatório ou codigo_externo_setor"
+      codigo_externo_setor:
+        type: "string"
+        maximum: 60
+        description: "Obrigatório ou codigo_setor"
+      codigo_cargo:
+        type: "integer"
+        description: "Obrigatório ou codigo_externo_cargo"
+      codigo_externo_cargo:
+        type: "string"
+        maximum: 60
+        description: "Consultar no endpoint codigo_cargo"
+      cpf_funcionario:
+        type: "integer"
+        maximum: 11
+        description: "CPF opcional quando um exame tiver um relacionamento com funcionario."
+      aplicacao_exame_itens:
+        type: "array"
+        items:
+          $ref: "#/definitions/AplicacaoExameItens"
+
+  AplicacaoExameItens:
+    type: "object"
+    required:
+      - codigo_exame
+      - codigo_externo_exame
+      - objetivo_exame
+      - tipos_exames
+      - aplicavel_em
+      - frequencia
+      - idade_minima_periodicidade_itens
+    properties:
+      codigo_exame:
+        type: "integer"
+        description: "Obrigatório ou o codigo_externo_exame"
+      codigo_externo_exame:
+        type: "string"
+        maximum: 255
+        description: "Obrigatório ou o codigo_exame"
+      operacao:
+        format: "E-> Exclusão do exame"
+        type: "string"
+        maximum: 1
+      frequencia:
+        type: "integer" # Intervalo de realização dos exames em meses
+        maximum: 10
+        description: 'Obrigatório ou idade_minima_periodicidade_itens'
+      apos_admissao:
+        type: "integer"
+        maximum: 10
+      aplicavel_em:
+        type: "array"
+        items:
+          type: "integer"
+          format: '1: Admissional, 2: Periódico, 3: Demissional, 4: Retorno Trabalho, 5: Mudança Função, 6: Monitoração Pontual' # - Admissional (1), Periódico (2), Demissional (3), Retorno ao Trabalho (4), e Mudança de Função (5)
+      idade_minima_periodicidade_itens: # Idade mínima e periodicidade na qual deve ser aplicado o exame em meses.
+        type: "array"
+        items:
+          $ref: "#/definitions/IdadeMinimaPeriodicidadeItens"
+      objetivo_exame:
+        type: "integer"
+        format: '1: Ocupacional, 2: Qualidade de Vida' # - Ocupacional (1) e Qualidade de Vida (2)
+        maximum: 1
+      tipos_exames:
+        type: "array"
+        items:
+          type: "integer"
+          enum: ['1: Convocação Exames,2: PPP,3: ASO,4: PCMSO,5: Relatório Anual'] # - Convocação Exames (1), PPP (2), ASO (3), PCMSO (4), e Relatório Anual (5)
+
+  IdadeMinimaPeriodicidadeItens:
+    type: "object"
+    description: 'Obrigatório ou frequencia'
+    required:
+      - idade_minima
+      - periodicidade
+    properties:
+      idade_minima:
+        type: "integer"
+        maximum: 10
+      periodicidade:
+        type: "integer"
+        maximum: 10
+
+  Cliente:
+    type: "object"
+    properties:
+      codigo:
+        type: "string"
+      cnpj:
+        type: "string"
+      tipo_unidade:
+        type: "string"
+        enum: ["F", "O"]
+      razao_social:
+        type: "string"
+      nome_fantasia:
+        type: "string"
+      logradouro:
+        type: "string"
+      bairro:
+        type: "string"
+      cidade:
+        type: "string"
+      estado:
+        type: "string"
+      codigo_externo:
+        type: "string"
+  Setor:
+    type: "object"
+    properties:
+      codigo:
+        type: "string"
+      descricao:
+        type: "string"
+      codigo_externo:
+        type: "string"
+  Cargo:
+    type: "object"
+    properties:
+      codigo:
+        type: "string"
+      descricao:
+        type: "string"
+      codigo_externo:
+        type: "string"
+  TomadorServico:
+    type: "object"
+    required:
+      - token
+      - cnpj
+      - cnpj_alocacao
+      - nome_tomador
+      - cep
+      - uf
+      - logradouro
+      - bairro
+      - cidade
+      - numero
+      - cnae
+      - grau_risco
+    properties:
+      token:
+        type: "string"
+        maximum: 32
+        description: "Token fornecido pela Buonny!"
+      cnpj:
+        type: "integer"
+        maximum: 14
+        description: "CNPJ do cliente!"
+      cnpj_alocacao:
+        type: "integer"
+        maximum: 14
+        description: "CNPJ do tomador de serviço!"
+      nome_tomador:
+        type: "string"
+        maximum: 250
+        description: "Nome do tomador de serviço!"
+      cep:
+        type: "string"
+        maximum: 8
+        description: "CEP do tomador de serviço sem hífem!"
+      uf:
+        type: "string"
+        maximum: 2
+        description: "UF do tomador de serviço"
+      logradouro:
+        type: "string"
+        maximum: 100
+        description: "Endereço do tomador de serviço!"
+      bairro:
+        type: "string"
+        maximum: 60
+        description: "Bairro do tomador de serviço!"
+      cidade:
+        type: "string"
+        maximum: 60
+        description: "Cidade do tomador de serviço!"
+      numero:
+        type: "integer"
+        maximum: 4
+        description: "Numero do endereço do tomador de serviço!"
+      complemento:
+        type: "string"
+        maximum: 250
+        description: "Complemento do endereço do tomador de serviço!"
+      cnae:
+        type: "string"
+        maximum: 25
+        description: "Codigo do CNAE!"
+      grau_risco:
+        type: "string"
+        maximum: 20
+        description: "Grau de Risco do CNAE!"
+      crm:
+        type: "integer"
+        maximum: 25
+        description: "CRM do medico pcmso responsavel!"
+      uf_crm:
+        type: "string"
+        maximum: 2
+        description: "UF CRM do medico pcmso responsavel!"
+      codigo_externo_setor:
+        type: "string"
+        maximum: 60
+        description: "Externo Setor do Cliente!"
+  TomadorServicoReturn:
+    type: "object"
+    properties:
+      cnpj_alocacao:
+        type: "integer"
+        maximum: 14
+        description: "CNPJ do tomador de serviço!"
+      nome_tomador:
+        type: "string"
+        maximum: 250
+        description: "Nome do tomador de serviço!"
+      cep:
+        type: "string"
+        maximum: 8
+        description: "CEP do tomador de serviço sem hífem!"
+      uf:
+        type: "string"
+        maximum: 2
+        description: "UF do tomador de serviço"
+      logradouro:
+        type: "string"
+        maximum: 100
+        description: "Endereço do tomador de serviço!"
+      bairro:
+        type: "string"
+        maximum: 60
+        description: "Bairro do tomador de serviço!"
+      cidade:
+        type: "string"
+        maximum: 60
+        description: "Cidade do tomador de serviço!"
+      numero:
+        type: "integer"
+        maximum: 4
+        description: "Numero do endereço do tomador de serviço!"
+      complemento:
+        type: "string"
+        maximum: 250
+        description: "Complemento do endereço do tomador de serviço!"
+      cnae:
+        type: "string"
+        maximum: 25
+        description: "Codigo do CNAE!"
+      grau_risco:
+        type: "string"
+        maximum: 20
+        description: "Grau de Risco do CNAE!"
+      crm:
+        type: "integer"
+        maximum: 25
+        description: "CRM do medico pcmso responsavel!"
+      uf_crm:
+        type: "string"
+        maximum: 2
+        description: "UF CRM do medico pcmso responsavel!"
+  Funcionario:
+    type: "object"
+    required:
+      - token
+      - cnpj
+      - cpf
+      - nome
+      - data_nascimento
+      - sexo
+      - rg
+      - orgao_expedidor
+      - matricula
+    properties:
+      token:
+        type: "string"
+        maximum: 32
+        description: "Token fornecido pela Buonny"
+      cnpj:
+        type: "integer"
+        maximum: 14
+        description: "CNPJ do Cliente"
+      cpf:
+        type: "string"
+        maximum: 11
+        description: "CPF do Funcionário"
+      nome:
+        type: "string"
+        maximum: 50
+        description: "Nome do Funcionário"
+      data_nascimento:
+        type: "string"
+        format: "YYYY-MM-DD"
+        maximum: 10
+        description: "Data de Nascimento"
+      sexo:
+        type: "string"
+        format: 'M-Masculino,F-Feminino'
+        maximum: 1
+        description: "Sexo"
+      estado_civil:
+        type: "string"
+        format: 'SO-Solteiro,CA-Casado,SE-Separado,DI-Divorciado,VI-Viúvo,OU-Outros'
+        maximum: 2
+        description: "Estado Civil"
+      deficiente:
+        type: "string"
+        format: 'S-Sim,N-Não'
+        maximum: 1
+        description: "É deficiente"
+      rg:
+        type: "string"
+        maximum: 11
+        description: "RG"
+      orgao_expedidor:
+        type: "string"
+        maximum: 4
+        description: "Orgão Expeditor"
+      data_emissao_rg:
+        type: "string"
+        format: 'YYYY-MM-DD'
+        maximum: 10
+        description: "Data de emissão do RG"
+      carteira_trabalho:
+        type: "string"
+        maximum: 10
+        description: "Carteira de trabalho"
+      serie:
+        type: "string"
+        maximum: 10
+        description: "Série"
+      uf_carteira_trabalho:
+        type: "string"
+        maximum: 2
+        description: "UF da carteira de trabalho"
+      data_emissao_carteira_trabalho:
+        type: "string"
+        format: "YYYY-MM-DD"
+        maximum: 10
+        description: "Data de emissão da carteira de trabalho"
+      nit:
+        type: "string"
+        maximum: 25
+        description: "Pis/Pasep"
+      cartao_nacional_saude:
+        type: "string"
+        maximum: 10
+        description: "CNS"
+      guia_recolhimento_fgts:
+        type: "string"
+        maximum: 25
+        description: "GFIP"
+      numero_endereco:
+        type: "string"
+        maximum: 10
+        description: "Numero do endereço"
+      complemento_endereco:
+        type: "string"
+        maximum: 50
+        description: "Complemento do endereço"
+      logradouro:
+        type: "string"
+        maximum: 100
+        description: "Logradouro do endereço"
+      bairro:
+        type: "string"
+        maximum: 60
+        description: "Bairro do endereço"
+      cidade:
+        type: "string"
+        maximum: 60
+        description: "Cidade do endereço"
+      estado:
+        type: "string"
+        maximum: 2
+        description: "Estado (Abreviação)"
+      cep:
+        type: "string"
+        maximum: 8
+        description: "Cep do Endereço"
+      contatos:
+        type: "array"
+        items:
+          type: "object"
+          required:
+            - tipo_retorno
+            - contato
+          properties:
+            tipo_retorno:
+              type: "integer"
+              format: '1: TELEFONE,2: E-MAIL, 3: FAX, 4: 0800, 5: CELULAR MOTORISTA, 6: RADIO, 7: CELULAR, 8: 3G, 9: SMS, 10: Ramal'
+              description: 'Tipo de retorno do funcionario'
+              maximum: 2
+            contato:
+              type: "string"
+              description: 'Descrição do contato, como telefone, email, etc'
+              maximum: 11
+      matricula:
+        type: "array"
+        items:
+          type: "object"
+          required:
+            - numero_matricula
+            - status_matricula
+            - data_inicio_matricula
+            - codigo_matricula
+          properties:
+            codigo_matricula:
+              type: integer
+              description: "CODIGO COMO CHAVE PRIMARIA SOMENTE DISPONIVEL NO GET DE FUNCIONARIO"
+            numero_matricula:
+              type: "string"
+              description: 'Número da matrícula'
+              maximum: 11
+            status_matricula:
+              type: "string"
+              format: 'AT-Ativo,IN-Inativo,AF-Afastado,FE-Férias'
+              description: 'Status da matrícula'
+              maximum: 2
+            data_inicio_matricula:
+              type: "string"
+              format: 'YYYY-MM-DD'
+              description: 'Data inicio da matrícula'
+              maximum: 10
+            data_fim_matricula:
+              type: "string"
+              format: 'YYYY-MM-DD'
+              description: 'Data fim da matrícula'
+              maximum: 10
+            centro_custo:
+              type: "string"
+              description: 'Centro de Custo'
+              maximum: 60
+            cargos:
+              type: "array"
+              items:
+                type: "object"
+                required:
+                  - data_inicio_cargo
+                  - codigo_externo_setor
+                  - codigo_setor
+                  - codigo_externo_cargo
+                  - codigo_cargo
+                  - codigo_unidade_alocacao
+                  - codigo_externo_unidade_alocacao
+                properties:
+                  data_inicio_cargo:
+                    type: "string"
+                    format: 'YYYY-MM-DD'
+                    description: 'Data inicio da cargo'
+                    maximum: 10
+                  codigo_unidade_alocacao:
+                    type: "integer"
+                    description: 'Obrigatório ou codigo_externo_unidade_alocacao'
+                  codigo_externo_unidade_alocacao:
+                    type: "string"
+                    maximum: 255
+                    description: 'Obrigatório ou codigo_unidade_alocacao'
+                  codigo_setor:
+                    type: "integer"
+                    description: 'Obrigatório ou codigo_externo_setor'
+                  codigo_externo_setor:
+                    type: "string"
+                    maximum: 60
+                    description: 'Obrigatório ou codigo_setor'
+                  codigo_cargo:
+                    type: "integer"
+                    description: 'Obrigatório ou codigo_externo_cargo'
+                  codigo_externo_cargo:
+                    type: "string"
+                    maximum: 60
+                    description: 'Obrigatório ou codigo_cargo'
+                  data_fim_cargo:
+                    type: "string"
+                    format: 'YYYY-MM-DD'
+                    description: 'Data fim da cargo'
+                    maximum: 10
+  FuncionarioMatricula:
+    type: "object"
+    required:
+      - token
+      - cnpj
+      - cpf
+      - codigo_matricula
+      - numero_matricula
+      - status_matricula
+      - data_inicio_matricula
+      - codigo_matricula
+    properties:
+      token:
+        type: "string"
+        maximum: 32
+        description: "Token fornecido pela Buonny"
+      cnpj:
+        type: "string"
+        maximum: 14
+        description: "CNPJ do cliente"
+      cpf:
+        type: "string"
+        maximum: 11
+        description: "CPF do funcionário"
+      codigo_matricula:
+        type: "integer"
+      numero_matricula:
+        type: "string"
+        maximun: 11
+      status_matricula:
+        type: "string"
+        maximum: 2
+        format: "AT->Ativo,IN->Inativo,AF->Afastado,FE-Férias"
+        description: "Para definir o status da matricula como ativa, inativa, afastado ou férias."
+      data_inicio_matricula:
+        type: "date"
+        format: "YYYY-MM-DD"
+      data_fim_matricula:
+        type: "date"
+        format: "YYYY-MM-DD"
+      centro_custo:
+        type: "string"
+        maximum: 60
+      cargos:
+        type: "array"
+        items:
+          type: "object"
+          required:
+            - data_inicio_cargo
+            - codigo_externo_setor
+            - codigo_externo_cargo
+            - codigo_externo_unidade_alocacao
+          properties:
+            data_inicio_cargo:
+              type: "date"
+              format: 'YYYY-MM-DD'
+            codigo_unidade_alocacao:
+              type: "integer"
+              description: "Obrigatório ou codigo_externo_unidade_alocacao"
+            codigo_externo_unidade_alocacao:
+              type: "string"
+              maximum: 255
+              description: "Obrigatório ou codigo_unidade_alocacao"
+            codigo_setor:
+              type: "integer"
+              description: "Obrigatório ou codigo_externo_setor"
+            codigo_externo_setor:
+              type: "string"
+              maximum: 60
+              description: "Obrigatório ou codigo_setor"
+            codigo_cargo:
+              type: "integer"
+              description: "Obrigatório ou codigo_externo_cargo"
+            codigo_externo_cargo:
+              type: "string"
+              maximum: 60
+              description: "Obrigatório ou codigo_cargo"
+            data_fim_cargo:
+              type: "date"
+              format: 'YYYY-MM-DD'
+  FuncionarioSetorCargo:
+    type: "object"
+    required:
+      - cpf
+      - codigo_matricula
+      - numero_matricula
+      - codigo_externo_cargo
+      - codigo_externo_setor
+      - data_inicio_cargo
+    properties:
+      codigo_matricula:
+        type: "integer"
+        description: "CODIGO COMO CHAVE PRIMARIA SOMENTE DISPONIVEL NO GET DE FUNCIONARIO"
+      numero_matricula:
+        type: "string"
+        maximun: 11
+        description: "Matricula do funcionario"
+      data_inicio_cargo:
+        type: "string"
+        format: 'YYYY-MM-DD'
+      codigo_externo_unidade_alocacao:
+        type: "string"
+        maximum: 255
+        description: "Obrigatório ou codigo_unidade_alocacao "
+      codigo_unidade_alocacao:
+        type: "integer"
+        description: "Obrigatório ou codigo_externo_unidade_alocacao "
+      codigo_externo_setor:
+        type: "string"
+        maximum: 60
+        description: "Obrigatório ou codigo_setor"
+      codigo_setor:
+        type: "integer"
+        description: "Obrigatório ou codigo_externo_setor"
+      codigo_externo_cargo:
+        type: "string"
+        maximum: 60
+        description: "Obrigatório ou codigo_cargo"
+      codigo_cargo:
+        type: "integer"
+        description: "Obrigatório ou codigo_externo_cargo"
+      data_fim_cargo:
+        type: "string"
+        format: 'YYYY-MM-DD'
+
+  RespostaPadrao:
+    type: "object"
+    properties:
+      status :
+        type: "string"
+      msg:
+        type: "string"
+
+# Added by API Auto Mocking Plugin
+host: https://tstportal.rhhealth.com.br
+basePath: /portal/
+schemes:
+  - https

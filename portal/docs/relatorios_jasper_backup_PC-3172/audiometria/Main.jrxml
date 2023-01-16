@@ -1,0 +1,1294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="audiometria" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a18143ef-f3a9-48cc-a67a-e44f07ca5d0f">
+	<property name="ireport.zoom" value="2.593742460100005"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/audiometria"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="fundo" mode="Opaque" backcolor="#CCCCCC"/>
+	<subDataset name="DatasetGraficoEsquerda" uuid="7e7e47c6-22d8-4b0b-94b7-33ec5cf89b02">
+		<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+			<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\Audiometria\\"]]></defaultValueExpression>
+		</parameter>
+		<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[select SUBSTRING(fq.descricao, 5, 10) AS Descricao, CAST(fr.resposta as NUMERIC(8,2)) as Resposta
+from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr,
+    RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME} and
+     ipe.codigo = fr.codigo_itens_pedidos_exames and
+     fr.codigo_formulario_questoes=fq.codigo and
+     fg.codigo = fq.codigo_formulario_grupo and
+     fq.descricao like '%VA - %' and
+     fg.descricao = 'Limiares Tonais - Orelha Esquerda']]>
+		</queryString>
+		<field name="Descricao" class="java.lang.String"/>
+		<field name="Resposta" class="java.math.BigDecimal"/>
+	</subDataset>
+	<subDataset name="DatasetGraficoDireita" uuid="ba75c989-0786-4f14-8f87-17792b1e6097">
+		<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[select SUBSTRING(fq.descricao, 5, 10) AS Descricao, CAST(fr.resposta as NUMERIC(8,2)) as Resposta
+from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr,
+    RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME} and
+     ipe.codigo = fr.codigo_itens_pedidos_exames and
+     fr.codigo_formulario_questoes=fq.codigo and
+     fg.codigo = fq.codigo_formulario_grupo and
+     fq.descricao like '%VA - %' and
+     fg.descricao = 'Limiares Tonais - Orelha Direita']]>
+		</queryString>
+		<field name="Descricao" class="java.lang.String"/>
+		<field name="Resposta" class="java.math.BigDecimal"/>
+	</subDataset>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.Integer"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<parameter name="URL_LOGO_MULTI_EMPRESA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select RHHealth.publico.Ufn_decode_utf8_string(cli.razao_social) as Cliente,
+       RHHealth.publico.Ufn_decode_utf8_string(fun.nome) as Funcionario,
+       CASE
+           WHEN fun.flg_nome_social = 1
+                AND fun.nome_social IS NOT NULL
+                OR fun.nome_social <> '' THEN RHHealth.publico.Ufn_decode_utf8_string(fun.nome_social)
+           ELSE ''
+       END AS FuncionarioNomeSocial,
+       RHHealth.publico.Ufn_decode_utf8_string(ge.descricao) as Unidade,
+       RHHealth.publico.Ufn_decode_utf8_string(s.descricao) as Setor,
+       RHHealth.publico.Ufn_decode_utf8_string(c.descricao) as Cargo,
+       "Situacao" = CASE
+                        WHEN cf.ativo = 1 THEN 'Ativo'
+                        WHEN cf.ativo != 1 THEN 'Inativo'
+                    END,
+                    fun.rg as RG,
+                    CONVERT(VARCHAR(10), ipeb.data_realizacao_exame, 103) as Data_Exame,
+                    CONVERT(VARCHAR(10), fun.data_nascimento, 103) as Nascimento,
+                    CONVERT(VARCHAR(10), cf.admissao, 103) as Admissao,
+                    isnull(CONVERT(VARCHAR(10), cf.data_demissao, 103), '-') as Demissao,
+                    FLOOR(DATEDIFF(DAY, CONVERT(VARCHAR(10), fun.data_nascimento, 21), CONVERT(VARCHAR(10), getDate(), 21)) / 365.25) as Idade,
+                    "Sexo" = CASE
+                                 WHEN fun.sexo = 'F' THEN 'Feminino'
+                                 WHEN fun.sexo = 'M' THEN 'Masculino'
+                             END,
+                             "Tipo" = CASE
+                                          WHEN exame_admissional = 1 THEN 'Admissional'
+                                          WHEN exame_demissional = 1 THEN 'Demissional'
+                                          WHEN exame_periodico = 1 THEN 'Periodico'
+                                          WHEN exame_retorno = 1 THEN 'Retorno'
+                                          WHEN exame_mudanca = 1 THEN 'Mudança de Função'
+                                          WHEN pontual = 1 THEN 'Pontual'
+                                          WHEN exame_monitoracao = 1 THEN 'Monitoração'
+                                      END,
+                                      "Resultado" = CASE
+                                                        WHEN ipeb.resultado = '0' THEN 'Sem Resultado'
+                                                        WHEN ipeb.resultado = '1' THEN 'Normal'
+                                                        WHEN ipeb.resultado = '2' THEN 'Alterado'
+                                                    END,
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'Ref./Seq.'),'-') AS 'Ref_Seq',
+                                                    aa.descricao as Aparelho,
+                                                    aa.fabricante as Fabricante,
+                                                    CONVERT(VARCHAR(10), aa.data_afericao, 103) as Calibracao,
+                                                    isnull(
+                                                             (select fr.resposta+' horas'
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'Se SIM, quantas horas?'),'Não') AS 'Repouso_Auditivo_Horas',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 0.25'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DA.25',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 0.50'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DA.50',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 1'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DA1',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 2'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DA2',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 3'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DA3',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 4'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DA4',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 6'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DA6',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 8'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DA8',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 0.25'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EA.25',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 0.50'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EA.50',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 1'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EA1',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 2'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EA2',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 3'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EA3',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 4'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EA4',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 6'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EA6',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VA - 8'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EA8',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 0.25'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DO.25',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 0.50'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DO.50',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 1'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DO1',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 2'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DO2',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 3'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DO3',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 4'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DO4',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 6'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DO6',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 8'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Direita'),'') AS 'DO8',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 0.25'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EO.25',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 0.50'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EO.50',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 1'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EO1',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 2'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EO2',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 3'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EO3',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 4'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EO4',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 6'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EO6',
+                                                    isnull(
+                                                             (select fr.resposta
+                                                              from RHHealth.dbo.itens_pedidos_exames ipe, RHHealth.dbo.formulario_respostas fr, RHHealth.dbo.formulario_questoes fq, RHHealth.dbo.formulario_grupos fg
+                                                              where ipe.codigo_pedidos_exames=$P{CODIGO_PEDIDO_EXAME}
+                                                                and ipe.codigo = fr.codigo_itens_pedidos_exames
+                                                                and fr.codigo_formulario_questoes=fq.codigo
+                                                                and fg.codigo = fq.codigo_formulario_grupo
+                                                                and fq.descricao = 'VO - 8'
+                                                                and fg.descricao = 'Limiares Tonais - Orelha Esquerda'),'') AS 'EO8'
+from RHHealth.dbo.pedidos_exames pe,
+     RHHealth.dbo.cliente_funcionario cf,
+     RHHealth.dbo.cliente cli,
+     RHHealth.dbo.funcionarios fun,
+     RHHealth.dbo.setores s,
+     RHHealth.dbo.cargos c,
+     RHHealth.dbo.grupos_economicos_clientes gec,
+     RHHealth.dbo.grupos_economicos ge,
+     RHHealth.dbo.itens_pedidos_exames ipe,
+     RHHealth.dbo.itens_pedidos_exames_baixa ipeb,
+     RHHealth.dbo.aparelhos_audiometricos aa
+where pe.codigo = $P{CODIGO_PEDIDO_EXAME}
+  and pe.codigo_cliente_funcionario=cf.codigo
+  and cf.codigo_cliente = cli.codigo
+  and cf.codigo_funcionario=fun.codigo
+  and cf.codigo_setor=s.codigo
+  and cf.codigo_cargo=c.codigo
+  and cf.codigo_cliente=gec.codigo_cliente
+  and gec.codigo_grupo_economico = ge.codigo
+  and pe.codigo = ipe.codigo_pedidos_exames
+  and ipe.codigo = ipeb.codigo_itens_pedidos_exames
+  and ipeb.codigo_aparelho_audiometrico = aa.codigo]]>
+	</queryString>
+	<field name="Cliente" class="java.lang.String"/>
+	<field name="Funcionario" class="java.lang.String"/>
+	<field name="FuncionarioNomeSocial" class="java.lang.String"/>
+	<field name="Unidade" class="java.lang.String"/>
+	<field name="Setor" class="java.lang.String"/>
+	<field name="Cargo" class="java.lang.String"/>
+	<field name="Situacao" class="java.lang.String"/>
+	<field name="RG" class="java.lang.String"/>
+	<field name="Data_Exame" class="java.lang.String"/>
+	<field name="Nascimento" class="java.lang.String"/>
+	<field name="Admissao" class="java.lang.String"/>
+	<field name="Demissao" class="java.lang.String"/>
+	<field name="Idade" class="java.math.BigDecimal"/>
+	<field name="Sexo" class="java.lang.String"/>
+	<field name="Tipo" class="java.lang.String"/>
+	<field name="Resultado" class="java.lang.String"/>
+	<field name="Ref_Seq" class="java.lang.String"/>
+	<field name="Aparelho" class="java.lang.String"/>
+	<field name="Fabricante" class="java.lang.String"/>
+	<field name="Calibracao" class="java.lang.String"/>
+	<field name="Repouso_Auditivo_Horas" class="java.lang.String"/>
+	<field name="DA.25" class="java.lang.String"/>
+	<field name="DA.50" class="java.lang.String"/>
+	<field name="DA1" class="java.lang.String"/>
+	<field name="DA2" class="java.lang.String"/>
+	<field name="DA3" class="java.lang.String"/>
+	<field name="DA4" class="java.lang.String"/>
+	<field name="DA6" class="java.lang.String"/>
+	<field name="DA8" class="java.lang.String"/>
+	<field name="EA.25" class="java.lang.String"/>
+	<field name="EA.50" class="java.lang.String"/>
+	<field name="EA1" class="java.lang.String"/>
+	<field name="EA2" class="java.lang.String"/>
+	<field name="EA3" class="java.lang.String"/>
+	<field name="EA4" class="java.lang.String"/>
+	<field name="EA6" class="java.lang.String"/>
+	<field name="EA8" class="java.lang.String"/>
+	<field name="DO.25" class="java.lang.String"/>
+	<field name="DO.50" class="java.lang.String"/>
+	<field name="DO1" class="java.lang.String"/>
+	<field name="DO2" class="java.lang.String"/>
+	<field name="DO3" class="java.lang.String"/>
+	<field name="DO4" class="java.lang.String"/>
+	<field name="DO6" class="java.lang.String"/>
+	<field name="DO8" class="java.lang.String"/>
+	<field name="EO.25" class="java.lang.String"/>
+	<field name="EO.50" class="java.lang.String"/>
+	<field name="EO1" class="java.lang.String"/>
+	<field name="EO2" class="java.lang.String"/>
+	<field name="EO3" class="java.lang.String"/>
+	<field name="EO4" class="java.lang.String"/>
+	<field name="EO6" class="java.lang.String"/>
+	<field name="EO8" class="java.lang.String"/>
+	<columnHeader>
+		<band height="80" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="50" width="555" height="25" backcolor="#CCCCCC" uuid="ca84f56a-dd87-4436-84b6-1d52f18fbb3e"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5" lineColor="#999999"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5" lineColor="#999999"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<staticText>
+					<reportElement x="1" y="4" width="131" height="16" forecolor="#999999" uuid="80f5472c-2947-4352-be74-f004359ea909"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Resultado de Exames]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="249" y="5" width="74" height="20" forecolor="#999999" uuid="7f7f33c6-ee48-4806-9e63-06eaf8f8f7e2"/>
+					<textElement>
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Audiometria]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement x="0" y="0" width="555" height="50" uuid="3fa98665-3f8f-4059-8604-e063079712a5"/>
+				<textField>
+					<reportElement x="132" y="15" width="355" height="20" uuid="973bbbc8-6a2d-4e2a-b1bf-f2eba26fd59b"/>
+					<textFieldExpression><![CDATA[$F{Cliente}]]></textFieldExpression>
+				</textField>
+				<image>
+					<reportElement x="450" y="5" width="100" height="40" uuid="422cdd7f-51a0-476c-81ac-f6fd43b8e3ce">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+					</reportElement>
+					<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+				</image>
+				<image>
+					<reportElement x="5" y="5" width="100" height="40" uuid="46a1be44-1e53-49a3-b33a-0215b3dbf291">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[(!$P{URL_LOGO_MULTI_EMPRESA}.isEmpty())]]></printWhenExpression>
+					</reportElement>
+					<imageExpression><![CDATA[$P{URL_LOGO_MULTI_EMPRESA}]]></imageExpression>
+				</image>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="674" splitType="Stretch">
+			<frame>
+				<reportElement mode="Opaque" x="1" y="124" width="555" height="85" backcolor="#FFFFFF" uuid="3c695f88-3a72-4d9a-9c07-d1d59f815d5b"/>
+				<staticText>
+					<reportElement x="1" y="10" width="50" height="13" uuid="53932965-b0df-4260-b3c0-55086fd881f3"/>
+					<text><![CDATA[Resultado:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="24" width="45" height="15" uuid="354144f9-ec64-4456-a1c4-e92f755eae62"/>
+					<text><![CDATA[Ref./Seq.:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="52" width="43" height="15" uuid="8d32fcb6-a03c-475e-8fd5-1ce664d0c708"/>
+					<text><![CDATA[Aparelho:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="66" width="51" height="15" uuid="b4580260-5fa5-4937-91e9-fc91f7f27b24"/>
+					<text><![CDATA[Fabricante:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="270" y="53" width="52" height="15" uuid="5aeec121-172d-4a71-ad30-6d1606c05651"/>
+					<text><![CDATA[Calibração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="270" y="67" width="88" height="15" uuid="cd6a15f3-fb1a-4ed5-9191-309d29e39923"/>
+					<text><![CDATA[Repouso Auditivo:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="52" y="10" width="200" height="16" uuid="29d1e5d4-e6f4-4da7-a299-730f848455e1"/>
+					<textFieldExpression><![CDATA[$F{Resultado}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="49" y="24" width="200" height="16" uuid="f003f454-ac9c-450d-9d6d-6d73399faf99"/>
+					<textFieldExpression><![CDATA[$F{Ref_Seq}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="47" y="52" width="200" height="16" uuid="5df7103c-f1de-455d-ac38-55cbac2fa653"/>
+					<textFieldExpression><![CDATA[$F{Aparelho}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="54" y="66" width="200" height="16" uuid="f8d5a6ae-a5a0-4ec1-b486-eec1214d4024"/>
+					<textFieldExpression><![CDATA[$F{Fabricante}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="323" y="53" width="147" height="16" uuid="c7e9adb6-748f-4045-8a0b-49339f998e3b"/>
+					<textFieldExpression><![CDATA[$F{Calibracao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="353" y="67" width="139" height="16" uuid="4ac8e81d-ac7a-4c13-87be-04336c0bbeb1"/>
+					<textFieldExpression><![CDATA[$F{Repouso_Auditivo_Horas}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<rectangle>
+				<reportElement x="0" y="215" width="555" height="14" backcolor="#999999" uuid="9b8ec416-4310-4270-833f-c0ea3ac09331"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="202" y="217" width="150" height="12" uuid="f300dd6a-aace-4304-9e7f-8900f578e718"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Limiares Tonais - Orelha Direita]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="229" width="555" height="14" backcolor="#CCCCCC" uuid="8304ce73-00c4-4a4a-a6b3-2a0b55230b26"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="243" width="555" height="14" backcolor="#CCCCCC" uuid="a0d4f1b0-dae1-4ef0-af37-8f661d9acab3"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="257" width="555" height="14" backcolor="#CCCCCC" uuid="5c95cd50-50a9-4a1b-bdae-142db4efe9a7"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="229" width="102" height="14" backcolor="#CCCCCC" uuid="6a4bd2e9-6c0a-4a85-bda8-91c5ae2eb68d"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="229" width="60" height="14" backcolor="#CCCCCC" uuid="78aaedb7-2a96-49fa-a4df-79d96e54a4e6"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="229" width="56" height="14" backcolor="#CCCCCC" uuid="dde0e40b-1654-422b-a2ad-3471caaa23a9"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="229" width="56" height="14" backcolor="#CCCCCC" uuid="ed84b7d5-9dbb-4827-a087-f2ddbf6835d9"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="229" width="56" height="14" backcolor="#CCCCCC" uuid="8cc19042-2f2e-4e05-a2f9-2c9c707cbeb1"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="229" width="56" height="14" backcolor="#CCCCCC" uuid="230c51c4-40de-48e1-8b65-38fde9099722"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="229" width="56" height="14" backcolor="#CCCCCC" uuid="0948f014-f7ac-4d4c-a0e0-194622febc32"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="229" width="56" height="14" backcolor="#CCCCCC" uuid="3683983b-709f-48ff-88be-d6317645addf"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="229" width="57" height="14" backcolor="#CCCCCC" uuid="0b45a2ec-0903-42ad-98d9-188e8827719b"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="243" width="56" height="14" backcolor="#EFEFEF" uuid="4bdad310-07b2-4502-b66a-6e0e2b6bc54f"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="243" width="56" height="14" backcolor="#EFEFEF" uuid="6bac032f-cb2a-451f-baa1-bb7f680bad87"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="243" width="102" height="14" backcolor="#CCCCCC" uuid="07661084-e131-4334-b6ac-d4f1042535b1"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="243" width="60" height="14" backcolor="#EFEFEF" uuid="5f35137c-7e3f-48d0-bf81-c7a9a975f80b"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="243" width="56" height="14" backcolor="#EFEFEF" uuid="369d282b-4ffa-4514-b173-fee54a80100a"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="243" width="57" height="14" backcolor="#EFEFEF" uuid="92ed9f68-ff0c-45e1-ba33-fb8c14992320"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="243" width="56" height="14" backcolor="#EFEFEF" uuid="405fa562-85b0-4d15-8339-ab2756bde322"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="243" width="56" height="14" backcolor="#EFEFEF" uuid="0fb89b21-d450-4813-931e-59d3955893ed"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="243" width="56" height="14" backcolor="#EFEFEF" uuid="e14c4b98-82c4-4802-b82b-404f13ef4f7f"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="257" width="56" height="14" backcolor="#EFEFEF" uuid="4174e614-04d1-430b-891d-974a87d29c4b"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="257" width="60" height="14" backcolor="#EFEFEF" uuid="d035a119-ca0c-4ced-8ef7-117413ab82d0"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="257" width="56" height="14" backcolor="#EFEFEF" uuid="bdf89918-f704-429f-adcc-f712770fa5b5"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="257" width="56" height="14" backcolor="#EFEFEF" uuid="412329af-dc0b-4ddc-b4c8-fc2ab76da14a"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="257" width="56" height="14" backcolor="#EFEFEF" uuid="1132703f-7c70-4036-aa22-5cc254d3aed8"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="257" width="56" height="14" backcolor="#EFEFEF" uuid="17856d1a-f1b3-49a3-b671-6daefaac2a10"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="257" width="102" height="14" backcolor="#CCCCCC" uuid="1d8b3878-ba58-4b13-b679-a1bfaa409f47"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="257" width="56" height="14" backcolor="#EFEFEF" uuid="1170a13b-98b0-4018-8884-988476c1aac8"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="257" width="57" height="14" backcolor="#EFEFEF" uuid="38f49df5-1ff6-4698-8652-5e48b37b9834"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="43" y="230" width="24" height="14" uuid="043151ab-1618-4b80-8e0a-3de8e5e26a19"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[kHz]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="43" y="245" width="24" height="14" uuid="f7c549c9-9e20-4e37-9cd6-909444a83eb5"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[V.A.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="43" y="259" width="24" height="14" uuid="a3726ceb-5f8e-42a8-9a5f-7a9288ff72f4"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[V.O.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="125" y="230" width="24" height="14" uuid="7b4a1b67-def9-4f7d-af0e-06b62c3cfab5"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[.25]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="183" y="230" width="24" height="14" uuid="13c5936f-e247-43ca-9774-0b21bdad65f8"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[.50]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="244" y="230" width="24" height="14" uuid="2b0d10d3-b52b-4dbd-a889-cc6e0e29b2e3"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="230" width="24" height="14" uuid="53fff1fa-9e94-4e57-a765-4cdf18c69131"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="357" y="230" width="24" height="14" uuid="81ba78b6-5d6a-4240-afb8-02093ad2d45f"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="413" y="230" width="24" height="14" uuid="aac281fb-66b4-4f1d-8708-c376df1d5dce"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[4]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="469" y="230" width="24" height="14" uuid="e5fe00b2-96d6-48c1-919b-c94df4305ea9"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[6]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="525" y="230" width="24" height="14" uuid="85d0d25c-9b3b-4d46-8bd6-5b724971fb92"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[8]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="282" width="555" height="14" backcolor="#999999" uuid="c8ce895e-cbcb-4eae-8749-3221302e85eb"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="195" y="283" width="168" height="12" uuid="ce2b1450-079a-4f85-9df8-522e0b10256a"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Limiares Tonais - Orelha Esquerda]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="442" y="296" width="56" height="14" backcolor="#CCCCCC" uuid="d676d4be-b7d3-48bd-b31c-a4574bfde623"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="296" width="56" height="14" backcolor="#CCCCCC" uuid="5cb9809f-48bb-40ea-a36b-1bbec45a6a3e"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="296" width="56" height="14" backcolor="#CCCCCC" uuid="361dc427-7a43-4ee2-aa58-d99850984e76"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="296" width="102" height="14" backcolor="#CCCCCC" uuid="4b174443-adb0-497f-bc9c-5c01cdb41b47"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="296" width="60" height="14" backcolor="#CCCCCC" uuid="349e52af-2b0b-4933-8237-fb952f0236ba"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="296" width="56" height="14" backcolor="#CCCCCC" uuid="50746ea8-6f57-4726-9590-064aa9b7ec8c"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="296" width="57" height="14" backcolor="#CCCCCC" uuid="d1420bd7-4dbb-43e5-921b-8a437eddd283"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="296" width="56" height="14" backcolor="#CCCCCC" uuid="a54c8c86-98a5-49a2-91f2-be3935225bc2"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="296" width="56" height="14" backcolor="#CCCCCC" uuid="9dd0bfe3-2579-4e18-9f45-b2859e93158f"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="310" width="56" height="14" backcolor="#EFEFEF" uuid="45afa4a2-5a0b-4f5c-9e78-9c8505556d0b"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="310" width="56" height="14" backcolor="#EFEFEF" uuid="37d93bf4-c3da-402f-b43b-4f902db42989"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="310" width="56" height="14" backcolor="#EFEFEF" uuid="6056d22f-55f2-4478-9cbd-f73c849f7865"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="324" width="56" height="14" backcolor="#EFEFEF" uuid="c7a0ea27-5af6-40bc-8fae-431a7d126843"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="324" width="56" height="14" backcolor="#EFEFEF" uuid="d6f27d7c-8aa6-451e-8a94-b65211f2fa15"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="218" y="324" width="56" height="14" backcolor="#EFEFEF" uuid="e6b3689c-d8eb-4bb3-b342-a699a659bfff"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="330" y="310" width="56" height="14" backcolor="#EFEFEF" uuid="350a842f-e16c-4d9d-8074-8b35d1c7904b"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="310" width="60" height="14" backcolor="#EFEFEF" uuid="c1179d37-11cb-4c9a-8a4a-8bce969f948a"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="162" y="324" width="56" height="14" backcolor="#EFEFEF" uuid="0797fe2d-23c6-46c2-8f33-5db3890ea781"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="324" width="56" height="14" backcolor="#EFEFEF" uuid="d7a2f4ee-458b-4104-85de-a24a53a4d9d0"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="442" y="324" width="56" height="14" backcolor="#EFEFEF" uuid="739b157a-dfbf-4555-b331-62220c1507c4"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="324" width="57" height="14" backcolor="#EFEFEF" uuid="450e9272-a5cd-4a5c-b457-f1d7d8bdbdeb"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="102" y="324" width="60" height="14" backcolor="#EFEFEF" uuid="b86ea743-5b32-4eb7-93e5-84f60098a469"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="274" y="310" width="56" height="14" backcolor="#EFEFEF" uuid="bd8380d5-2598-4634-8992-e54d3ce364c0"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="310" width="102" height="14" backcolor="#CCCCCC" uuid="df10a8c9-d3fa-4098-a2cc-d82c0d4d0410"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="386" y="310" width="56" height="14" backcolor="#EFEFEF" uuid="2d4dd991-6c75-4eb3-ae63-6c57e5a89668"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="310" width="57" height="14" backcolor="#EFEFEF" uuid="10a1a6bc-c084-4b4d-921d-a55741831e9e"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="324" width="102" height="14" backcolor="#CCCCCC" uuid="cdb81f3b-68f9-4276-8134-f0a92573a07c"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="43" y="312" width="24" height="14" uuid="ce28bf37-5274-476b-bf32-b5fde963bf49"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[V.A.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="43" y="297" width="24" height="14" uuid="5e318fe1-92ed-476c-ad00-23a360b18a59"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[kHz]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="43" y="326" width="24" height="14" uuid="2b38dda7-fae8-4a3a-83a0-4a53661f9b55"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[V.O.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="469" y="297" width="24" height="14" uuid="1c87b1c0-dbd3-4b37-a277-79e8e0d621f9"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[6]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="297" width="24" height="14" uuid="3b12932f-f201-42d8-8e54-82742acea0d5"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="183" y="297" width="24" height="14" uuid="6c5be807-f1bb-48ca-8da0-839ae8b50c02"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[.50]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="244" y="297" width="24" height="14" uuid="8e959213-6328-4e7f-9d97-7f2007219b8f"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="125" y="297" width="24" height="14" uuid="fafc3931-7126-4d2e-bbed-e9d835cde221"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[.25]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="525" y="297" width="24" height="14" uuid="2a31a0b6-1f3a-4acf-9fc1-3c43e4a354ed"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[8]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="413" y="297" width="24" height="14" uuid="fce9ff05-3e9a-4f5a-8354-ead63c634e5f"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[4]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="357" y="297" width="24" height="14" uuid="d798e767-bd24-4f53-8e7d-8dfdfbc74f88"/>
+				<textElement>
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[3]]></text>
+			</staticText>
+			<frame>
+				<reportElement mode="Opaque" x="2" y="-4" width="555" height="127" backcolor="#FFFFFF" uuid="63dc6559-4d1a-42b2-a930-4f649f6994e1"/>
+				<box>
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.0" lineColor="#CCCCCC"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5" lineColor="#999999"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<staticText>
+					<reportElement x="1" y="12" width="64" height="16" uuid="26d6f108-5d9e-497e-b14e-9208d13c0d35"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Funcionário: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="423" y="12" width="78" height="16" uuid="29d04d37-1816-45b1-9aee-458b5ae118be"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[Data do Exame:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="49" width="49" height="13" uuid="396ee46f-eab1-413b-929b-b49c800841cb"/>
+					<text><![CDATA[Unidade:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="63" width="36" height="13" uuid="600c2cae-20fa-40fa-9fa2-6c19f2d56750"/>
+					<text><![CDATA[Setor:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="76" width="36" height="13" uuid="00484cfa-3ef2-4c89-af60-bb7265154ecd"/>
+					<text><![CDATA[Cargo:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="90" width="50" height="13" uuid="6178fdf1-3c37-4646-8f7f-8bdbb47c7676"/>
+					<text><![CDATA[Situação:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="104" width="20" height="13" uuid="fd760109-bd1c-440d-a044-f6d90b96d5d0"/>
+					<text><![CDATA[RG:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="423" y="61" width="50" height="13" uuid="aa4bee0e-3d95-4642-b742-c2b4dd13310a"/>
+					<text><![CDATA[Demissão:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="423" y="33" width="63" height="13" uuid="81c2959c-efee-4e76-be74-110cebe78cae"/>
+					<text><![CDATA[Nascimento:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="423" y="75" width="30" height="13" uuid="2e779570-f8ce-4856-b758-0d4e5d7d51fe"/>
+					<text><![CDATA[Idade:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="423" y="47" width="50" height="13" uuid="c72a84bc-ff0f-4d55-8a7a-cd425434a1d0"/>
+					<text><![CDATA[Admissão:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="423" y="89" width="30" height="13" uuid="cd5c54c1-f045-47ee-b6ca-eff5e9260123"/>
+					<text><![CDATA[Sexo:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="423" y="103" width="30" height="13" uuid="63050bde-d902-4a0b-8e94-3eb1acc413f4"/>
+					<text><![CDATA[Tipo:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="70" y="12" width="189" height="16" uuid="54fa6370-47ab-452a-9d74-9bdd5c0ebf5d"/>
+					<textFieldExpression><![CDATA[$F{Funcionario}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="70" y="28" width="380" height="13" uuid="2ae27240-fae2-4461-9a57-c2ef0425b84b"/>
+					<textFieldExpression><![CDATA[$F{FuncionarioNomeSocial}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="33" y="63" width="392" height="13" uuid="7617a720-dc1a-4910-ac0c-87575cc6352f"/>
+					<textFieldExpression><![CDATA[$F{Setor}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="37" y="76" width="389" height="13" uuid="304c6c79-3e25-405b-adb1-b22d63e6347d"/>
+					<textFieldExpression><![CDATA[$F{Cargo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="49" y="90" width="378" height="13" uuid="1c2f5437-334d-472d-99fe-981fde83f27a"/>
+					<textFieldExpression><![CDATA[$F{Situacao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="21" y="104" width="402" height="13" uuid="535d194d-f363-4b3e-918f-879ee5c5ff34"/>
+					<textFieldExpression><![CDATA[$F{RG}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="481" y="33" width="72" height="13" uuid="d1f62309-7e18-4a6d-a9e0-9e5ce1bccefc"/>
+					<textFieldExpression><![CDATA[$F{Nascimento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="472" y="46" width="81" height="13" uuid="1a665ef1-be85-4148-bb27-2539badf3895"/>
+					<textFieldExpression><![CDATA[$F{Admissao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="472" y="61" width="81" height="13" uuid="4ebfc992-4675-44ab-beb1-79b98d7dfe16"/>
+					<textFieldExpression><![CDATA[$F{Demissao}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="453" y="75" width="100" height="13" uuid="a5841542-1334-423c-b256-d08072b49107"/>
+					<textFieldExpression><![CDATA[$F{Idade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="451" y="89" width="102" height="13" uuid="16a8f1be-5e23-40f2-bdfb-438751d9beec"/>
+					<textFieldExpression><![CDATA[$F{Sexo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="448" y="103" width="105" height="13" uuid="08070991-9ddd-417b-936d-0d04a3dfcd73"/>
+					<textFieldExpression><![CDATA[$F{Tipo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="500" y="12" width="54" height="16" uuid="9b769a7f-e445-49ef-933b-625ca4568f37"/>
+					<textFieldExpression><![CDATA[$F{Data_Exame}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="49" y="49" width="380" height="13" uuid="673e3794-8b3d-4612-960b-0cb11b7ba412"/>
+					<textFieldExpression><![CDATA[$F{Unidade}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="1" y="28" width="70" height="13" uuid="4e28670c-ae58-460c-ae8d-202d54bbf5f6"/>
+					<text><![CDATA[Nome Social:]]></text>
+				</staticText>
+			</frame>
+			<line>
+				<reportElement x="73" y="640" width="142" height="1" uuid="d0a95806-10a6-48a9-9262-41ddad67465c"/>
+			</line>
+			<staticText>
+				<reportElement x="114" y="654" width="62" height="14" uuid="cd36433d-bf00-41d7-9e67-7c54ab06d294"/>
+				<text><![CDATA[(Funcionário)]]></text>
+			</staticText>
+			<line>
+				<reportElement x="334" y="640" width="142" height="1" uuid="3da90c7c-9b23-426f-8c90-2f306a9b1113"/>
+			</line>
+			<staticText>
+				<reportElement x="367" y="641" width="91" height="20" uuid="96ce4897-1d7c-492b-8fa6-3e692410a162"/>
+				<text><![CDATA[Fonoaudiólogo (a)]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="104" y="244" width="33" height="15" uuid="3107859f-cf33-41c6-b1ed-7a2dd1732ee0"/>
+				<textFieldExpression><![CDATA[$F{DA.25}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="164" y="244" width="33" height="15" uuid="cd72aff2-6a80-4daf-9ffc-bb420956ced6"/>
+				<textFieldExpression><![CDATA[$F{DA.50}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="244" width="14" height="15" uuid="20bdfd85-c6f3-4fbb-bd18-da3442d78994"/>
+				<textFieldExpression><![CDATA[$F{DA1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="276" y="244" width="14" height="15" uuid="47e949f5-731a-465f-a510-e81fb0423758"/>
+				<textFieldExpression><![CDATA[$F{DA2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="332" y="244" width="14" height="15" uuid="f5cf36f8-c9fd-4a2d-9098-f8d24eebaaa1"/>
+				<textFieldExpression><![CDATA[$F{DA3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="388" y="244" width="14" height="15" uuid="47ee74bc-13ad-464c-adb9-19b93edab968"/>
+				<textFieldExpression><![CDATA[$F{DA4}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="244" width="14" height="15" uuid="ba7874d7-e4c6-420c-9b83-82f1f420c159"/>
+				<textFieldExpression><![CDATA[$F{DA6}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="244" width="14" height="15" uuid="51232886-7415-4f8f-a1e1-4b5d72d5c914"/>
+				<textFieldExpression><![CDATA[$F{DA8}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="311" width="14" height="15" uuid="540fcf66-8dd7-4516-8efa-e5c3270278c0"/>
+				<textFieldExpression><![CDATA[$F{EA6}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="332" y="311" width="14" height="15" uuid="5c8e7937-7dda-4b20-9f2a-3775ea70a1d8"/>
+				<textFieldExpression><![CDATA[$F{EA3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="104" y="311" width="33" height="15" uuid="c3c2fd95-661a-4ad2-a8e2-75eb3d30331e"/>
+				<textFieldExpression><![CDATA[$F{EA.25}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="164" y="311" width="33" height="15" uuid="9aa44ccd-a4c7-4bf2-994a-257af7b6b9ca"/>
+				<textFieldExpression><![CDATA[$F{EA.50}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="388" y="311" width="14" height="15" uuid="685d62c6-9087-416b-a6a6-ad382d1618cf"/>
+				<textFieldExpression><![CDATA[$F{EA4}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="276" y="311" width="14" height="15" uuid="6dd10cf6-6f5a-4ba8-b943-9002238db4e0"/>
+				<textFieldExpression><![CDATA[$F{EA2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="311" width="14" height="15" uuid="b4e95b43-949a-44b8-94a4-66a44fc2b3d7"/>
+				<textFieldExpression><![CDATA[$F{EA8}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="311" width="14" height="15" uuid="24bfc883-9f3b-4d86-bede-19129793f5a8"/>
+				<textFieldExpression><![CDATA[$F{EA1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="258" width="14" height="15" uuid="31f095d4-f68f-4d19-95ac-fd7250e939ba"/>
+				<textFieldExpression><![CDATA[$F{DO6}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="332" y="258" width="14" height="15" uuid="0b7fd3b0-535f-48d1-b794-e41353a45361"/>
+				<textFieldExpression><![CDATA[$F{DO3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="104" y="258" width="33" height="15" uuid="c01430a2-dd0a-4335-b2ff-e4ccca1b5b3e"/>
+				<textFieldExpression><![CDATA[$F{DO.25}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="164" y="258" width="33" height="15" uuid="ba99ebb5-6f62-4a97-b390-455055247144"/>
+				<textFieldExpression><![CDATA[$F{DO.50}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="388" y="258" width="14" height="15" uuid="2325d55a-40f3-4b17-8c75-6be3164a1929"/>
+				<textFieldExpression><![CDATA[$F{DO4}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="276" y="258" width="14" height="15" uuid="3bc576f4-72cd-48f5-8d91-3b38a84d11f9"/>
+				<textFieldExpression><![CDATA[$F{DO2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="258" width="14" height="15" uuid="0574a3e5-454a-4569-981b-1426a581356e"/>
+				<textFieldExpression><![CDATA[$F{DO8}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="258" width="14" height="15" uuid="42cd7db1-872a-4ddd-b214-dd752bfdd729"/>
+				<textFieldExpression><![CDATA[$F{DO1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="332" y="325" width="14" height="15" uuid="bc0f2c7c-9550-43c0-be66-f814aa8a8a40"/>
+				<textFieldExpression><![CDATA[$F{EO3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="164" y="325" width="33" height="15" uuid="18c6690d-9693-48ad-8664-7fea25627c18"/>
+				<textFieldExpression><![CDATA[$F{EO.50}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="104" y="325" width="33" height="15" uuid="22dfc4a7-f5d2-4220-b770-d8412ca8ce86"/>
+				<textFieldExpression><![CDATA[$F{EO.25}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="220" y="325" width="14" height="15" uuid="447fa763-3587-4fe7-aefb-4988e6a863db"/>
+				<textFieldExpression><![CDATA[$F{EO1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="276" y="325" width="14" height="15" uuid="e55699be-5f34-4558-98b3-be54d08fce3c"/>
+				<textFieldExpression><![CDATA[$F{EO2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="325" width="14" height="15" uuid="b3f5cd8c-d40a-468b-8db0-5f3b57258042"/>
+				<textFieldExpression><![CDATA[$F{EO8}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="325" width="14" height="15" uuid="bf33ad2f-85bd-4011-8f14-6f380c5c18d9"/>
+				<textFieldExpression><![CDATA[$F{EO6}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="388" y="325" width="14" height="15" uuid="6328cd5b-e0a6-459f-9b43-434b9b7d1d44"/>
+				<textFieldExpression><![CDATA[$F{EO4}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="87" y="641" width="177" height="16" uuid="f1707f1c-89f6-4194-b5a0-c64cfd157a89"/>
+				<textFieldExpression><![CDATA[$F{Funcionario}]]></textFieldExpression>
+			</textField>
+			<lineChart>
+				<chart>
+					<reportElement x="-16" y="394" width="298" height="153" uuid="18339514-2424-41ef-8d14-53244c6e8e82"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="DatasetGraficoDireita" uuid="ff08576f-e58d-49ec-9bd5-939df6e44a12">
+							<datasetParameter name="CODIGO_PEDIDO_EXAME">
+								<datasetParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></datasetParameterExpression>
+							</datasetParameter>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA["Orelha Direita"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{Descricao}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{Resposta}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<linePlot>
+					<plot/>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</linePlot>
+			</lineChart>
+			<lineChart>
+				<chart>
+					<reportElement mode="Transparent" x="277" y="394" width="298" height="153" forecolor="#000000" backcolor="#FFFFFF" uuid="bc5454f2-2b5f-49a0-99ae-629c4b063be5"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="DatasetGraficoEsquerda" uuid="fea98474-4789-4c91-a9d7-5dd787673bc7">
+							<datasetParameter name="CODIGO_PEDIDO_EXAME">
+								<datasetParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></datasetParameterExpression>
+							</datasetParameter>
+						</datasetRun>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA["Orelha Esquerda"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{Descricao}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{Resposta}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<linePlot>
+					<plot>
+						<seriesColor seriesOrder="0" color="#0000FF"/>
+					</plot>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</linePlot>
+			</lineChart>
+			<staticText>
+				<reportElement x="257" y="504" width="26" height="13" uuid="4cf17a87-a930-4d46-9924-8f6e769305bc"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[KHz]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="-7" y="385" width="26" height="13" uuid="95712f18-351f-482e-8843-acde062a9780"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[dB]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="286" y="385" width="26" height="13" uuid="a1639c3c-9561-493e-bdf9-a92d9e1b52a2"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[dB]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="549" y="504" width="26" height="13" uuid="62870e96-6c6e-420c-8fc4-e8cee3a3f425"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[KHz]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="46" splitType="Stretch"/>
+	</columnFooter>
+</jasperReport>

@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/Clientes;laudo_pcd
+create;buonny/Clientes;listagem_cliente_funcionario_laudo_pcd
+create;buonny/Funcionarios;imprimir_laudo_pcd
+create;buonny/Funcionarios;__jasperConsultaLaudoPcd

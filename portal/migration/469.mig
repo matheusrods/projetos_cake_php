@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/Funcionarios;index_funcionario_liberacao
+create;buonny/Funcionarios;listagem_funcionario_liberacao
+create;buonny/Funcionarios;set_func_lib_trab

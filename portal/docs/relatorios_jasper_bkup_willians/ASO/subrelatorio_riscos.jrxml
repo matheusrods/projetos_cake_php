@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subrelatorio_riscos" language="groovy" columnCount="2" printOrder="Horizontal" pageWidth="595" pageHeight="360" columnWidth="297" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="2.0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subrelatorio_riscos" language="groovy" printOrder="Horizontal" pageWidth="595" pageHeight="360" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.996500000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ASO"/>
+	<property name="ireport.jasperserver.url" value="http:// jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="CODIGO_CLIENTE_FUNCIONARIO" class="java.lang.Integer"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[12355]]></defaultValueExpression>
+	</parameter>
+
+	<queryString>
+		<![CDATA[SELECT
+		<![CDATA[WITH CONSULTA AS (
+SELECT
+
+
+
+
+
+
+
+
+
+                DISTINCT(ri.codigo),
+                RHHealth.publico.Ufn_decode_utf8_string(gr.descricao) as grupos_riscos_descricao,
+                RHHealth.publico.Ufn_decode_utf8_string(ri.nome_agente) as risco_descricao,
+                case when ri.nivel_acao <> '' then
+                case when (ger.valor_medido <> '') THEN
+                    case when CONVERT(money, ger.valor_medido) > CONVERT(money, ri.nivel_acao) THEN 'S'
+                        ELSE 'N'
+                        END
+                    ELSE 'S'
+                    END
+                ELSE 'S'
+                END as linha
+            FROM rhhealth.dbo.pedidos_exames pe
+        	INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = pe.codigo_func_setor_cargo
+        	INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = pe.codigo_cliente_funcionario
+            INNER JOIN RHHealth.dbo.cargos cg ON cg.codigo = fsc.codigo_cargo
+        	INNER JOIN RHHealth.dbo.setores st ON st.codigo = fsc.codigo_setor
+            INNER JOIN RHHealth.dbo.clientes_setores cs ON (cs.codigo_setor = st.codigo AND cs.codigo_cliente_alocacao = fsc.codigo_cliente_alocacao)
+            INNER JOIN RHHealth.dbo.grupo_exposicao ge  ON (ge.codigo_cargo = cg.codigo AND ge.codigo_cliente_setor = cs.codigo AND ((ge.codigo_funcionario = pe.codigo_funcionario) OR (ge.codigo_funcionario IS NULL)))
+            INNER JOIN RHHealth.dbo.grupos_exposicao_risco ger ON (ger.codigo_grupo_exposicao = ge.codigo)
+            INNER JOIN RHHealth.dbo.riscos ri ON (ri.codigo = ger.codigo_risco)
+            INNER JOIN RHHealth.dbo.grupos_riscos gr ON (gr.codigo = ri.codigo_grupo)
+WHERE pe.codigo = ($P{CODIGO_PEDIDO_EXAME})
+ORDER BY linha DESC]]>
+            WHERE pe.codigo = ($P{CODIGO_PEDIDO_EXAME})
+),
+registros AS(
+select codigo,grupos_riscos_descricao,LEFT(risco_descricao,130) as descricao,linha,1 AS ordem from CONSULTA
+UNION ALL
+select codigo,'',SUBSTRING(risco_descricao,131,130),linha,2 from CONSULTA WHERE LEN(risco_descricao) > 130
+UNION ALL
+select codigo,'',SUBSTRING(risco_descricao,261,130),linha,3 from CONSULTA WHERE LEN(risco_descricao) > 260
+UNION ALL
+select codigo,'',SUBSTRING(risco_descricao,391,130),linha,4 from CONSULTA WHERE LEN(risco_descricao) > 390
+)
+SELECT * FROM registros ORDER BY codigo,ordem]]>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="grupos_riscos_descricao" class="java.lang.String"/>
+	<field name="risco_descricao" class="java.lang.String"/>
+	<field name="descricao" class="java.lang.String"/>
+	<field name="linha" class="java.lang.String"/>
+
+	<field name="ordem" class="java.lang.Integer"/>
+
+
+
+	<detail>
+		<band height="12">
+		<band height="12" splitType="Prevent">
+			<textField isBlankWhenNull="false">
+				<reportElement  isPrintRepeatedValues="false" x="3" y="1" width="280" height="10" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{linha}.equals('S')]]></printWhenExpression>
+				</reportElement>
+				<reportElement isPrintRepeatedValues="false" x="3" y="1" width="588" height="10" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{linha}.equals('S')]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{grupos_riscos_descricao} + "  -  " + $F{risco_descricao}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{grupos_riscos_descricao} != '') ? $F{grupos_riscos_descricao} + "  -  " + $F{descricao} : $F{descricao}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

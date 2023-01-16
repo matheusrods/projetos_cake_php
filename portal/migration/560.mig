@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;Turmas
+create;buonny/Turmas;index
+create;buonny/Turmas;listagem
+create;buonny/Turmas;incluir
+create;buonny/Turmas;editar
+create;buonny/Turmas;get_combos
+create;buonny/Turmas;atualiza_status_turma

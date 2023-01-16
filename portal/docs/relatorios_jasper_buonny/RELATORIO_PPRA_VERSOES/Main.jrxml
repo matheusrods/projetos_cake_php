@@ -1,0 +1,2600 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_ppra" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppra_versoes"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<subDataset name="dataset1"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Program Files (x86)\\Jaspersoft\\iReport-4.7.1\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_PPRA_VERSOES" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT TOP 1
+-- dados da filial
+dbBuonny.publico.ufn_decode_utf8_string(clf.razao_social) AS razao_social,
+dbBuonny.publico.ufn_decode_utf8_string(clf.nome_fantasia) AS nome_fantasia,
+CASE
+    WHEN clf.codigo_documento_real IS NULL THEN dbBuonny.publico.ufn_formata_cnpj(clf.codigo_documento)
+    WHEN clf.codigo_documento_real = '' THEN dbBuonny.publico.ufn_formata_cnpj(clf.codigo_documento)
+    ELSE dbBuonny.publico.ufn_formata_cnpj(clf.codigo_documento_real)
+  END AS cnpj,
+dbbuonny.publico.Ufn_decode_utf8_string(clef.logradouro) AS endereco,
+clef.numero AS numero,
+dbbuonny.publico.Ufn_decode_utf8_string(clef.bairro) AS bairro,
+dbbuonny.publico.Ufn_decode_utf8_string(clef.cidade) AS cidade,
+dbbuonny.publico.Ufn_decode_utf8_string(clef.estado_descricao) AS estado,
+clf.cnae,
+ISNULL(dbBuonny.publico.ufn_decode_utf8_string(cnae.descricao),'') AS ramo_atividade,
+ISNULL(cnae.grau_risco, '') AS grau_risco,
+ISNULL(dbBuonny.publico.ufn_decode_utf8_string(me.nome), '') AS medico,
+ISNULL(me.numero_conselho, '') AS numero_conselho,
+ISNULL(me.conselho_uf, '') AS conselho_uf,
+ISNULL(dbBuonny.publico.ufn_decode_utf8_string(cp.descricao), '') AS descricao_conselho_profissional,
+ISNULL(dbBuonny.publico.ufn_decode_utf8_string(me.especialidade), '') AS especialidade,
+CONVERT(varchar(10), gpra.data_inicio_vigencia, 111) AS data_inicio_vigencia,
+
+--pegar os dados da empresa que deve ser impressa os dados como pai
+dbBuonny.publico.ufn_decode_utf8_string(cpai.razao_social) as pai_razao_social,
+dbBuonny.publico.ufn_decode_utf8_string(cpai.nome_fantasia) as pai_nome_fantasia,
+dbBuonny.publico.ufn_formata_cnpj(cpai.codigo_documento) as pai_cnpj,
+CASE
+	WHEN clf.codigo_documento_real IS NULL THEN dbbuonny.publico.Ufn_decode_utf8_string(clef.logradouro)
+	WHEN clf.codigo_documento_real = '' THEN dbbuonny.publico.Ufn_decode_utf8_string(clef.logradouro) -- filho
+    ELSE dbbuonny.publico.Ufn_decode_utf8_string(clem.logradouro) -- pai
+END AS pai_endereco,
+CASE
+	WHEN clf.codigo_documento_real IS NULL THEN clef.numero
+	WHEN clf.codigo_documento_real = '' THEN clef.numero -- filho
+    ELSE clem.numero  -- pai
+END AS pai_numero,
+CASE
+	WHEN clf.codigo_documento_real IS NULL THEN dbbuonny.publico.Ufn_decode_utf8_string(clef.bairro)
+	WHEN clf.codigo_documento_real = '' THEN dbbuonny.publico.Ufn_decode_utf8_string(clef.bairro) -- filho
+    ELSE dbbuonny.publico.Ufn_decode_utf8_string(clem.bairro)   -- pai
+END AS pai_bairro,
+CASE
+	WHEN clf.codigo_documento_real IS NULL THEN dbbuonny.publico.Ufn_decode_utf8_string(clef.cidade)
+	WHEN clf.codigo_documento_real = '' THEN dbbuonny.publico.Ufn_decode_utf8_string(clef.cidade) -- filho
+    ELSE dbbuonny.publico.Ufn_decode_utf8_string(clem.cidade) -- pai
+END AS pai_cidade,
+CASE
+	WHEN clf.codigo_documento_real IS NULL THEN dbbuonny.publico.Ufn_decode_utf8_string(clef.estado_descricao)
+	WHEN clf.codigo_documento_real = '' THEN dbbuonny.publico.Ufn_decode_utf8_string(clef.estado_descricao) -- filho
+    ELSE dbbuonny.publico.Ufn_decode_utf8_string(clem.estado_descricao) -- pai
+END AS pai_estado
+FROM RHHealth.dbo.ppra_versoes pv
+	INNER JOIN RHHealth.dbo.grupos_economicos_clientes gec ON gec.codigo_cliente = pv.codigo_cliente_alocacao
+	INNER JOIN RHHealth.dbo.cliente clf				ON (clf.codigo = gec.codigo_cliente)
+	LEFT JOIN RHHealth.dbo.cnae						ON (cnae.cnae = clf.cnae)
+    LEFT JOIN RHHealth.dbo.cliente_endereco clef	ON (clef.codigo_cliente = clf.codigo)
+	LEFT JOIN RHHealth.dbo.grupos_prevencao_riscos_ambientais_versoes gpra  ON(gpra.codigo_cliente = gec.codigo_cliente AND gpra.codigo_ppra_versoes = pv.codigo)
+	LEFT JOIN RHHealth.dbo.medicos me		        ON(me.codigo = gpra.codigo_medico)
+	LEFT JOIN RHHealth.dbo.conselho_profissional cp ON(cp.codigo = me.codigo_conselho_profissional)
+	LEFT JOIN RHHealth.dbo.cliente cpai				ON clf.codigo_documento_real = cpai.codigo_documento
+	LEFT JOIN RHHealth.dbo.cliente_endereco clem    ON (clem.codigo_cliente = cpai.codigo)
+WHERE pv.codigo = $P{CODIGO_PPRA_VERSOES};]]>
+	</queryString>
+	<field name="razao_social" class="java.lang.String"/>
+	<field name="nome_fantasia" class="java.lang.String"/>
+	<field name="cnpj" class="java.lang.String"/>
+	<field name="endereco" class="java.lang.String"/>
+	<field name="numero" class="java.lang.Integer"/>
+	<field name="bairro" class="java.lang.String"/>
+	<field name="cidade" class="java.lang.String"/>
+	<field name="estado" class="java.lang.String"/>
+	<field name="cnae" class="java.lang.String"/>
+	<field name="ramo_atividade" class="java.lang.String"/>
+	<field name="grau_risco" class="java.lang.String"/>
+	<field name="medico" class="java.lang.String"/>
+	<field name="numero_conselho" class="java.lang.String"/>
+	<field name="conselho_uf" class="java.lang.String"/>
+	<field name="descricao_conselho_profissional" class="java.lang.String"/>
+	<field name="especialidade" class="java.lang.String"/>
+	<field name="data_inicio_vigencia" class="java.lang.String"/>
+	<field name="pai_razao_social" class="java.lang.String"/>
+	<field name="pai_nome_fantasia" class="java.lang.String"/>
+	<field name="pai_cnpj" class="java.lang.String"/>
+	<field name="pai_endereco" class="java.lang.String"/>
+	<field name="pai_numero" class="java.lang.Integer"/>
+	<field name="pai_bairro" class="java.lang.String"/>
+	<field name="pai_cidade" class="java.lang.String"/>
+	<field name="pai_estado" class="java.lang.String"/>
+	<pageHeader>
+		<band height="59">
+			<frame>
+				<reportElement x="0" y="1" width="555" height="58"/>
+				<rectangle>
+					<reportElement x="0" y="0" width="555" height="57"/>
+				</rectangle>
+				<line>
+					<reportElement x="86" y="0" width="1" height="57"/>
+				</line>
+				<line>
+					<reportElement x="86" y="19" width="469" height="1"/>
+				</line>
+				<line>
+					<reportElement x="416" y="20" width="1" height="37"/>
+				</line>
+				<line>
+					<reportElement x="417" y="38" width="138" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="87" y="20" width="329" height="37"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE PREVENÇÃO DE RISCOS AMBIENTAIS - PPRA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="416" y="20" width="85" height="18"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+						<paragraph leftIndent="5"/>
+					</textElement>
+					<text><![CDATA[Número de revisão:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="501" y="20" width="54" height="18"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[00]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="416" y="38" width="69" height="18"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+						<paragraph firstLineIndent="5"/>
+					</textElement>
+					<text><![CDATA[Data emissão:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="485" y="39" width="69" height="17"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{data_inicio_vigencia} != null) ? new SimpleDateFormat("MMMMM/yyyy", new Locale("pt", "BR")).format(new Date($F{data_inicio_vigencia})) : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="87" y="0" width="466" height="19"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="703" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="21" y="195" width="514" height="28"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE PREVENÇÃO DE RISCOS AMBIENTAIS
+-PPRA-]]></text>
+				</staticText>
+				<image>
+					<reportElement x="13" y="62" width="126" height="37"/>
+					<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+				</image>
+				<image>
+					<reportElement x="440" y="60" width="100" height="40">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+					</reportElement>
+					<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+				</image>
+				<textField>
+					<reportElement x="22" y="362" width="513" height="34"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="22" y="396" width="513" height="25"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome_fantasia}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="22" y="421" width="513" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{endereco} +", " +$F{numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="22" y="441" width="513" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{bairro} +" - " +$F{cidade} + " / " + $F{estado}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="611" width="551" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{data_inicio_vigencia} != null) ? new SimpleDateFormat("MMMMM/yyyy", new Locale("pt", "BR")).format(new Date($F{data_inicio_vigencia})) : '']]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="13" y="195" width="527" height="192"/>
+					<textElement/>
+					<text><![CDATA[Ref.: PPRA – Programa de Prevenção de Riscos Ambientais
+
+Conforme contrato encaminhado, o trabalho em epigrafe.
+
+
+
+
+Sem mais
+
+
+
+
+Atenciosamente]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="20" y="20" width="516" height="20"/>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cidade} + ", " + new SimpleDateFormat("dd/MM/yyyy", new Locale("pt", "BR")).format(new Date())]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="17" y="74" width="100" height="20"/>
+					<textElement/>
+					<text><![CDATA[À]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="16" y="125" width="522" height="20"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="213" y="40" width="100" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[SUMÁRIO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="71" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[........................................................................................................................................................................ 4
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="71" width="165" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[I.      IDENTIFICAÇÃO DA EMPRESA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="88" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="88" width="210" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[II.     DESCRIÇÃO DA EMPRESA E PROCESSOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="104" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="104" width="100" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[III.    INTRODUÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="120" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="120" width="80" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IV.   OBJETIVO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="136" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="136" width="100" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[V.    ABRANGÊNCIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="152" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 5]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="152" width="113" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        5.1. DEFINIÇÕES ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="168" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 6]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="168" width="157" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VI.   DIPLOMAS TÉCNICO-LEGAIS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="184" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 6]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="184" width="100" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VII.  ORGANIZAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="200" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 6]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="200" width="149" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.1. RESPONSABILIDADES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="216" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 7]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="216" width="113" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.2. INTEGRAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="232" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[..........................................................................................................................................................................7]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="232" width="210" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.3. PARTICIPAÇÃO DOS FUNCIONÁRIOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="248" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[..........................................................................................................................................................................8]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="248" width="274" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.4. DOCUMENTAÇÃO E MANUTENÇÃO DE REGISTROS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="264" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 8]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="264" width="125" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.5. TREINAMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="280" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[..........................................................................................................................................................................8]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="280" width="262" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.6. ASSESSORIA OU CONSULTORIA ESPECIALIZADA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="296" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[..........................................................................................................................................................................9]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="296" width="115" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VIII. PLANEJAMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="327" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[....................................................................................................................................................................... 10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="327" width="121" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        8.2. PRIORIDADES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="343" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[........................................................................................................................................................................ 10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="343" width="242" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        8.3. MONITORAMENTO GLOBAL DO PROGRAMA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="359" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="359" width="209" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        8.4. CRONOGRAMA (PLANO DE AÇÕES)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="375" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="375" width="121" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IX.   DESENVOLVIMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="391" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="391" width="115" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        9.1. ANTECIPAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="407" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[........................................................................................................................................................................ 10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="407" width="135" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        9.2. RECONHECIMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="423" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................11]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="423" width="103" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        9.3. AVALIAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="439" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................11]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="439" width="107" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        9.4. CONTROLE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="455" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................18]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="455" width="156" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[X.    AVALIAÇÃO DO PROGRAMA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="471" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................18]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="471" width="103" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[XI.   BIBLIOGRAFIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="487" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[........................................................................................................................................................................ 19]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="487" width="61" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ANEXOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="311" width="527" height="14"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[....................................................................................................................................................................... 10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="311" width="121" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        8.1. META]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="14" y="20" width="146" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[I. IDENTIFICAÇÃO DA EMPRESA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="50" width="71" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Razão Social:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="92" width="84" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Endereço CNPJ:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="215" width="522" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[II. DESCRIÇÃO DA EMPRESA E PROCESSOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="178" width="102" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Ramo de atividade:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="268" width="298" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[III. INTRODUÇÃO
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="15" y="290" width="525" height="74"/>
+					<textElement textAlignment="Justified">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Este Programa foi elaborado de acordo com as diretrizes da NR-9, Portaria SSMT 25 / 94 (de 29.12.94, DOU de 30.12.94, republicada em 15.02.95) que alterou a NR-9 da Portaria 3214/78 doMTb (atual MTE).
+
+	O PPRA é parte integrante do conjunto mais amplo das iniciativas da empresa no campo de preservação da saúde e da integridade física dos trabalhadores, de forma a ANTECIPAR, RECONHECER, AVALIAR E CONTROLAR possíveis riscos ambientais, existentes ou que venham a existir nos ambientes de trabalho, promovendo uma GESTÃO eficaz sobre as potenciais EXPOSIÇÕES OCUPACIONAIS.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="378" width="517" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IV. OBJETIVO
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="400" width="525" height="40"/>
+					<textElement textAlignment="Justified">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Seu objetivo é sumarizar e documentar o conjunto de ações relativas ao gerenciamento dos riscos ambientais, inerentes ao processo produtivo da empresa, fornecendo parâmetros técnico-legais, considerando a proteção dos trabalhadores em relação ao meio ambiente laboral e aos recursos naturais empregados.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="453" width="527" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[V. ABRANGÊNCIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="475" width="525" height="106"/>
+					<textElement textAlignment="Justified">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Este Programa abrangerá os riscos Ambientais identificados no ambiente laboral da empresa. Conforme estabelecido pela NR-9 da Portaria 3214/78 do Ministério do Trabalho em seu item 9.1.5, “consideram-se riscos ambientais os agentes físicos, químicos e biológicos existentes nos ambientes de trabalho que, em função de sua natureza, concentração ou intensidade e tempo de exposição, com capacidade de causar danos à saúde do trabalhador.”
+
+	Consideram-se agentes físicos as diversas formas de energia a que possam estar expostos os trabalhadores, tais como ruído, vibrações, pressões anormais, temperaturas extremas, radiações ionizantes, radiações não ionizantes, vibração e umidade. ]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="86" y="50" width="454" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="50" y="67" width="131" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cnpj}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="14" y="67" width="36" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CNPJ:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="238" y="67" width="131" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cnae}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="202" y="67" width="36" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CNAE:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="379" y="67" width="69" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Grau de risco:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="98" y="92" width="440" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pai_endereco} +", " +$F{pai_numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="98" y="108" width="435" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pai_bairro} +" - " +$F{pai_cidade} + " / " + $F{pai_estado}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="14" y="132" width="146" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Endereço da Vistoria (Unidade):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="161" y="132" width="394" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{endereco} +", " +$F{numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="161" y="148" width="394" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{bairro} +" - " +$F{cidade} + " / " + $F{estado}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="116" y="178" width="437" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ramo_atividade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="14" y="234" width="539" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ramo_atividade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="448" y="67" width="93" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{grau_risco}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="13" y="24" width="525" height="125"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Consideram-se agentes químicos as substâncias, compostos ou produtos que possam penetrar no organismo pela via respiratória, nas formas de poeiras, fumos, névoas, neblinas, gases ou vapores, ou que, pela natureza da atividade de exposição, possam ter contato ou ser absorvidos pelo organismo através da pele ou por ingestão.
+
+	Consideram-se agentes biológicos as bactérias, fungos, bacilos, parasitas, protozoários, vírus, entre outros.
+
+	Tal como previsto na NR-9, este Programa de Prevenção de Riscos Ambientais - PPRA apresenta a seguinte estrutura:
+
+	•   Planejamento anual com informações sobre metas, prioridades e cronograma;
+	•   Estratégia e metodologia de ação;
+	•   Forma de registro, manutenção e divulgação dos dados;
+	•   Periodicidade e forma de avaliação do desenvolvimento do Programa.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="171" width="100" height="14"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[5.1.  Definições]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="15" y="205" width="523" height="318"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[PERIGO (HAZARD) - condição ou situação ou agente com potencial para causar dano.
+
+RISCO (RISK) - condição da exposição ocupacional a um perigo. Interação probabilística entre a possibilidade de ocorrência e as conseqüências de um evento.
+
+DANO - na situação ocupacional, objeto deste programa, será alteração do estado de saúde que resulte em doença, alteração funcional ou até morte.
+
+IDENTIFICAÇÃO DE PERIGOS - processo para identificar um PERIGO e definir suas características.
+
+ESTIMATIVA DO RISCO - processo para determinar a freqüência ou a probabilidade e as conseqüências de um perigo.
+
+AVALIAÇÃO DO RISCO - processo utilizado para estimar a extensão dos riscos (GRADUAÇÃO), fornecendo subsidiando a tomada de decisões quanto às medidas preventivas a serem adotadas.
+
+APRECIAÇÃO DO RISCO - processo que julga como um risco é Aceitável, com base nas informações obtidas na análise do risco e levando em conta fatores sócio-econômicos e ambientais.
+
+Nível de Ação - corresponde a um valor a partir do qual devem ser iniciadas medidas preventivas de forma a minimizar a probabilidade de que as exposições a agentes ambientais ultrapassem os limites de tolerância (gerem condições de risco)
+
+Agentes Químicos = 50% do LT (limite de tolerância) Ruído - dose = 0,5
+
+LT - Limite de Tolerância - concentrações ou intensidades máximas ou mínimas, relacionadas à natureza e o tempo de exposição ao agente, que não causará dano à saúde do trabalhador, durante sua vida laboral (item 15.1.5 da NR-15, Portaria 3214).
+
+Valor Teto - concentração que não pode ser excedida durante nenhum momento da exposição do trabalhador. ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="525" width="241" height="14"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IDHL ( Imediataly Dangerous for Health and Life) - ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="214" y="525" width="228" height="14"/>
+					<textElement>
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[concentração imediatamente perigosa a vida/saúde.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="15" y="32" width="145" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VI. DIPLOMAS TÉCNICO-LEGAIS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="68" width="525" height="14"/>
+					<textElement>
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[As Análises Técnicas, contidas neste Programa, estão embasadas nos seguintes textos Técnico-legais:
+
+]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="95" width="14" height="13"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="95" width="509" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Consolidação das Leis do Trabalho – CLT ;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="29" y="114" width="509" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Lei 6.514, de 22 de dezembro de 1977;
+]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="114" width="14" height="13"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="132" width="509" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Portaria 3.214/78 do MTb (atual MTE), em sua NR-9 “Programa de Prevenção de Riscos Ambientais”;
+]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="132" width="14" height="13"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="151" width="14" height="13"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="151" width="509" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Portaria 3.214/78 do MTb (atual MTE), em sua NR-15 “Atividades e Operações Insalubres” ;]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="170" width="14" height="13"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="170" width="509" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Instruções Normativas INSS – Instituto Nacional de Seguridade Social;
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="29" y="189" width="509" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Normas de Higiene Ocupacional – NHO, da Fundacentro;
+]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="189" width="14" height="13"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="208" width="14" height="13"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="208" width="509" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Normas Brasileiras da ABNT- Associação Brasileira de Normas Técnicas;
+]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="227" width="14" height="13"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="227" width="509" height="27"/>
+					<textElement verticalAlignment="Top">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Limites de Tolerância definidos pela ACGIH – American Conference of Governmental Industrial Higyenist. Conforme previsto pela NR-9 da Portaria 3214/78 do MTb.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="294" width="145" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VII. ORGANIZAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="318" width="145" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.1. Responsabilidades
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="58" y="340" width="478" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.1.1. Responsáveis Técnicos pela coleta de dados e avaliações: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="318" y="363" width="145" height="45"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Carolina Pontes
+Técnica de Segurança do Trabalho
+MTE nº: SP/007441.1
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="58" y="426" width="479" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.1.2. Responsável pelo Desenvolvimento do PPRA:
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="451" width="522" height="200"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	O responsável pelo desenvolvimento do PPRA será o RESPONSÁVEL PELA UNIDADE, ao qual caberá prover os recursos necessários à execução das ações necessárias para se atingir os objetivos e metas definidos no Programa.
+
+	Cabe ao responsável pelo desenvolvimento do PPRA , delegar funções e atribuições de forma a:
+
+	•   Estabelecer, implementar e assegurar o cumprimento permanente do PPRA;
+	•   Manter o documento base disponível ao acesso das autoridades competentes;
+	•   Seguir o cronograma de implantação e execução do PPRA (Plano de Ações);
+	•   Avaliar medidas de controle;
+]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="699">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="699"/>
+				<staticText>
+					<reportElement x="16" y="16" width="522" height="54"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	•   Executar treinamentos;
+	•   Manter registro de dados por um período mínimo de 20 anos, histórico técnico e administrativo;
+	•   Revisar e atualizar o PPRA;
+	•   Divulgar o programa na Empresa.
+
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="58" y="83" width="477" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.1.4. Responsabilidade do empregador:
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="109" width="522" height="30"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Fornecer as condições necessárias a implantação e desenvolvimento do Programa de Prevenção de Riscos Ambientais na empresa.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="59" y="153" width="477" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.1.5. Responsabilidade dos trabalhadores: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="180" width="522" height="73"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	•   colaborar e participar na implantação e execução do PPRA;
+	•   seguir as orientações recebidas nos treinamentos ministrados pela empresa;
+	•   informar ao seu superior hierárquico direto ocorrências que, a seu julgamento, possam implicar em situações de risco à saúde dos trabalhadores.
+	•  Seguir rigidamente os procedimentos operacionais, instruções de trabalho e Ordens de Serviço existentes, de forma a prevenir efeitos adversos à sua saúde e integridade física.
+
+
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="59" y="275" width="477" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.1.6. Responsabilidade do SESMT da Planta: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="302" width="522" height="14"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	• Prover suporte técnico e orientação na condução das ações de Prevenção de riscos Ocupacionais.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="341" width="145" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.2. Integração
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="59" y="369" width="477" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.2.1. Integração Interna
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="395" width="522" height="47"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Este Programa é parte complementar de outros programas desenvolvidos na empresa, devendo ser adotados mecanismos de interação entre os mesmos. Em particular salienta-se o PCMSO – Programa de Controle Médico de Saúde Ocupacional, previsto na NR-7 da Portaria 3214 do Ministério do Trabalho, para o qual o PPRA representa o ponto de partida (base line) para o monitoramento biológico dos colaboradores.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="484" width="522" height="23"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	O PPRA, por definição da própria NR-9, além de cumprir um requisito legal, é um documento técnico de referência para a gestão das exposições ocupacionais, sendo permitida sua consulta pelos empregados e seus representantes.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="60" y="458" width="477" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.2.2. Integração Externa
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="552" width="522" height="54"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	A participação dos funcionários no processo de identificação e gestão dos riscos ambientais, se dá pelo envolvimento da Comissão Interna de Prevenção de Acidentes – CIPA. Através desta comissão, que apresenta em sua constituição uma representação bipartite (empregador e empregados), todos os colaboradores podem expor situações que identifiquem como potencialmente de risco à sua saúde e integridade física. Bem como a possibilidade de sugestões de ações de melhoria. ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="517" width="145" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.3. Participação dos Funcionários ]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="16" y="27" width="235" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.4. Documentação e Manutenção de Registros
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="54" width="522" height="140"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Todos os documentos relativos à gestão das exposições ocupacionais a agentes ambientais (físicos, químicos e biológicos), permanecerão arquivados, conforme critérios específicos.
+
+	São documentos relativos ao PPRA:
+
+	•   Documento-Base do PPRA,
+	•   Avaliações Ambientais (monitoramento quantitativo das exposições);
+	•   Relatórios de Inspeção e Auditorias de Segurança;
+	•   Relatórios Técnicos de Identificação e Avaliação de Riscos;
+	•   Entre outros.
+
+	Os documentos relativos ao PPRA permanecerão arquivados, conforme critérios estabelecidos no sistema de gestão. Ressaltando que o tempo mínimo estabelecido pela NR-9 será de 20 anos.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="207" width="235" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.5. Treinamento
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="236" width="522" height="48"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Todos os funcionários receberão treinamentos gerais e específicos, conforme definido em programa específico de treinamento. Estes treinamentos têm por objetivo garantir que todos os colaboradores estarão familiarizados com os procedimentos operacionais relativos às tarefas de sua responsabilidade, os riscos inerentes às mesmas e os procedimentos de segurança para controle das exposições ocupacionais a estes riscos. ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="298" width="235" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.6. Assessoria ou Consultoria Especializada]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="327" width="522" height="33"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Para execução, acompanhamento ou avaliação de atividades específicas que extrapolem a capacidade dos recursos humanos disponíveis na unidade ou por questões técnico-legais, o Responsável pelo Desenvolvimento do PPRA poderá contratar serviços de especialistas, para demandas específicas, sempre com o objetivo de agregar resultados à Gestão Global dos Riscos Ocupacionais.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="16" y="34" width="145" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VIII. PLANEJAMENTO
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="57" width="522" height="33"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	O PROGRAMA DE PREVENÇÃO DE RISCOS AMBIENTAIS desta unidade, adota a seguinte metodologia para IDENTIFICAÇÃO, ESTIMATIVA, AVALIAÇÃO e APRECIAÇÃO DAS EXPOSIÇÕES OCUPACIONAIS:]]></text>
+				</staticText>
+				<image>
+					<reportElement x="0" y="117" width="554" height="546"/>
+					<imageExpression><![CDATA["repo:fluxograma.jpg"]]></imageExpression>
+				</image>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="16" y="29" width="525" height="248"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[8.1. Meta
+
+	A meta geral deste Programa é a ocorrência de 0 (zero) doenças ocupacionais ou lesões decorrente da exposição a agentes ambientais dentro do âmbito de abrangência, deste PPRA, conforme estabelecido pela NR-9 da Portaria 3214/78 do MTE. Para ações específicas, constantes do Cronograma de Ações (Plano de Ações) deste PPRA, poderá haver Metas individuais para cada item ali estabelecido.
+
+8.2. Prioridades
+
+	A priorização de Ações a serem desenvolvidas, bem como a definição de prazos para as ações corretivas e preventivas, definidas no plano de ações deste PPRA, seguirão a GRADUAÇÃO DE RISCOS, definida para cada condição de exposição ocupacional evidenciada neste programa.
+
+8.3. Monitoramento Global do Programa
+
+	O monitoramento global dos riscos ambientais consiste no acompanhamento sistemático das exposições ocupacionais, como forma de verificação da eficácia das ações corretivas e preventivas implementadas.
+
+8.4. Cronograma (Plano de Ações)
+
+	O cronograma apresenta os prazos a serem seguidos para implementação das ações corretivas (ou medidas preventivas) adotados. A cada avaliação anual do PPRA, será elaborado novo cronograma, em função das novas situações verificadas e da avaliação do cronograma anterior.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="294" width="145" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IX. DESENVOLVIMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="322" width="525" height="167"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Neste item apresentamos como se desenvolverão as etapas do Programa de Prevenção de Riscos Ambientais.
+
+9.1. Antecipação
+
+	Esta fase consiste na análise prévia de todo e qualquer projeto de ampliação e/ou modificação do processo produtivo ou instalações, a fim de se identificar os riscos potenciais que poderão ser somados ao ambiente laboral e introduzir medidas de proteção para seu controle ou eliminação.
+
+9.2. Reconhecimento
+
+Compreende a etapa de CARACTERIZAÇÃO BÁSICA, onde procedeu-se a :
+
+	• identificação do processo produtivo ;
+	• identificação dos agentes ambientais inerentes ao processo produtivo, seu potencial de dano e efeitos à saúde ;
+	• identificação das exposições ocupacionais e meios técnicos de controle existentes; identificação e localização das possíveis fontes geradoras e determinação da força de trabalho. ]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="15" y="39" width="525" height="382"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	As considerações técnicas e detalhamento das informações advindas desta etapa do PPRA, estão relacionadas em ANÁLISES PRELIMINARES DE RISCO.
+
+	As ANÁLISES PRELIMINARES DE RISCO, compreendem um resumo de informações técnicas, relativas às exposições ocupacionais, meios de controle e Graduação dos Riscos, elaboradas por cargo/função. A relação geral dos Setores e Funções/Cargos, para os quais foram avaliadas as exposições ocupacionais, é apresentada na Planilha 1 “Distribuição de Setores e Funções” anexa.
+
+9.3. Avaliação
+
+	Compreende as etapas de: DEFINIÇÃO DE GRUPOS DE EXPOSIÇÃO SIMILAR, AVALIAÇÃO QUALITATIVA DAS EXPOSIÇÕES, MONITORAMENTO QUANTITATIVO DAS EXPOSIÇÕES e INTERPRETAÇÃO DOS DADOS E TOMADA DE DECISÃO, conforme descrito no fluxograma a seguir. As informações advindas desta etapa do PPRA.
+
+	Uma vez entendidos os processos produtivos e identificadas as exposições ocupacionais, definiram-se os GRUPOS DE EXPOSIÇÃO SIMILAR. O Grupo de Exposição Similar (GES) é a base para avaliação das exposições ocupacionais dos trabalhadores. Consiste em agrupar os trabalhadores sujeitos a similares características de exposição a um determinado agente ambiental, ou seja, que apresentam o mesmo perfil de exposição ocupacional devido à semelhança e freqüências de exposição, materiais que manipulam e processos e operações que realizam.
+
+	Os Grupos de Exposição Similar, tem por objetivo otimizar as avaliações ambientais, garantindo representatividade das amostras coletadas. Assim os resultados das amostragens realizadas, para os representantes do grupo (Exposto de Maior Risco), garantirão a representatividade da exposição para todo o grupo.
+
+	Realizadas as avaliações Qualitativas e Quantitativas das exposições ocupacionais, procede-se a análise dos resultados obtidos e as conclusões e recomendações técnicas dela advindas.
+
+9.4. Controle
+
+	Esta etapa envolve a implementação das ações Preventivas/Corretivas advindas das etapas anteriores, conforme descrito no fluxograma a seguir.
+
+	Na seleção das medidas de controle a serem implementadas, serão priorizadas MEDIDAS PREVENTIVAS em detrimento de medidas de proteção. Assim, serão considerados os seguintes princípios: ]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="15" y="438" width="524" height="194"/>
+				</rectangle>
+				<line>
+					<reportElement x="189" y="438" width="1" height="194"/>
+				</line>
+				<staticText>
+					<reportElement x="21" y="446" width="100" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[EVITAR RISCOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="21" y="490" width="100" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ELIMINAR RISCOS]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="475" width="524" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="194" y="446" width="341" height="24"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Qualquer novo investimento deverá ser analisado antecipadamente para garantir que ele pode ser implementado com o menor nível de risco possível. ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="481" width="342" height="38"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Qualquer alteração a um processo ou instalação existentes, deve ser objecto de análise de riscos para determinar se os perigos existentes ou risco podem ser eliminados, por exemplo, eliminação de tintas a base de solventes orgânicos por tintas à base de água.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="524" width="525" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="21" y="530" width="173" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[REDUÇÃO DE RISCO POR SUBSTITUIÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="534" width="336" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Substituindo o perigoso pelo não perigoso ou menos perigoso.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="557" width="524" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="21" y="566" width="173" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[REDUÇÃO DE RISCO POR TECNOLOGIA
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="570" width="336" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Substituindo o perigoso pelo não perigoso ou menos perigoso.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="593" width="525" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="196" y="605" width="336" height="13"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Consiste em, sempre que possível, lidar com o risco na sua origem (fonte geradora).]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="21" y="601" width="173" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MEDIDAS DE ENGENHARIA]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<rectangle>
+					<reportElement x="15" y="27" width="524" height="154"/>
+				</rectangle>
+				<line>
+					<reportElement x="189" y="27" width="1" height="154"/>
+				</line>
+				<staticText>
+					<reportElement x="21" y="35" width="161" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MEDIDAS ADMINISTRATIVAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="21" y="79" width="100" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROTEÇÃO COLETIVA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="64" width="524" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="194" y="35" width="341" height="24"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Consiste na elaboração e implementação, manutenção de ações voltadas a procedimentos, normas, instruções e afins.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="70" width="342" height="38"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Consiste na adoção de medidas de controle da exposição ocupacional de caráter coletivo (fonte ou transmissão)]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="113" width="525" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="21" y="136" width="173" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROTEÇÃO INDIVIDUAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="120" width="339" height="53"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Consiste na adoção de medidas de controle da exposição ocupacional de caráter individual (trabalhador). Como princípio geral, a aplicação de EPI (Equipamentos de Proteção Individual) será considerada como a última na linha de prioridades de ações, devendo ser implementada em carater temporário ou quando todas as demais se mostrem inviáveis.]]></text>
+				</staticText>
+				<image>
+					<reportElement x="55" y="242" width="449" height="394"/>
+					<imageExpression><![CDATA["repo:fluxograma2.jpg"]]></imageExpression>
+				</image>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="0" y="35" width="553" height="668"/>
+					<imageExpression><![CDATA["repo:fluxograma3.jpg"]]></imageExpression>
+				</image>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="16" y="51" width="525" height="131"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Para ESTIMATIVA, AVALIAÇÃO e APRECIAÇÃO das Exposições Ocupacionais, de forma a auxiliar a tomada de decisões quanto às ações de controle e prioridades, tomou-se por base a metodologia de Graduação de Riscos (MULHAUSEN & DAMIANO), validada pela AIHA (American Industrial Hygiene Association), complementada com outros critérios, advindos de boas práticas de Higiene Ocupacional.  As matrizes de Risco e de enquadramento de PROBABILIDADES e de SEVERIDADE, constantes da metodologia acima citada, foram. Além da Graduação dos Riscos, a metodologia prevê a priorização das ações a serem adotadas.
+
+	As informações levantadas foram compiladas em planilhas de Análise Preliminar de Riscos, distribuídas por FUNÇÃO – SETOR - ÁREA. Esta técnica nos permite registrar as exposições ocupacionais evidenciadas, procedendo sua graduação.
+
+
+	Contudo, o GRAU DE EXPOSIÇÃO é função de duas variáveis: Tempo de exposição ao agente e quantidade ou intensidade do agente na operação ou ambiente laboral, assim teremos:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="113" y="237" width="329" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Grau de Exposição = TEMPO DE EXPOSIÇÃO X EXPOSIÇÃO (PROBABILIDADE)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="14" y="307" width="524" height="208"/>
+				</rectangle>
+				<line>
+					<reportElement x="128" y="327" width="1" height="188"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="333" width="100" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TIPO DE EXPOSIÇÃO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="327" width="524" height="1"/>
+				</line>
+				<line>
+					<reportElement x="14" y="359" width="523" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="382" width="95" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[OCASIONAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="361" width="201" height="20"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição ocupacional não programada, que ocorre em períodos curtos de exposição.
+]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="425" width="524" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="438" width="101" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[INTERMITENTE]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="472" width="524" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="138" y="306" width="278" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DEFINIÇÃO TEMPO DE EXPOSIÇÃO PARA ENFOQUE QUALITATIVO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="336" y="328" width="1" height="187"/>
+				</line>
+				<staticText>
+					<reportElement x="139" y="333" width="179" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IDENTIFICAÇÃO DA EXPOSIÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="348" y="334" width="183" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TEMPO ENVOLVIDO NA EXPOSIÇÃO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="129" y="382" width="207" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="134" y="386" width="201" height="38"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição ocupacional não programada, que ocorre em períodos curtos de exposição, porem quando ocorrem podem se repetir algumas vezes durante a jornada de trabalho. (2 ou 3 vezes)
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="342" y="365" width="193" height="44"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição diária, com tempo de até 6% do total da jornada, ou exposição não diária (uma vez por semana ou menos).]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="430" width="201" height="38"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição ocupacional programada, porem que ocorrem em períodos descontínuos.
+Ou seja, exposições que cessam e recomeçam com intervalor programados ou não.
+
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="342" y="429" width="193" height="39"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição diária, com tempo de até 60% do total da jornada.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="342" y="476" width="193" height="39"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição diária com tempo superior a 60% da jornada.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="477" width="201" height="38"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição ocupacional que perdura durante a jornada de trabalho, podendo ser sem pausas, ou pausas curtas (refeições, necessidades fisiológicas, descanso, etc.)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="485" width="101" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PERMANENTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="571" width="525" height="34"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	As definições para classificação quanto às categorias não esgotam todas as alternativas, mas apenas servem de orientação para a classificação das exposições.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="113" y="7" width="329" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[EXPOSIÇÃO (PROBABILIDADE)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="14" y="37" width="524" height="360"/>
+				</rectangle>
+				<frame>
+					<reportElement mode="Opaque" x="15" y="38" width="522" height="60" backcolor="#F0F0F0"/>
+				</frame>
+				<line>
+					<reportElement x="128" y="37" width="1" height="360"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="68" width="100" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Categoria]]></text>
+				</staticText>
+				<line>
+					<reportElement x="129" y="57" width="409" height="1"/>
+				</line>
+				<line>
+					<reportElement x="14" y="98" width="523" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="127" width="106" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BAIXA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="170" width="524" height="1"/>
+				</line>
+				<line>
+					<reportElement x="14" y="245" width="524" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="138" y="36" width="278" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Descrição]]></text>
+				</staticText>
+				<line>
+					<reportElement x="316" y="58" width="1" height="339"/>
+				</line>
+				<staticText>
+					<reportElement x="133" y="68" width="179" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ENFOQUE QUALITATIVO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="319" y="59" width="113" height="38"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ENFOQUE QUANTITATIVO
+(QUANDO UTILIZANDO, LEVAR EM CONSIDERAÇÃO A ATENUAÇÃO DO EPI OU EPC)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="104" width="178" height="65"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição ocasional à baixas concentrações ou intensidades]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="322" y="104" width="107" height="66"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição Média Estimada:
+
+Abaixo de 10% do LT  ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="399" width="525" height="34"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[LT – Limite de Tolerância
+Enfoque Quantitativo – Leva-se em consideração a exposição encontrada com a sua respectiva atenuação.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="432" y="37" width="3" height="360"/>
+				</line>
+				<staticText>
+					<reportElement x="435" y="68" width="100" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FATOR DE PROTEÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="438" y="104" width="97" height="65"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[As medidas de controle existentes são adequadas, eficientes e há garantias de que sejam mantidas em longo prazo.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="438" y="175" width="97" height="65"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[As medidas de controle existentes são adequadas e eficientes, mas não há garantias de que sejam mantidas em longo prazo.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="175" width="178" height="65"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição intermitente ao agente à baixa concentração ou intensidade
+Exposição ocasional ao agente à alta concentração ou intensidade
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="198" width="106" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MÉDIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="322" y="175" width="107" height="65"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição Média Estimada:
+
+entre   10% e 50% do LT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="250" width="178" height="87"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição permanente ao agente à concentrações ou intensidades significativas]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="281" width="106" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="438" y="250" width="97" height="87"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[As medidas de controle existentes são adequadas mas apresentando desvios ou problemas significativos. A eficiência é duvidosa e não há garantias de manutenção adequada.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="322" y="250" width="107" height="87"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição Média Estimada:
+
+Acima de 50% do LT (NÍVEL DE AÇÃO)]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="337" width="524" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="322" y="343" width="107" height="51"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição Média Estimada:
+
+Acima do LT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="359" width="106" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MUITO ALTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="438" y="343" width="97" height="51"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Medidas de controle inexistentes ou as medidas existentes são reconhecidamente inadequadas.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="343" width="178" height="51"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição permanente ao agente à alta concentração ou intensidade]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="113" y="438" width="329" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[GRAU DE EXPOSIÇÃO]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="116" y="466" width="324" height="100"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="121" y="490" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BAIXA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="121" y="510" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MÉDIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="121" y="530" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="121" y="549" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MUITO ALTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="530" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[INCERTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="510" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DE ATENÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="490" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DE ATENÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="549" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CRÍTICA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="470" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PERMANENTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="281" y="530" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[INCERTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="281" y="510" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DE ATENÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="281" y="470" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PERMANENTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="281" y="490" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DE ATENÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="281" y="549" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CRÍTICA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="361" y="530" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DE ATENÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="361" y="510" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IRRELEVANTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="361" y="470" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[OCASIONAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="361" y="490" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IRRELEVANTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="361" y="549" width="68" height="14"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CRÍTICA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="195" y="466" width="1" height="100"/>
+				</line>
+				<line>
+					<reportElement x="275" y="466" width="1" height="100"/>
+				</line>
+				<line>
+					<reportElement x="355" y="466" width="1" height="100"/>
+				</line>
+				<line>
+					<reportElement x="116" y="486" width="324" height="1"/>
+				</line>
+				<line>
+					<reportElement x="116" y="506" width="324" height="1"/>
+				</line>
+				<line>
+					<reportElement x="116" y="526" width="324" height="1"/>
+				</line>
+				<line>
+					<reportElement x="116" y="546" width="324" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="14" y="589" width="525" height="11"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	A avaliação do Risco pode ser representada pela seguinte expressão:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="608" width="511" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APRECIAÇÃO DA EXPOSIÇÃO = GRAU DE EXPOSIÇÃO (Probabilidade) X POTENCIAL DE DANO (Severidade)]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703"/>
+				<staticText>
+					<reportElement x="113" y="7" width="329" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[POTENCIAL DE DANO À SAÚDE (SEVERIDADE)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="14" y="37" width="524" height="528"/>
+				</rectangle>
+				<frame>
+					<reportElement mode="Opaque" x="15" y="38" width="522" height="27" backcolor="#F0F0F0"/>
+				</frame>
+				<line>
+					<reportElement x="128" y="37" width="1" height="528"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="42" width="100" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Categoria]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="65" width="523" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="95" width="106" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[LEVE]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="138" width="524" height="1"/>
+				</line>
+				<line>
+					<reportElement x="14" y="230" width="524" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="138" y="42" width="278" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Descrição]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="72" width="401" height="65"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• O agente, na condição verificada, não representa risco potencial de dano à saúde ou efeitos reversíveis de pouca importância ou não confirmados apenas suspeitos.
+• Para Contato – não irritante à pele , olhos e membranas mucosas
+• O agente não é considerado Xenobiótico.
+• Tomando por base os Limites de Tolerância -  agente sem limites de tolerância
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="577" width="525" height="34"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Assim, para cada agente evidenciado, em função da combinação  da Probabilidade de exposição com os possíveis efeitos que este agente poderá causar a saúde do trabalhador (Severidade), estabeleceremos uma graduação para o risco da exposição ocupacional, de acordo com a matriz de risco abaixo:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="142" width="401" height="84"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Efeitos reversíveis à saúde
+• Para contato – levemente irritante para Pele, olhos e mucosas. Vapores e Fumos irritantes em contato com a pele, olhos e membranas mucosas.
+• Sem evidência de carcinogenicidade, teratogenicidade ou mutagenicidade. (ACGIH A4 ou A5).
+• Tomando por base os Limites de Tolerância -  acima de 500 ppm (vapores e gases),  acima de 10 mg/m³ (particulados)
+• Biossegurança : baixo risco individual para o trabalhador e para a coletividade, com baixa probabilidade de causar doença ao ser humano. (NR-32 )
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="142" width="106" height="84"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BAIXO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="235" width="401" height="98"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Efeitos reversíveis, mas severos, à saúde
+• Agente apresenta TLV-Stel
+• Para Contato -  Irritante para membranas mucosas, olhos, pele, sistema respiratório superior.
+• Carcinogênico, teratogênico ou mutagênico confirmado somente para animais. (ACGIH A3).
+• Tomando por base os Limites de Tolerância -  entre 101 e 500 ppm (vapores e gases),  entre 1,1 e 10 mg/m³ (particulados)
+• Biossegurança : risco individual moderado para o trabalhador e com baixa probabilidade de disseminação para  a coletividade. Podem causar doenças ao ser humano, para as quais existem meios eficazes de profilaxia ou tratamento. (NR-32 )
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="235" width="106" height="98"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MÉDIO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="338" width="524" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="343" width="106" height="104"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="343" width="401" height="104"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Efeitos Irreversíveis à saúde
+• Agente apresenta TLV-CEIL (Valor-Teto)
+• Para Contato – Altamente irritante para membranas mucosas, olhos, pele, sistema respiratório e digestivo, resultando em lesões irreversíveis limitantes da capacidade funcional.
+• Suspeito de ser carcinogênico, teratogênico ou mutagênico para seres humanos. (ACGIH A2).
+• Tomando por base os Limites de Tolerância -  entre 11 e 100 ppm (vapores e gases),  entre 0,1 e 1,0 mg/m³ (particulados)
+• Biossegurança : risco individual elevado para o trabalhador e com probabilidade de disseminação para  a coletividade. Podem causar doenças e infecções graves ao ser humano, para as quais nem sempre existem meios eficazes de profilaxia ou tratamento. (NR-32 )
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="458" width="106" height="103"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IMINENTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="458" width="401" height="103"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Ameaça de vida, lesão incapacitante ou doença.
+• Agente apresenta baixo IDLH
+• Para Contato – Efeito cáustico e corrosivo severo sobre a pele, mucosa e olhos (pode causar perda da visão), podendo resultar em morte ou lesões incapacitantes.
+• Carcinogênico, teratogênico ou mutagênico confirmado para seres humanos (ACGIH A1).
+• Tomando por base os Limites de Tolerância -  <= 10 ppm (vapores e gases),  < 0,1 mg/m³ (particulados)
+• Biossegurança : risco individual elevado para o trabalhador e com elevada probabilidade de disseminação para  a coletividade. Apresenta grande poder de transmissibilidade de um indivíduo a outro. Podem causar doenças graves ao ser humano, para as quais não existem meios eficazes de profilaxia ou tratamento. (NR-32 )
+]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="453" width="524" height="1"/>
+				</line>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706"/>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="20" y="16" width="457" height="230"/>
+					<imageExpression><![CDATA["repo:grafico1.jpg"]]></imageExpression>
+				</image>
+				<rectangle>
+					<reportElement x="14" y="297" width="524" height="328"/>
+				</rectangle>
+				<frame>
+					<reportElement mode="Opaque" x="15" y="298" width="522" height="42" backcolor="#F0F0F0"/>
+				</frame>
+				<staticText>
+					<reportElement x="20" y="302" width="76" height="35"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Risco
+(exposição resultante)]]></text>
+				</staticText>
+				<line>
+					<reportElement x="98" y="297" width="1" height="328"/>
+				</line>
+				<staticText>
+					<reportElement mode="Opaque" x="20" y="344" width="73" height="82" backcolor="#339900"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BAIXO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="20" y="434" width="73" height="39" backcolor="#FFFF00"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MODERADO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="189" y="528" width="346" height="97"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• O trabalho não deve ser iniciado até que o risco tenha sido reduzido para o nível MODERADO/ALTO;
+• Provavelmente recursos consideráveis deverão ser alocados para reduzir o risco, o que implica em escalar o plano de ações a níveis mais elevados de responsabilidade;
+• Quando o trabalho se encontrar em progresso, ação urgente deve ser adotada;
+• Procedimentos de controle operacional, planos de emergência e objetivos e metas são mandatários.
+]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="339" width="523" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="189" y="344" width="346" height="85"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Nenhuma ação adicional é necessária;
+• Considerações podem ser feitas para avaliar soluções mais efetivas e de menor custo ou ainda melhorias que não envolvem custo;
+• Procedimentos e/ou objetivos e metas são opcionais;
+• Registrar e informar aos trabalhadores.
+]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="522" width="524" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="113" y="267" width="329" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APRECIAÇÃO DAS EXPOSIÇÃO RESULTANTE E POSSÍVEIS AÇÕES]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="430" width="524" height="1"/>
+				</line>
+				<staticText>
+					<reportElement x="189" y="435" width="346" height="83"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Esforços devem ser feitos para reduzir o risco, porém os custos de prevenção devem ser cuidadosamente estimados e definidos;
+• Quando avaliadas e definidas como  aplicáveis, as medidas a implementar devem ter definidos seus responsáveis e prazos de conclusão;
+• Avaliações adicionais devem ser definidas,  para estabelecer mais precisamente  as medidas de controle a serem melhoradas;
+• Procedimentos de controle operacional e/ou planos de emergência são necessários.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="20" y="528" width="73" height="90" forecolor="#FFFFFF" backcolor="#FF0000"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MUITO ALTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="20" y="479" width="73" height="39" forecolor="#FFFFFF" backcolor="#003366"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="102" y="302" width="76" height="35"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Apreciação]]></text>
+				</staticText>
+				<line>
+					<reportElement x="180" y="297" width="1" height="328"/>
+				</line>
+				<staticText>
+					<reportElement x="103" y="344" width="74" height="85"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[ACEITÁVEL
+
+​​O risco deve ser monitorado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="103" y="434" width="74" height="85"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[TOLERÁVEL
+
+Estudar medidas para redução do risco.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="103" y="523" width="74" height="102"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[INACEITÁVEL
+
+Paralisação da atividade e definição de ações corretivas para reduzir o risco]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706"/>
+				<staticText>
+					<reportElement x="13" y="24" width="527" height="44"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Observação: A classificação da priorização de ações é dada considerando a exposição resultante x critérios de incerteza em ordem decrescente. Quanto maior o resultado da multiplicação ” exposição resultante x critérios de incerteza” maior a prioridade na busca de mais informações (por exemplo, avaliação quantitativa).]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="104" width="145" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[X. AVALIAÇÃO DO PROGRAMA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="132" width="525" height="47"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Atendendo a metodologia de Avaliação das Exposições Ocupacionais, definida neste Programa, bem como à NR-9 da Portaria 3214, será efetuado, no mínimo anualmente, uma avaliação global do Programa, a fim de se verificar o cumprimento do Plano de Ações fixado e a eficácia das ações implementadas, atendendo assim ao item “VII” deste Programa.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="232" width="525" height="127"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[1) – Sounis, Emílio. Manual de Higiene e Medicina do Trabalho. 3.ª ed., Ícone editora, São Paulo, SP, Brasil, 1991.
+
+2) – Gonçalves, Edwar Abreu. Manual de Segurança e Saúde no Trabalho. LTr Editora Ltda, São Paulo, SP, Brasil, 2000.
+
+3) – Burgess, William A. Identificação de Possíveis Riscos à Saúde do Trabalhador nos Diversos Processos Industriais. Trad. Ricardo Baptista. Ergo Editora, Belo Horizonte, MG, Brasil, 1997.
+
+4) – Torreira, Raúl Peragallo. Manual de Segurança Industrial. Margus Publicações, São Paulo, SP, Brasil, 1999.
+
+5) Santos, Ubiratan de Paula. Ruído Riscos e Prevenção. 3.ª ed., Editora Hucitec, São Paulo, SP, Brasil, 1999.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="204" width="145" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[XI. BIBLIOGRAFIA]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706"/>
+				<staticText>
+					<reportElement x="14" y="326" width="525" height="48"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ANEXOS
+
+QUALIFICAÇÃO DOS AGENTES / RISCOS]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706"/>
+				<staticText>
+					<reportElement x="170" y="9" width="209" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DISTRIBUIÇÃO DE CARGOS]]></text>
+				</staticText>
+				<subreport>
+					<reportElement x="0" y="55" width="554" height="651" isPrintWhenDetailOverflows="true"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_PPRA_VERSOES">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PPRA_VERSOES}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:relatorio_distribuicao_cargos.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="186">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="186"/>
+				<staticText>
+					<reportElement x="288" y="35" width="91" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Nome Fantasia:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="18" y="35" width="78" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Razão Social:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="75" y="35" width="206" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="356" y="35" width="195" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome_fantasia}]]></textFieldExpression>
+				</textField>
+				<subreport>
+					<reportElement x="0" y="63" width="555" height="123" isPrintWhenDetailOverflows="true"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_PPRA_VERSOES">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PPRA_VERSOES}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:relatorio_grupos_homogeneos.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706"/>
+				<subreport>
+					<reportElement x="0" y="34" width="555" height="672"/>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_PPRA_VERSOES">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PPRA_VERSOES}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_prevencao_riscos_ambientais.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706"/>
+				<staticText>
+					<reportElement x="15" y="60" width="525" height="47"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Este documento foi digitado datado e assinado na presente folha. ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="15" y="32" width="145" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[XI. ENCERRAMENTO]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="16" y="126" width="516" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cidade} + ", " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="17" y="188" width="518" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Responsáveis Técnicos pela Elaboração do Programa:]]></text>
+				</staticText>
+				<frame>
+					<reportElement style="bordered" x="47" y="276" width="184" height="70"/>
+					<textField>
+						<reportElement x="0" y="0" width="184" height="70"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="8"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{medico} + '\n' + $F{especialidade} + '\nRegistro ' + $F{descricao_conselho_profissional} + '/' + $F{conselho_uf} + ' nº ' + $F{numero_conselho} + ' - ' + $F{conselho_uf}]]></textFieldExpression>
+					</textField>
+				</frame>
+			</frame>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="37">
+			<image>
+				<reportElement x="241" y="6" width="55" height="26"/>
+				<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="453" y="2" width="100" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

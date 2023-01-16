@@ -1,0 +1,17 @@
+[ACO]
+create;buonny;FichaPsicossocial
+create;buonny/FichaPsicossocial;index
+create;buonny/FichaPsicossocial;listagem
+create;buonny/FichaPsicossocial;listagem_ficha_psicossocial
+create;buonny/FichaPsicossocial;autocomplete_funcionario
+create;buonny/FichaPsicossocial;vidas_listagem
+create;buonny/FichaPsicossocial;existe_alerta_hierarquia_pendente
+create;buonny/FichaPsicossocial;listagem_matriculas
+create;buonny/FichaPsicossocial;get_tomador
+create;buonny/FichaPsicossocial;atualiza_status
+create;buonny/FichaPsicossocial;selecionar_pedido_de_exame
+create;buonny/FichaPsicossocial;listagem_pedido_de_exame
+create;buonny/FichaPsicossocial;incluir
+create;buonny/FichaPsicossocial;editar
+create;buonny/FichaPsicossocial;imprimir_relatorio
+create;buonny/FichaPsicossocial;__jasperConsulta

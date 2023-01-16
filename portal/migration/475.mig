@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;AssinaturaEletronica
+create;buonny/AssinaturaEletronica;index
+create;buonny/AssinaturaEletronica;listagem
+create;buonny/AssinaturaEletronica;listagem_log
+create;buonny/AssinaturaEletronica;editar
+create;buonny/AssinaturaEletronica;retorna_combos

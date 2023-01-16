@@ -1,0 +1,13 @@
+[ACO]
+create;buonny;FormasPagto
+create;buonny/FormasPagto;index
+create;buonny/FormasPagto;listagem
+create;buonny/FormasPagto;incluir
+create;buonny/FormasPagto;editar
+create;buonny/FormasPagto;excluir
+create;buonny;Vendedores
+create;buonny/Vendedores;index
+create;buonny/Vendedores;listagem
+create;buonny/Vendedores;incluir
+create;buonny/Vendedores;editar
+create;buonny/Vendedores;excluir

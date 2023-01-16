@@ -1,0 +1,5 @@
+[ACO]
+create;buonny;ItensPedidosExamesBaixa
+create;buonny/ItensPedidosExamesBaixa;index
+create;buonny/ItensPedidosExamesBaixa;listagem
+create;buonny/ItensPedidosExamesBaixa;baixa

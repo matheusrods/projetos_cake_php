@@ -1,0 +1,13 @@
+[ACO]	
+create;buonny;AtribuicoesCargos
+create;buonny/AtribuicoesCargos;index
+create;buonny/AtribuicoesCargos;recupera_dados_matriz
+create;buonny/AtribuicoesCargos;gerenciar
+create;buonny/AtribuicoesCargos;listagem
+create;buonny/AtribuicoesCargos;busca_cliente
+create;buonny/AtribuicoesCargos;listagem_clientes
+create;buonny/AtribuicoesCargos;incluir
+create;buonny/AtribuicoesCargos;editar
+create;buonny/AtribuicoesCargos;atualiza_status
+
+create;buonny/Clientes;listagem_terceiros_unidades

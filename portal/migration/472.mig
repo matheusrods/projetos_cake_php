@@ -1,0 +1,14 @@
+[ACO]
+create;buonny/Clientes;listagem_pre_faturamento
+create;buonny/Clientes;pre_faturamento_salvar
+create;buonny/Clientes;incluir_config_cliente_validador
+create;buonny/Clientes;lista_cliente_validadores
+create;buonny/Clientes;get_campos_unidades
+create;buonny/Clientes;get_campos_usuarios
+create;buonny/Clientes;config_cliente_validador_incluir
+create;buonny/Clientes;delete_ccv
+create;buonny/Clientes;editar_c_c_v
+create;buonny/Clientes;get_campos_editarccv
+create;buonny/Clientes;config_cliente_validador_editar
+create;buonny/Clientes;pre_faturamento_pdf
+create;buonny/Clientes;buscar

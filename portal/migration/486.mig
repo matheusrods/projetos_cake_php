@@ -1,0 +1,7 @@
+[ACO]
+create;buonny/Covid;resultado_exame_sintetico
+create;buonny/Covid;resultado_exame_sintetico_listagem
+create;buonny/Covid;resultado_exame_analitico
+create;buonny/Covid;resultado_exame_analitico_listagem
+create;buonny/Covid;carrega_combos_grupo_economico
+create;buonny/Covid;carrega_combo_periodo

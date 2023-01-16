@@ -1,0 +1,2598 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_ppra" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6ff60980-24be-48fc-91e7-4063266a1ea5">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppra_versoes"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<subDataset name="dataset1" uuid="78782736-3e33-493b-a31b-48bed1fb5292"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\RELATORIO_PPRA_VERSOES\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_PPRA_VERSOES" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT TOP 1
+-- dados da filial
+RHHealth.publico.Ufn_decode_utf8_string(clf.razao_social) AS razao_social,
+RHHealth.publico.Ufn_decode_utf8_string(clf.nome_fantasia) AS nome_fantasia,
+CASE
+    WHEN clf.codigo_documento_real IS NULL THEN RHHealth.publico.ufn_formata_cnpj(clf.codigo_documento)
+    WHEN clf.codigo_documento_real = '' THEN RHHealth.publico.ufn_formata_cnpj(clf.codigo_documento)
+    ELSE RHHealth.publico.ufn_formata_cnpj(clf.codigo_documento_real)
+  END AS cnpj,
+RHHealth.publico.Ufn_decode_utf8_string(clef.logradouro) AS endereco,
+clef.numero AS numero,
+RHHealth.publico.Ufn_decode_utf8_string(clef.bairro) AS bairro,
+RHHealth.publico.Ufn_decode_utf8_string(clef.cidade) AS cidade,
+RHHealth.publico.Ufn_decode_utf8_string(clef.estado_descricao) AS estado,
+clf.cnae,
+ISNULL(RHHealth.publico.Ufn_decode_utf8_string(cnae.descricao),'') AS ramo_atividade,
+ISNULL(cnae.grau_risco, '') AS grau_risco,
+ISNULL(RHHealth.publico.Ufn_decode_utf8_string(me.nome), '') AS medico,
+ISNULL(me.numero_conselho, '') AS numero_conselho,
+ISNULL(me.conselho_uf, '') AS conselho_uf,
+ISNULL(RHHealth.publico.Ufn_decode_utf8_string(cp.descricao), '') AS descricao_conselho_profissional,
+ISNULL(RHHealth.publico.Ufn_decode_utf8_string(me.especialidade), '') AS especialidade,
+CONVERT(varchar(10), gpra.data_inicio_vigencia, 111) AS data_inicio_vigencia,
+
+--pegar os dados da empresa que deve ser impressa os dados como pai
+RHHealth.publico.Ufn_decode_utf8_string(cpai.razao_social) as pai_razao_social,
+RHHealth.publico.Ufn_decode_utf8_string(cpai.nome_fantasia) as pai_nome_fantasia,
+RHHealth.publico.ufn_formata_cnpj(cpai.codigo_documento) as pai_cnpj,
+CASE
+	WHEN clf.codigo_documento_real IS NULL THEN RHHealth.publico.Ufn_decode_utf8_string(clef.logradouro)
+	WHEN clf.codigo_documento_real = '' THEN RHHealth.publico.Ufn_decode_utf8_string(clef.logradouro) -- filho
+    ELSE RHHealth.publico.Ufn_decode_utf8_string(clem.logradouro) -- pai
+END AS pai_endereco,
+CASE
+	WHEN clf.codigo_documento_real IS NULL THEN clef.numero
+	WHEN clf.codigo_documento_real = '' THEN clef.numero -- filho
+    ELSE clem.numero  -- pai
+END AS pai_numero,
+CASE
+	WHEN clf.codigo_documento_real IS NULL THEN RHHealth.publico.Ufn_decode_utf8_string(clef.bairro)
+	WHEN clf.codigo_documento_real = '' THEN RHHealth.publico.Ufn_decode_utf8_string(clef.bairro) -- filho
+    ELSE RHHealth.publico.Ufn_decode_utf8_string(clem.bairro)   -- pai
+END AS pai_bairro,
+CASE
+	WHEN clf.codigo_documento_real IS NULL THEN RHHealth.publico.Ufn_decode_utf8_string(clef.cidade)
+	WHEN clf.codigo_documento_real = '' THEN RHHealth.publico.Ufn_decode_utf8_string(clef.cidade) -- filho
+    ELSE RHHealth.publico.Ufn_decode_utf8_string(clem.cidade) -- pai
+END AS pai_cidade,
+CASE
+	WHEN clf.codigo_documento_real IS NULL THEN RHHealth.publico.Ufn_decode_utf8_string(clef.estado_descricao)
+	WHEN clf.codigo_documento_real = '' THEN RHHealth.publico.Ufn_decode_utf8_string(clef.estado_descricao) -- filho
+    ELSE RHHealth.publico.Ufn_decode_utf8_string(clem.estado_descricao) -- pai
+END AS pai_estado
+FROM RHHealth.dbo.ppra_versoes pv
+	INNER JOIN RHHealth.dbo.grupos_economicos_clientes gec ON gec.codigo_cliente = pv.codigo_cliente_alocacao
+	INNER JOIN RHHealth.dbo.cliente clf				ON (clf.codigo = gec.codigo_cliente)
+	LEFT JOIN RHHealth.dbo.cnae						ON (cnae.cnae = clf.cnae)
+    LEFT JOIN RHHealth.dbo.cliente_endereco clef	ON (clef.codigo_cliente = clf.codigo)
+	LEFT JOIN RHHealth.dbo.grupos_prevencao_riscos_ambientais_versoes gpra  ON(gpra.codigo_cliente = gec.codigo_cliente AND gpra.codigo_ppra_versoes = pv.codigo)
+	LEFT JOIN RHHealth.dbo.medicos me		        ON(me.codigo = gpra.codigo_medico)
+	LEFT JOIN RHHealth.dbo.conselho_profissional cp ON(cp.codigo = me.codigo_conselho_profissional)
+	LEFT JOIN RHHealth.dbo.cliente cpai				ON clf.codigo_documento_real = cpai.codigo_documento
+	LEFT JOIN RHHealth.dbo.cliente_endereco clem    ON (clem.codigo_cliente = cpai.codigo)
+WHERE pv.codigo = $P{CODIGO_PPRA_VERSOES};]]>
+	</queryString>
+	<field name="razao_social" class="java.lang.String"/>
+	<field name="nome_fantasia" class="java.lang.String"/>
+	<field name="cnpj" class="java.lang.String"/>
+	<field name="endereco" class="java.lang.String"/>
+	<field name="numero" class="java.lang.Integer"/>
+	<field name="bairro" class="java.lang.String"/>
+	<field name="cidade" class="java.lang.String"/>
+	<field name="estado" class="java.lang.String"/>
+	<field name="cnae" class="java.lang.String"/>
+	<field name="ramo_atividade" class="java.lang.String"/>
+	<field name="grau_risco" class="java.lang.String"/>
+	<field name="medico" class="java.lang.String"/>
+	<field name="numero_conselho" class="java.lang.String"/>
+	<field name="conselho_uf" class="java.lang.String"/>
+	<field name="descricao_conselho_profissional" class="java.lang.String"/>
+	<field name="especialidade" class="java.lang.String"/>
+	<field name="data_inicio_vigencia" class="java.lang.String"/>
+	<field name="pai_razao_social" class="java.lang.String"/>
+	<field name="pai_nome_fantasia" class="java.lang.String"/>
+	<field name="pai_cnpj" class="java.lang.String"/>
+	<field name="pai_endereco" class="java.lang.String"/>
+	<field name="pai_numero" class="java.lang.Integer"/>
+	<field name="pai_bairro" class="java.lang.String"/>
+	<field name="pai_cidade" class="java.lang.String"/>
+	<field name="pai_estado" class="java.lang.String"/>
+	<pageHeader>
+		<band height="59">
+			<frame>
+				<reportElement x="0" y="1" width="555" height="58" uuid="0b07bb68-cebc-41a2-a2e0-754a682abf49"/>
+				<rectangle>
+					<reportElement x="0" y="0" width="555" height="57" uuid="987f4b79-5ce3-43cb-a17c-ea90a11f9622"/>
+				</rectangle>
+				<line>
+					<reportElement x="86" y="0" width="1" height="57" uuid="1f81d613-3ea8-486a-b717-72366e563498"/>
+				</line>
+				<line>
+					<reportElement x="86" y="19" width="469" height="1" uuid="01842a0c-b22a-4808-aded-7fdfb28f40ec"/>
+				</line>
+				<line>
+					<reportElement x="416" y="20" width="1" height="37" uuid="82729281-23db-48a3-a1d6-994314e1e759"/>
+				</line>
+				<line>
+					<reportElement x="417" y="38" width="138" height="1" uuid="b9b35cb7-f55a-454c-88a1-1b00632ec7eb"/>
+				</line>
+				<staticText>
+					<reportElement x="87" y="20" width="329" height="37" uuid="76b98027-28b2-4a63-aa18-34e41cd6e7b9"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE PREVENÇÃO DE RISCOS AMBIENTAIS - PPRA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="416" y="20" width="85" height="18" uuid="a59eb501-6a44-403e-91a7-ae78d6cf0ca0"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+						<paragraph leftIndent="5"/>
+					</textElement>
+					<text><![CDATA[Número de revisão:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="501" y="20" width="54" height="18" uuid="51422172-c172-49f7-8d50-66b55ece6ceb"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[00]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="416" y="38" width="69" height="18" uuid="67369ba3-192c-4982-bea1-5dd45f412ec8"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+						<paragraph firstLineIndent="5"/>
+					</textElement>
+					<text><![CDATA[Data emissão:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="485" y="39" width="69" height="17" uuid="ec88f975-2442-4dc6-8c66-7e03f74a2a9d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{data_inicio_vigencia} != null) ? new SimpleDateFormat("MMMMM/yyyy", new Locale("pt", "BR")).format(new Date($F{data_inicio_vigencia})) : '']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="87" y="0" width="466" height="19" uuid="cf0b254a-ed7d-4a69-b480-e91e21d87799"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="703" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="676cbe79-2c16-4714-adfb-1022104dcef9"/>
+				<staticText>
+					<reportElement x="21" y="195" width="514" height="28" uuid="a6ec50f7-528e-4f03-94b1-aaa10d2749e6"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="11" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROGRAMA DE PREVENÇÃO DE RISCOS AMBIENTAIS
+-PPRA-]]></text>
+				</staticText>
+				<image>
+					<reportElement x="13" y="62" width="126" height="37" uuid="fc59ff14-d06b-4f56-9539-d83934206b60"/>
+					<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+				</image>
+				<image>
+					<reportElement x="440" y="60" width="100" height="40" uuid="23211176-f08b-4e85-bb29-a41cdada0dc3">
+						<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+					</reportElement>
+					<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+				</image>
+				<textField>
+					<reportElement x="22" y="362" width="513" height="34" uuid="c2e7792f-9359-45c3-9c96-c12dabaf04b1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="22" y="396" width="513" height="25" uuid="178469fd-6fd5-4759-97e0-9257e79e3566"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome_fantasia}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="22" y="421" width="513" height="20" uuid="09ddf612-3acf-4341-81c7-beb24cca443b"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{endereco} +", " +$F{numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="22" y="441" width="513" height="20" uuid="7c268d27-0a74-41d2-be04-0a22cb4dd0a1"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{bairro} +" - " +$F{cidade} + " / " + $F{estado}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="0" y="611" width="551" height="17" uuid="303484ce-7dba-43fb-9bf0-876f193096d8"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{data_inicio_vigencia} != null) ? new SimpleDateFormat("MMMMM/yyyy", new Locale("pt", "BR")).format(new Date($F{data_inicio_vigencia})) : '']]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="69c895f1-9804-4733-8ccb-10a926bcb111"/>
+				<staticText>
+					<reportElement x="13" y="195" width="527" height="192" uuid="e44a1f41-21a2-440f-8ec7-af0be1357a5c"/>
+					<text><![CDATA[Ref.: PPRA – Programa de Prevenção de Riscos Ambientais
+
+Conforme contrato encaminhado, o trabalho em epigrafe.
+
+
+
+
+Sem mais
+
+
+
+
+Atenciosamente]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="20" y="20" width="516" height="20" uuid="ad9ede86-bcdb-4bc9-b0dc-12fbf99648c3"/>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cidade} + ", " + new SimpleDateFormat("dd/MM/yyyy", new Locale("pt", "BR")).format(new Date())]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="17" y="74" width="100" height="20" uuid="6e836640-50b5-442b-99a7-02e548ff99c4"/>
+					<text><![CDATA[À]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="16" y="125" width="522" height="20" uuid="e62b7ffd-6032-461c-aa36-f174a65aea2e"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="04ec7e2f-ca9f-45c9-8a38-3723447dbd91"/>
+				<staticText>
+					<reportElement x="213" y="40" width="100" height="20" uuid="02a06bcc-10a3-4e30-a88c-72160833acd6"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[SUMÁRIO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="71" width="527" height="14" uuid="520fd5fc-084a-4739-8de6-d9d88344fcd1"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[........................................................................................................................................................................ 4
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="71" width="165" height="14" uuid="d3ed2524-204d-4da0-bd5e-19e3c812fa78"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[I.      IDENTIFICAÇÃO DA EMPRESA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="88" width="527" height="14" uuid="4d5e063a-eea9-43c2-8efe-a9427590595e"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="88" width="210" height="14" uuid="93614bce-4c71-41dd-a8b8-cd950ab96363"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[II.     DESCRIÇÃO DA EMPRESA E PROCESSOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="104" width="527" height="14" uuid="e18c9c10-6d07-45bf-995a-8bc1fbbfd688"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="104" width="100" height="14" uuid="cc87e03b-2266-48e5-aa5f-955114b3902f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[III.    INTRODUÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="120" width="527" height="14" uuid="d5d9e65e-f510-461e-824c-c332edc9484d"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="120" width="80" height="14" uuid="125b4d4f-62d0-4a02-b08e-dd100627e82e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IV.   OBJETIVO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="136" width="527" height="14" uuid="4627f154-9049-4b71-97fe-61d6b62c8666"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="136" width="100" height="14" uuid="bc9d6207-0b82-446f-8c56-86735060c4a3"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[V.    ABRANGÊNCIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="152" width="527" height="14" uuid="d989a85a-51f4-4d0a-8b6c-e44c0a9f0a40"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 5]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="152" width="113" height="14" uuid="1d469b32-8e98-45cd-817d-259aa01d89cf"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        5.1. DEFINIÇÕES ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="168" width="527" height="14" uuid="cb2199bf-33b5-4b0a-b884-1dc3cf0d13b9"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 6]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="168" width="157" height="14" uuid="8ef403b9-5187-4690-948d-9056c0c7e058"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VI.   DIPLOMAS TÉCNICO-LEGAIS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="184" width="527" height="14" uuid="0a5fa72c-7e54-4531-b7eb-9780659e2056"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 6]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="184" width="100" height="14" uuid="23f85012-107d-438c-8fb4-02f26e8980bc"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VII.  ORGANIZAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="200" width="527" height="14" uuid="604dca94-3d63-422f-8a75-047436637021"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 6]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="200" width="149" height="14" uuid="de1e7cd8-8ada-460b-99f7-9961fd86e797"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.1. RESPONSABILIDADES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="216" width="527" height="14" uuid="8dfb94e9-037b-47bd-a6c0-73fa86bfe7a1"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 7]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="216" width="113" height="14" uuid="6b8960c1-6460-4567-9974-f235aca42751"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.2. INTEGRAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="232" width="527" height="14" uuid="0724e2bd-0df0-4d3e-a7bb-74134270f0e3"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[..........................................................................................................................................................................7]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="13" y="232" width="210" height="14" uuid="37870ba8-843c-4879-b13f-d3a6b5ac6a5b"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.3. PARTICIPAÇÃO DOS FUNCIONÁRIOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="248" width="527" height="14" uuid="052ba750-6b52-4e3e-a81f-4f5f29030bfa"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[..........................................................................................................................................................................8]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="248" width="274" height="14" uuid="42a44a4a-63dc-447b-9caa-25b3676f388e"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.4. DOCUMENTAÇÃO E MANUTENÇÃO DE REGISTROS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="264" width="527" height="14" uuid="049f6f5c-d74c-47e2-a5e8-6b8bc11b0a35"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[......................................................................................................................................................................... 8]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="264" width="125" height="14" uuid="62ae9f15-4c32-40cd-984b-2d09776381a2"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.5. TREINAMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="280" width="527" height="14" uuid="e28e364b-64c0-44e3-a7a1-15a3d3a50e01"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[..........................................................................................................................................................................8]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="280" width="262" height="14" uuid="857d2f66-0cdc-4f9e-af45-a95c737cd17a"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        7.6. ASSESSORIA OU CONSULTORIA ESPECIALIZADA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="296" width="527" height="14" uuid="65380ce7-f347-4846-a2db-a8c28c03c373"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[..........................................................................................................................................................................9]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="296" width="115" height="14" uuid="d4d23a0f-c0f8-4d6b-aee9-976247bfc676"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VIII. PLANEJAMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="327" width="527" height="14" uuid="d70d0a65-30b4-400b-be77-a8b6129f2582"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[....................................................................................................................................................................... 10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="327" width="121" height="14" uuid="76d72045-2514-41e8-ac89-18f9bfd254af"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        8.2. PRIORIDADES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="343" width="527" height="14" uuid="b12710b9-cd57-4873-a22b-d3d65fc005d7"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[........................................................................................................................................................................ 10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="343" width="242" height="14" uuid="14ff1481-c095-4e2d-a676-b212631bc0c4"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        8.3. MONITORAMENTO GLOBAL DO PROGRAMA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="359" width="527" height="14" uuid="830acb07-47b4-49d4-8eb4-55843ab63f91"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="359" width="209" height="14" uuid="3dcd11cd-02a7-4a8f-a13f-a20922d92688"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        8.4. CRONOGRAMA (PLANO DE AÇÕES)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="375" width="527" height="14" uuid="397533a7-c5bf-43ea-a50e-8d79fdb2429d"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="375" width="121" height="14" uuid="8b6f8718-c039-42be-aecb-19040980b00f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IX.   DESENVOLVIMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="391" width="527" height="14" uuid="d6279ac7-3e61-4642-b92f-dd1f8348d37a"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="391" width="115" height="14" uuid="54196678-d435-4124-bcb4-ccb244ca1379"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        9.1. ANTECIPAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="407" width="527" height="14" uuid="61856659-d4be-4eaa-b00f-f94878f1ae44"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[........................................................................................................................................................................ 10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="407" width="135" height="14" uuid="54351a9c-bd36-4ece-9fd1-33b75d913c25"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        9.2. RECONHECIMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="423" width="527" height="14" uuid="6fa5a855-2fa9-4289-aa11-e418d40e54c3"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................11]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="423" width="103" height="14" uuid="c71a558c-eb34-49e0-a7ef-33ad343a5341"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        9.3. AVALIAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="439" width="527" height="14" uuid="00aa051c-a8d6-4817-b595-dbc1577e39a8"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................11]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="439" width="107" height="14" uuid="c803e5c4-bcd6-4c5b-a9a1-b37d958f79f6"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        9.4. CONTROLE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="455" width="527" height="14" uuid="e7398021-ab7c-4187-a9da-31b0228fcd53"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................18]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="455" width="156" height="14" uuid="6fb084ec-92bb-4234-b87d-2a97775ce797"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[X.    AVALIAÇÃO DO PROGRAMA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="471" width="527" height="14" uuid="7b974464-70d9-4c4f-a9d8-2f75dfd0f0a9"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[.........................................................................................................................................................................18]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="471" width="103" height="14" uuid="d13dece4-eff3-43b3-8234-94e3326213e8"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[XI.   BIBLIOGRAFIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="487" width="527" height="14" uuid="7fb09bcf-6a12-4943-b86d-957a93fd0843"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[........................................................................................................................................................................ 19]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="487" width="61" height="14" uuid="0b17c61e-4e9d-4f52-939d-1386fcba14b9"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ANEXOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="311" width="527" height="14" uuid="6ebc2d64-d7b8-4bdb-8d7f-2de6075205b3"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[....................................................................................................................................................................... 10]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="14" y="311" width="121" height="14" uuid="5259f72b-4f34-4612-9629-3e309b182eec"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[        8.1. META]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="bb2010d9-89ac-4b13-9301-bcbc687f3b87"/>
+				<staticText>
+					<reportElement x="14" y="20" width="146" height="14" uuid="a4c5a0bd-32fb-41ca-8e09-00e9e83911d0"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[I. IDENTIFICAÇÃO DA EMPRESA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="50" width="71" height="14" uuid="cd495503-ed47-4abe-8bfb-b55723bb3121"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Razão Social:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="92" width="84" height="14" uuid="624e5a2e-6200-498f-b77c-a1f9544afcd7"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Endereço CNPJ:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="215" width="522" height="14" uuid="c88f5bf8-45fb-4b9a-9d16-94b17c12c91a"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[II. DESCRIÇÃO DA EMPRESA E PROCESSOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="178" width="102" height="14" uuid="5f6c9558-8bbd-4199-81a1-6a605f9ca953"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Ramo de atividade:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="268" width="298" height="14" uuid="3dc6cd79-cc11-422f-a38f-a2739edec17f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[III. INTRODUÇÃO
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="15" y="290" width="525" height="74" uuid="64b2d76e-7728-47e5-b7c8-e3eed9bfca30"/>
+					<textElement textAlignment="Justified">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Este Programa foi elaborado de acordo com as diretrizes da NR-9, Portaria SSMT 25 / 94 (de 29.12.94, DOU de 30.12.94, republicada em 15.02.95) que alterou a NR-9 da Portaria 3214/78 doMTb (atual MTE).
+
+	O PPRA é parte integrante do conjunto mais amplo das iniciativas da empresa no campo de preservação da saúde e da integridade física dos trabalhadores, de forma a ANTECIPAR, RECONHECER, AVALIAR E CONTROLAR possíveis riscos ambientais, existentes ou que venham a existir nos ambientes de trabalho, promovendo uma GESTÃO eficaz sobre as potenciais EXPOSIÇÕES OCUPACIONAIS.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="378" width="517" height="14" uuid="045f6043-b3ff-4c09-b3e4-a2ab3e2e3ad5"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IV. OBJETIVO
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="400" width="525" height="40" uuid="6ed7139f-8085-4f1a-ab68-64f1c9915288"/>
+					<textElement textAlignment="Justified">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Seu objetivo é sumarizar e documentar o conjunto de ações relativas ao gerenciamento dos riscos ambientais, inerentes ao processo produtivo da empresa, fornecendo parâmetros técnico-legais, considerando a proteção dos trabalhadores em relação ao meio ambiente laboral e aos recursos naturais empregados.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="453" width="527" height="14" uuid="e6efcd81-2ffe-4b5c-9d2b-5c58751c7dad"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[V. ABRANGÊNCIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="475" width="525" height="106" uuid="7670dff8-35a3-41e0-98ca-67e8e5f6b727"/>
+					<textElement textAlignment="Justified">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Este Programa abrangerá os riscos Ambientais identificados no ambiente laboral da empresa. Conforme estabelecido pela NR-9 da Portaria 3214/78 do Ministério do Trabalho em seu item 9.1.5, “consideram-se riscos ambientais os agentes físicos, químicos e biológicos existentes nos ambientes de trabalho que, em função de sua natureza, concentração ou intensidade e tempo de exposição, com capacidade de causar danos à saúde do trabalhador.”
+
+	Consideram-se agentes físicos as diversas formas de energia a que possam estar expostos os trabalhadores, tais como ruído, vibrações, pressões anormais, temperaturas extremas, radiações ionizantes, radiações não ionizantes, vibração e umidade. ]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="86" y="50" width="454" height="14" uuid="5dd45bc6-ccd6-4730-82e1-6aaf518d31a0"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="50" y="67" width="131" height="14" uuid="ca1c376a-6fcb-4c35-9006-71b020ae78d5"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cnpj}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="14" y="67" width="36" height="14" uuid="e5d9cc4e-b21a-4fa3-b617-6c8acf07dcf2"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CNPJ:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="238" y="67" width="131" height="14" uuid="6941f317-4ea8-4505-8403-6ee756530617"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cnae}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="202" y="67" width="36" height="14" uuid="e94c8a39-bcac-4af5-aaef-f7c1e890d6ef"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CNAE:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="379" y="67" width="69" height="14" uuid="3b077a1c-f030-4490-8a15-fe84aada8e6b"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Grau de risco:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="98" y="92" width="440" height="14" uuid="0155e0e3-88a5-476a-8a5d-174c60ebf2ca"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pai_endereco} +", " +$F{pai_numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="98" y="108" width="435" height="14" uuid="13f039d6-f61c-40cd-ac64-d1b49118d314"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pai_bairro} +" - " +$F{pai_cidade} + " / " + $F{pai_estado}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="14" y="132" width="146" height="14" uuid="5b71343d-ce26-4e28-aea1-20838dfabb24"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Endereço da Vistoria (Unidade):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="161" y="132" width="394" height="14" uuid="2036bac0-2c99-4957-ac0b-72d5076b7f97"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{endereco} +", " +$F{numero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="161" y="148" width="394" height="14" uuid="1c269021-bdbb-496b-99c4-66324c32fce9"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{bairro} +" - " +$F{cidade} + " / " + $F{estado}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="116" y="178" width="437" height="14" uuid="e4272fa7-dc45-4976-9d6c-a177f5c3513b"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ramo_atividade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="14" y="234" width="539" height="14" uuid="e2cde9c3-3457-468a-9a6f-f95325fc5eeb"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ramo_atividade}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="448" y="67" width="93" height="14" uuid="bfc99547-d817-45e7-8dbb-41132433e3bf"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{grau_risco}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="cfce96b0-25de-4a50-b41d-63cfda5a81be"/>
+				<staticText>
+					<reportElement x="13" y="24" width="525" height="125" uuid="098877f8-b971-4612-87b7-5f99ff38c557"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Consideram-se agentes químicos as substâncias, compostos ou produtos que possam penetrar no organismo pela via respiratória, nas formas de poeiras, fumos, névoas, neblinas, gases ou vapores, ou que, pela natureza da atividade de exposição, possam ter contato ou ser absorvidos pelo organismo através da pele ou por ingestão.
+
+	Consideram-se agentes biológicos as bactérias, fungos, bacilos, parasitas, protozoários, vírus, entre outros.
+
+	Tal como previsto na NR-9, este Programa de Prevenção de Riscos Ambientais - PPRA apresenta a seguinte estrutura:
+
+	•   Planejamento anual com informações sobre metas, prioridades e cronograma;
+	•   Estratégia e metodologia de ação;
+	•   Forma de registro, manutenção e divulgação dos dados;
+	•   Periodicidade e forma de avaliação do desenvolvimento do Programa.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="13" y="171" width="100" height="14" uuid="8b2e6a18-ee5e-4fe0-8360-dfd67546db52"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[5.1.  Definições]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="15" y="205" width="523" height="318" uuid="a4af119f-46e8-4505-847a-926f4b8bd636"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[PERIGO (HAZARD) - condição ou situação ou agente com potencial para causar dano.
+
+RISCO (RISK) - condição da exposição ocupacional a um perigo. Interação probabilística entre a possibilidade de ocorrência e as conseqüências de um evento.
+
+DANO - na situação ocupacional, objeto deste programa, será alteração do estado de saúde que resulte em doença, alteração funcional ou até morte.
+
+IDENTIFICAÇÃO DE PERIGOS - processo para identificar um PERIGO e definir suas características.
+
+ESTIMATIVA DO RISCO - processo para determinar a freqüência ou a probabilidade e as conseqüências de um perigo.
+
+AVALIAÇÃO DO RISCO - processo utilizado para estimar a extensão dos riscos (GRADUAÇÃO), fornecendo subsidiando a tomada de decisões quanto às medidas preventivas a serem adotadas.
+
+APRECIAÇÃO DO RISCO - processo que julga como um risco é Aceitável, com base nas informações obtidas na análise do risco e levando em conta fatores sócio-econômicos e ambientais.
+
+Nível de Ação - corresponde a um valor a partir do qual devem ser iniciadas medidas preventivas de forma a minimizar a probabilidade de que as exposições a agentes ambientais ultrapassem os limites de tolerância (gerem condições de risco)
+
+Agentes Químicos = 50% do LT (limite de tolerância) Ruído - dose = 0,5
+
+LT - Limite de Tolerância - concentrações ou intensidades máximas ou mínimas, relacionadas à natureza e o tempo de exposição ao agente, que não causará dano à saúde do trabalhador, durante sua vida laboral (item 15.1.5 da NR-15, Portaria 3214).
+
+Valor Teto - concentração que não pode ser excedida durante nenhum momento da exposição do trabalhador. ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="525" width="241" height="14" uuid="7523ac60-fe1c-4b8b-af0d-3fcadbc71ced"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IDHL ( Imediataly Dangerous for Health and Life) - ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="214" y="525" width="228" height="14" uuid="c72bc4e8-44d1-4807-aa3f-e7c10e47e4d0"/>
+					<textElement>
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[concentração imediatamente perigosa a vida/saúde.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="2f7e7f5d-ddd8-4ebc-8df9-394d1137aa2e"/>
+				<staticText>
+					<reportElement x="15" y="32" width="145" height="14" uuid="fc14bfbf-fd24-4b67-81b8-0d3150526a6f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VI. DIPLOMAS TÉCNICO-LEGAIS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="68" width="525" height="14" uuid="00d8bdc2-8435-4783-bd37-b6b33d04dd9c"/>
+					<textElement>
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[As Análises Técnicas, contidas neste Programa, estão embasadas nos seguintes textos Técnico-legais:
+
+]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="95" width="14" height="13" uuid="75c2c994-162f-4a9c-9a8f-eeec5c607608"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="95" width="509" height="14" uuid="9ced7b1f-401d-403a-b73e-af38adda7169"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Consolidação das Leis do Trabalho – CLT ;]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="29" y="114" width="509" height="14" uuid="afdc860f-1f5a-4d9c-b1d9-7f6ca99f06af"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Lei 6.514, de 22 de dezembro de 1977;
+]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="114" width="14" height="13" uuid="e8b5d1a0-1b2f-4cf8-860d-77f78380d3d0"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="132" width="509" height="14" uuid="6de85ca7-294e-4f72-9ab1-57b6b4e66869"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Portaria 3.214/78 do MTb (atual MTE), em sua NR-9 “Programa de Prevenção de Riscos Ambientais”;
+]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="132" width="14" height="13" uuid="63c7eec8-5f33-45e5-af7b-a3ed7b803ff1"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="151" width="14" height="13" uuid="4ab423b3-2075-4404-9f77-6bced2b3a2b8"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="151" width="509" height="14" uuid="8ca1d115-6f02-40e6-8eaf-57a6eec05dd7"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Portaria 3.214/78 do MTb (atual MTE), em sua NR-15 “Atividades e Operações Insalubres” ;]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="170" width="14" height="13" uuid="0f18456b-070f-43fe-aa46-502f1290e4a9"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="170" width="509" height="14" uuid="85394ed6-7a81-4a3e-9d99-7ed002d82310"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Instruções Normativas INSS – Instituto Nacional de Seguridade Social;
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="29" y="189" width="509" height="14" uuid="e0c83290-6d3c-41cf-9f0e-13fcd544e7fc"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Normas de Higiene Ocupacional – NHO, da Fundacentro;
+]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="189" width="14" height="13" uuid="01dc5431-3e91-4d73-ba04-b6b6a2815a52"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="208" width="14" height="13" uuid="209967aa-a5b5-49f7-ba1a-c0f2d5a40497"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="208" width="509" height="14" uuid="cd4cc318-062a-4834-8cfa-d2939523d818"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Normas Brasileiras da ABNT- Associação Brasileira de Normas Técnicas;
+]]></text>
+				</staticText>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="15" y="227" width="14" height="13" uuid="51084419-43bc-49e5-9041-af30698f77aa"/>
+					<imageExpression><![CDATA["repo:icon_book.jpg"]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement x="29" y="227" width="509" height="27" uuid="6ea45507-c936-422f-baf5-a50e3b7edd9c"/>
+					<textElement verticalAlignment="Top">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Limites de Tolerância definidos pela ACGIH – American Conference of Governmental Industrial Higyenist. Conforme previsto pela NR-9 da Portaria 3214/78 do MTb.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="294" width="145" height="14" uuid="1dbc17c4-6f99-408c-8f93-73fc3d02a961"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VII. ORGANIZAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="318" width="145" height="14" uuid="b1dfa506-7a43-48c2-b50f-de4f9c20cb72"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.1. Responsabilidades
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="58" y="340" width="478" height="14" uuid="eb9c9d85-7810-454b-b6f3-ac44a3c0fe71"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.1.1. Responsáveis Técnicos pela coleta de dados e avaliações: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="318" y="363" width="145" height="45" uuid="034302da-fec4-4b04-a733-e1126eda962e"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Carolina Pontes
+Técnica de Segurança do Trabalho
+MTE nº: SP/007441.1
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="58" y="426" width="479" height="14" uuid="d72b78f2-4cbc-4a0f-bcbf-da8f665a0d6f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.1.2. Responsável pelo Desenvolvimento do PPRA:
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="451" width="522" height="200" uuid="adcb6aa7-d9e7-40a0-848f-9f76e1ce6a93"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	O responsável pelo desenvolvimento do PPRA será o RESPONSÁVEL PELA UNIDADE, ao qual caberá prover os recursos necessários à execução das ações necessárias para se atingir os objetivos e metas definidos no Programa.
+
+	Cabe ao responsável pelo desenvolvimento do PPRA , delegar funções e atribuições de forma a:
+
+	•   Estabelecer, implementar e assegurar o cumprimento permanente do PPRA;
+	•   Manter o documento base disponível ao acesso das autoridades competentes;
+	•   Seguir o cronograma de implantação e execução do PPRA (Plano de Ações);
+	•   Avaliar medidas de controle;
+]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="699">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="699" uuid="0fe71b79-6fda-490d-91a4-e0e7fdab6e7c"/>
+				<staticText>
+					<reportElement x="16" y="16" width="522" height="54" uuid="8e99ba14-0982-41e3-a154-f986448f20df"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	•   Executar treinamentos;
+	•   Manter registro de dados por um período mínimo de 20 anos, histórico técnico e administrativo;
+	•   Revisar e atualizar o PPRA;
+	•   Divulgar o programa na Empresa.
+
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="58" y="83" width="477" height="14" uuid="c6bdd331-6328-4978-9ccc-59441ec78d3a"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.1.4. Responsabilidade do empregador:
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="109" width="522" height="30" uuid="8bcda084-719c-446b-b132-a2ca1caa658d"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Fornecer as condições necessárias a implantação e desenvolvimento do Programa de Prevenção de Riscos Ambientais na empresa.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="59" y="153" width="477" height="14" uuid="78333dc8-5f1b-4d2d-8308-d45e0adbdcb5"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.1.5. Responsabilidade dos trabalhadores: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="180" width="522" height="73" uuid="f9875bef-9e8b-42b2-896c-433d918c1d8d"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	•   colaborar e participar na implantação e execução do PPRA;
+	•   seguir as orientações recebidas nos treinamentos ministrados pela empresa;
+	•   informar ao seu superior hierárquico direto ocorrências que, a seu julgamento, possam implicar em situações de risco à saúde dos trabalhadores.
+	•  Seguir rigidamente os procedimentos operacionais, instruções de trabalho e Ordens de Serviço existentes, de forma a prevenir efeitos adversos à sua saúde e integridade física.
+
+
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="59" y="275" width="477" height="14" uuid="1240c1f0-6f9d-4e71-a9ff-443bbe543a00"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.1.6. Responsabilidade do SESMT da Planta: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="302" width="522" height="14" uuid="1aaa0506-7976-4b66-a9f6-8e4ed8de7376"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	• Prover suporte técnico e orientação na condução das ações de Prevenção de riscos Ocupacionais.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="341" width="145" height="14" uuid="ba41fcef-a5ab-446b-81a2-be6af688b720"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.2. Integração
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="59" y="369" width="477" height="14" uuid="453cd747-aaf6-4a65-8f4e-6ca016db5461"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.2.1. Integração Interna
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="395" width="522" height="47" uuid="c21fd1f0-826f-4102-9c85-b167cd9167d8"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Este Programa é parte complementar de outros programas desenvolvidos na empresa, devendo ser adotados mecanismos de interação entre os mesmos. Em particular salienta-se o PCMSO – Programa de Controle Médico de Saúde Ocupacional, previsto na NR-7 da Portaria 3214 do Ministério do Trabalho, para o qual o PPRA representa o ponto de partida (base line) para o monitoramento biológico dos colaboradores.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="484" width="522" height="23" uuid="78047ab1-3339-4398-bf81-ce7d5e1f3c56"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	O PPRA, por definição da própria NR-9, além de cumprir um requisito legal, é um documento técnico de referência para a gestão das exposições ocupacionais, sendo permitida sua consulta pelos empregados e seus representantes.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="60" y="458" width="477" height="14" uuid="ccf48454-a835-43ea-b0f6-43c5ef21887f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[7.2.2. Integração Externa
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="552" width="522" height="54" uuid="9f02660a-34fd-4c71-ad28-7bd99c90e9f2"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	A participação dos funcionários no processo de identificação e gestão dos riscos ambientais, se dá pelo envolvimento da Comissão Interna de Prevenção de Acidentes – CIPA. Através desta comissão, que apresenta em sua constituição uma representação bipartite (empregador e empregados), todos os colaboradores podem expor situações que identifiquem como potencialmente de risco à sua saúde e integridade física. Bem como a possibilidade de sugestões de ações de melhoria. ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="517" width="145" height="14" uuid="71ca3076-033b-4849-860f-4b0f0e182784"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.3. Participação dos Funcionários ]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="24540ea2-fda9-41ad-9c11-b0b361467f12"/>
+				<staticText>
+					<reportElement x="16" y="27" width="235" height="14" uuid="e496e24c-f6bc-4f3c-ac83-d4da9beb7b63"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.4. Documentação e Manutenção de Registros
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="54" width="522" height="140" uuid="0767a696-d701-4023-9f23-07607776ebb1"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Todos os documentos relativos à gestão das exposições ocupacionais a agentes ambientais (físicos, químicos e biológicos), permanecerão arquivados, conforme critérios específicos.
+
+	São documentos relativos ao PPRA:
+
+	•   Documento-Base do PPRA,
+	•   Avaliações Ambientais (monitoramento quantitativo das exposições);
+	•   Relatórios de Inspeção e Auditorias de Segurança;
+	•   Relatórios Técnicos de Identificação e Avaliação de Riscos;
+	•   Entre outros.
+
+	Os documentos relativos ao PPRA permanecerão arquivados, conforme critérios estabelecidos no sistema de gestão. Ressaltando que o tempo mínimo estabelecido pela NR-9 será de 20 anos.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="207" width="235" height="14" uuid="a9bea9f1-be2d-4938-8277-f3bc23a233a3"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.5. Treinamento
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="236" width="522" height="48" uuid="305713e1-288c-453d-80f2-b3979b1cdf0e"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Todos os funcionários receberão treinamentos gerais e específicos, conforme definido em programa específico de treinamento. Estes treinamentos têm por objetivo garantir que todos os colaboradores estarão familiarizados com os procedimentos operacionais relativos às tarefas de sua responsabilidade, os riscos inerentes às mesmas e os procedimentos de segurança para controle das exposições ocupacionais a estes riscos. ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="298" width="235" height="14" uuid="a1c9477e-03c7-4561-bf25-071e687b2aad"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<text><![CDATA[7.6. Assessoria ou Consultoria Especializada]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="327" width="522" height="33" uuid="6b9b172c-fba4-4d8e-b9a9-f8875a64aca1"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Para execução, acompanhamento ou avaliação de atividades específicas que extrapolem a capacidade dos recursos humanos disponíveis na unidade ou por questões técnico-legais, o Responsável pelo Desenvolvimento do PPRA poderá contratar serviços de especialistas, para demandas específicas, sempre com o objetivo de agregar resultados à Gestão Global dos Riscos Ocupacionais.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="46d36b52-fa8b-484f-8265-082bff3680b8"/>
+				<staticText>
+					<reportElement x="16" y="34" width="145" height="14" uuid="430bb14b-c910-4a0c-b5c0-12b490929abb"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[VIII. PLANEJAMENTO
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="17" y="57" width="522" height="33" uuid="620a0625-c986-48a6-a2c4-bb3c6e005714"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	O PROGRAMA DE PREVENÇÃO DE RISCOS AMBIENTAIS desta unidade, adota a seguinte metodologia para IDENTIFICAÇÃO, ESTIMATIVA, AVALIAÇÃO e APRECIAÇÃO DAS EXPOSIÇÕES OCUPACIONAIS:]]></text>
+				</staticText>
+				<image>
+					<reportElement x="0" y="117" width="554" height="546" uuid="d01c04cc-3d57-4bc9-875c-d58937c83298"/>
+					<imageExpression><![CDATA["repo:fluxograma.jpg"]]></imageExpression>
+				</image>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="0e174757-6ada-4aea-b9a7-6cc995873a37"/>
+				<staticText>
+					<reportElement x="16" y="29" width="525" height="248" uuid="46b4c42b-231e-465e-af7f-a334938b2b57"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[8.1. Meta
+
+	A meta geral deste Programa é a ocorrência de 0 (zero) doenças ocupacionais ou lesões decorrente da exposição a agentes ambientais dentro do âmbito de abrangência, deste PPRA, conforme estabelecido pela NR-9 da Portaria 3214/78 do MTE. Para ações específicas, constantes do Cronograma de Ações (Plano de Ações) deste PPRA, poderá haver Metas individuais para cada item ali estabelecido.
+
+8.2. Prioridades
+
+	A priorização de Ações a serem desenvolvidas, bem como a definição de prazos para as ações corretivas e preventivas, definidas no plano de ações deste PPRA, seguirão a GRADUAÇÃO DE RISCOS, definida para cada condição de exposição ocupacional evidenciada neste programa.
+
+8.3. Monitoramento Global do Programa
+
+	O monitoramento global dos riscos ambientais consiste no acompanhamento sistemático das exposições ocupacionais, como forma de verificação da eficácia das ações corretivas e preventivas implementadas.
+
+8.4. Cronograma (Plano de Ações)
+
+	O cronograma apresenta os prazos a serem seguidos para implementação das ações corretivas (ou medidas preventivas) adotados. A cada avaliação anual do PPRA, será elaborado novo cronograma, em função das novas situações verificadas e da avaliação do cronograma anterior.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="294" width="145" height="14" uuid="2a1393fe-1efb-4785-830c-b9f384b3a0e3"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IX. DESENVOLVIMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="322" width="525" height="167" uuid="667e43a6-993b-4bdd-bc99-4bd373655b95"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Neste item apresentamos como se desenvolverão as etapas do Programa de Prevenção de Riscos Ambientais.
+
+9.1. Antecipação
+
+	Esta fase consiste na análise prévia de todo e qualquer projeto de ampliação e/ou modificação do processo produtivo ou instalações, a fim de se identificar os riscos potenciais que poderão ser somados ao ambiente laboral e introduzir medidas de proteção para seu controle ou eliminação.
+
+9.2. Reconhecimento
+
+Compreende a etapa de CARACTERIZAÇÃO BÁSICA, onde procedeu-se a :
+
+	• identificação do processo produtivo ;
+	• identificação dos agentes ambientais inerentes ao processo produtivo, seu potencial de dano e efeitos à saúde ;
+	• identificação das exposições ocupacionais e meios técnicos de controle existentes; identificação e localização das possíveis fontes geradoras e determinação da força de trabalho. ]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="038a0abe-0686-4206-93a6-4a9e951b73fe"/>
+				<staticText>
+					<reportElement x="15" y="39" width="525" height="382" uuid="74faf322-1b74-4b38-a56a-cfeb58e827c0"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	As considerações técnicas e detalhamento das informações advindas desta etapa do PPRA, estão relacionadas em ANÁLISES PRELIMINARES DE RISCO.
+
+	As ANÁLISES PRELIMINARES DE RISCO, compreendem um resumo de informações técnicas, relativas às exposições ocupacionais, meios de controle e Graduação dos Riscos, elaboradas por cargo/função. A relação geral dos Setores e Funções/Cargos, para os quais foram avaliadas as exposições ocupacionais, é apresentada na Planilha 1 “Distribuição de Setores e Funções” anexa.
+
+9.3. Avaliação
+
+	Compreende as etapas de: DEFINIÇÃO DE GRUPOS DE EXPOSIÇÃO SIMILAR, AVALIAÇÃO QUALITATIVA DAS EXPOSIÇÕES, MONITORAMENTO QUANTITATIVO DAS EXPOSIÇÕES e INTERPRETAÇÃO DOS DADOS E TOMADA DE DECISÃO, conforme descrito no fluxograma a seguir. As informações advindas desta etapa do PPRA.
+
+	Uma vez entendidos os processos produtivos e identificadas as exposições ocupacionais, definiram-se os GRUPOS DE EXPOSIÇÃO SIMILAR. O Grupo de Exposição Similar (GES) é a base para avaliação das exposições ocupacionais dos trabalhadores. Consiste em agrupar os trabalhadores sujeitos a similares características de exposição a um determinado agente ambiental, ou seja, que apresentam o mesmo perfil de exposição ocupacional devido à semelhança e freqüências de exposição, materiais que manipulam e processos e operações que realizam.
+
+	Os Grupos de Exposição Similar, tem por objetivo otimizar as avaliações ambientais, garantindo representatividade das amostras coletadas. Assim os resultados das amostragens realizadas, para os representantes do grupo (Exposto de Maior Risco), garantirão a representatividade da exposição para todo o grupo.
+
+	Realizadas as avaliações Qualitativas e Quantitativas das exposições ocupacionais, procede-se a análise dos resultados obtidos e as conclusões e recomendações técnicas dela advindas.
+
+9.4. Controle
+
+	Esta etapa envolve a implementação das ações Preventivas/Corretivas advindas das etapas anteriores, conforme descrito no fluxograma a seguir.
+
+	Na seleção das medidas de controle a serem implementadas, serão priorizadas MEDIDAS PREVENTIVAS em detrimento de medidas de proteção. Assim, serão considerados os seguintes princípios: ]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="15" y="438" width="524" height="194" uuid="52857f09-4b9c-49a2-9e67-640af677d38a"/>
+				</rectangle>
+				<line>
+					<reportElement x="189" y="438" width="1" height="194" uuid="fafff0fa-22b0-4e08-99cc-ce413dc6c1c8"/>
+				</line>
+				<staticText>
+					<reportElement x="21" y="446" width="100" height="20" uuid="48e97e93-a47b-4509-baea-0ba62aba899d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[EVITAR RISCOS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="21" y="490" width="100" height="20" uuid="7febca72-feb7-4d7d-9903-8157504510d9"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ELIMINAR RISCOS]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="475" width="524" height="1" uuid="daf4e1b3-37cb-4f82-9919-ba3c69d8a02b"/>
+				</line>
+				<staticText>
+					<reportElement x="194" y="446" width="341" height="24" uuid="372c91a5-9a46-4f89-acbf-fef2fe2cf453"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Qualquer novo investimento deverá ser analisado antecipadamente para garantir que ele pode ser implementado com o menor nível de risco possível. ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="481" width="342" height="38" uuid="3882753a-c170-43a7-bb82-d5305b5d590b"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Qualquer alteração a um processo ou instalação existentes, deve ser objecto de análise de riscos para determinar se os perigos existentes ou risco podem ser eliminados, por exemplo, eliminação de tintas a base de solventes orgânicos por tintas à base de água.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="524" width="525" height="1" uuid="0d9890e4-6745-4801-8cb8-fe4f8a4ab37a"/>
+				</line>
+				<staticText>
+					<reportElement x="21" y="530" width="173" height="20" uuid="b2d9b6d4-6333-41f1-b5ee-940c855fb690"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[REDUÇÃO DE RISCO POR SUBSTITUIÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="534" width="336" height="13" uuid="4d64fb7d-1bf9-4480-97d1-19f4a84f1ea2"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Substituindo o perigoso pelo não perigoso ou menos perigoso.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="557" width="524" height="1" uuid="b1937481-7677-4141-a9b1-3f1e5af0fdfb"/>
+				</line>
+				<staticText>
+					<reportElement x="21" y="566" width="173" height="20" uuid="955c1215-db2f-4f72-b631-cc6021a52ef2"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[REDUÇÃO DE RISCO POR TECNOLOGIA
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="570" width="336" height="13" uuid="9234f67f-b4cd-4753-ab9f-f6045e4ac5c1"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Substituindo o perigoso pelo não perigoso ou menos perigoso.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="593" width="525" height="1" uuid="ec29f186-a132-4509-b21f-567889a64f08"/>
+				</line>
+				<staticText>
+					<reportElement x="196" y="605" width="336" height="13" uuid="46115c38-30ae-4fa0-ad3e-435da063b85f"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Consiste em, sempre que possível, lidar com o risco na sua origem (fonte geradora).]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="21" y="601" width="173" height="20" uuid="25f13566-83ba-4d02-b5d9-7e78a281a70c"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MEDIDAS DE ENGENHARIA]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="b9b7f9d7-6772-4448-aa41-e83b1f702628"/>
+				<rectangle>
+					<reportElement x="15" y="27" width="524" height="154" uuid="ef54a465-28a4-4ef3-aab9-188384c25c66"/>
+				</rectangle>
+				<line>
+					<reportElement x="189" y="27" width="1" height="154" uuid="57c35122-6e3e-4b33-b38f-3cff38459938"/>
+				</line>
+				<staticText>
+					<reportElement x="21" y="35" width="161" height="20" uuid="031a3a50-29a0-4e35-91b4-5dc928baa401"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MEDIDAS ADMINISTRATIVAS]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="21" y="79" width="100" height="20" uuid="4ae65ad4-d818-4a13-b170-2e1052919f88"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROTEÇÃO COLETIVA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="64" width="524" height="1" uuid="b395e514-cebc-4b92-996f-c7f407aabea0"/>
+				</line>
+				<staticText>
+					<reportElement x="194" y="35" width="341" height="24" uuid="4e8b8b2a-efd0-4e86-88f1-8226b0bcd2c7"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Consiste na elaboração e implementação, manutenção de ações voltadas a procedimentos, normas, instruções e afins.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="70" width="342" height="38" uuid="1cad662b-cbdd-4381-aeaa-7c04b60e1551"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Consiste na adoção de medidas de controle da exposição ocupacional de caráter coletivo (fonte ou transmissão)]]></text>
+				</staticText>
+				<line>
+					<reportElement x="15" y="113" width="525" height="1" uuid="5b776288-9ad6-4b7b-96c5-36e9f89d3622"/>
+				</line>
+				<staticText>
+					<reportElement x="21" y="136" width="173" height="20" uuid="c42e0e55-c91a-4f89-88a2-59820d535b38"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PROTEÇÃO INDIVIDUAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="196" y="120" width="339" height="53" uuid="2c7bf966-0534-4490-b0f5-ef415ce3ec09"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Consiste na adoção de medidas de controle da exposição ocupacional de caráter individual (trabalhador). Como princípio geral, a aplicação de EPI (Equipamentos de Proteção Individual) será considerada como a última na linha de prioridades de ações, devendo ser implementada em carater temporário ou quando todas as demais se mostrem inviáveis.]]></text>
+				</staticText>
+				<image>
+					<reportElement x="55" y="242" width="449" height="394" uuid="c29cffd1-b999-4c0b-ac01-22b24810b7fc"/>
+					<imageExpression><![CDATA["repo:fluxograma2.jpg"]]></imageExpression>
+				</image>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="eaee8a47-cfc9-4742-8408-cf4dd2f92115"/>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="0" y="35" width="553" height="668" uuid="26d97d48-716c-48e3-b6b4-e488c8b79ca8"/>
+					<imageExpression><![CDATA["repo:fluxograma3.jpg"]]></imageExpression>
+				</image>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="b5b1bf98-06b3-4dd7-9797-a00a1ceda8df"/>
+				<staticText>
+					<reportElement x="16" y="51" width="525" height="131" uuid="f2764267-e8fd-45fd-812b-549a0406d949"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Para ESTIMATIVA, AVALIAÇÃO e APRECIAÇÃO das Exposições Ocupacionais, de forma a auxiliar a tomada de decisões quanto às ações de controle e prioridades, tomou-se por base a metodologia de Graduação de Riscos (MULHAUSEN & DAMIANO), validada pela AIHA (American Industrial Hygiene Association), complementada com outros critérios, advindos de boas práticas de Higiene Ocupacional.  As matrizes de Risco e de enquadramento de PROBABILIDADES e de SEVERIDADE, constantes da metodologia acima citada, foram. Além da Graduação dos Riscos, a metodologia prevê a priorização das ações a serem adotadas.
+
+	As informações levantadas foram compiladas em planilhas de Análise Preliminar de Riscos, distribuídas por FUNÇÃO – SETOR - ÁREA. Esta técnica nos permite registrar as exposições ocupacionais evidenciadas, procedendo sua graduação.
+
+
+	Contudo, o GRAU DE EXPOSIÇÃO é função de duas variáveis: Tempo de exposição ao agente e quantidade ou intensidade do agente na operação ou ambiente laboral, assim teremos:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="113" y="237" width="329" height="20" uuid="4f5d6907-1010-45f9-a286-83feca6e7dd7"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Grau de Exposição = TEMPO DE EXPOSIÇÃO X EXPOSIÇÃO (PROBABILIDADE)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="14" y="307" width="524" height="208" uuid="243e864a-7f5b-4d59-9901-301a486bbe7a"/>
+				</rectangle>
+				<line>
+					<reportElement x="128" y="327" width="1" height="188" uuid="1dd7c5db-5a25-4918-8654-ad7f69d8a01e"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="333" width="100" height="20" uuid="451b1c97-27c5-4775-851d-05869b679e7a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TIPO DE EXPOSIÇÃO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="327" width="524" height="1" uuid="e3806eb2-69c2-4873-81ef-530f9f6b1bfc"/>
+				</line>
+				<line>
+					<reportElement x="14" y="359" width="523" height="1" uuid="a6fd95bc-3d89-4f98-8411-cc7a3be68408"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="382" width="95" height="20" uuid="64b99e27-bf0c-4269-8a44-48872bfb47db"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[OCASIONAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="135" y="361" width="201" height="20" uuid="6e818666-0f0b-43cb-a869-439d3013ad7d"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição ocupacional não programada, que ocorre em períodos curtos de exposição.
+]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="425" width="524" height="1" uuid="98a72011-f2d5-42a9-ab29-72e58a8db4df"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="438" width="101" height="20" uuid="f8a832e8-2cc5-4036-9017-aedff212f9b1"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[INTERMITENTE]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="472" width="524" height="1" uuid="1fc38e36-492b-433f-89ea-4bbac1830d07"/>
+				</line>
+				<staticText>
+					<reportElement x="138" y="306" width="278" height="20" uuid="50341d98-dba8-443b-b6cd-b877caeea5e5"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DEFINIÇÃO TEMPO DE EXPOSIÇÃO PARA ENFOQUE QUALITATIVO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="336" y="328" width="1" height="187" uuid="1b343473-b708-4133-a6e1-99ef0a10652c"/>
+				</line>
+				<staticText>
+					<reportElement x="139" y="333" width="179" height="20" uuid="cc11c8ac-172b-43e4-a03c-7a85920d61b5"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IDENTIFICAÇÃO DA EXPOSIÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="348" y="334" width="183" height="20" uuid="ac103660-7637-4874-a2cd-ebe06cc15cb8"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TEMPO ENVOLVIDO NA EXPOSIÇÃO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="129" y="382" width="207" height="1" uuid="0277f6cd-8e83-47f5-88ca-50053abd4bb4"/>
+				</line>
+				<staticText>
+					<reportElement x="134" y="386" width="201" height="38" uuid="52c4841e-3133-42b0-b587-a434bcb05a2b"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição ocupacional não programada, que ocorre em períodos curtos de exposição, porem quando ocorrem podem se repetir algumas vezes durante a jornada de trabalho. (2 ou 3 vezes)
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="342" y="365" width="193" height="44" uuid="cc58b7f0-6c89-460f-ad17-61d27bf79187"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição diária, com tempo de até 6% do total da jornada, ou exposição não diária (uma vez por semana ou menos).]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="430" width="201" height="38" uuid="cd1191de-0782-488b-bed4-e0081c2671b9"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição ocupacional programada, porem que ocorrem em períodos descontínuos.
+Ou seja, exposições que cessam e recomeçam com intervalor programados ou não.
+
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="342" y="429" width="193" height="39" uuid="f70e4ec6-de19-4d3c-9bec-7d321826b6a4"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição diária, com tempo de até 60% do total da jornada.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="342" y="476" width="193" height="39" uuid="d5748e4f-f466-4fb0-a23b-a93a86f05f82"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição diária com tempo superior a 60% da jornada.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="477" width="201" height="38" uuid="aea9a95d-8fdd-4ea8-92df-cba6d3892c4e"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Exposição ocupacional que perdura durante a jornada de trabalho, podendo ser sem pausas, ou pausas curtas (refeições, necessidades fisiológicas, descanso, etc.)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="485" width="101" height="20" uuid="411ea425-a165-4b76-8890-eee3b6d16621"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PERMANENTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="16" y="571" width="525" height="34" uuid="b25dae27-3e41-4f8d-a67b-53717714e2a0"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	As definições para classificação quanto às categorias não esgotam todas as alternativas, mas apenas servem de orientação para a classificação das exposições.]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="1781d4ff-e776-4e4a-ac4a-f2f17d7c8df4"/>
+				<staticText>
+					<reportElement x="113" y="7" width="329" height="20" uuid="31a9cbf0-9813-4f00-8de3-c26d17c69aef"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[EXPOSIÇÃO (PROBABILIDADE)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="14" y="37" width="524" height="360" uuid="aa352b63-903c-43d8-a7b2-b167d72b7299"/>
+				</rectangle>
+				<frame>
+					<reportElement mode="Opaque" x="15" y="38" width="522" height="60" backcolor="#F0F0F0" uuid="2bc6d790-bf7c-4b0f-80b4-e9d4b61ee50b"/>
+				</frame>
+				<line>
+					<reportElement x="128" y="37" width="1" height="360" uuid="29992988-1c84-4158-8dac-23ab383c119c"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="68" width="100" height="20" uuid="a1b5f545-7d4a-4f7a-bb0f-6682773e9133"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Categoria]]></text>
+				</staticText>
+				<line>
+					<reportElement x="129" y="57" width="409" height="1" uuid="63f80601-0786-4090-9651-2a4f22d5d607"/>
+				</line>
+				<line>
+					<reportElement x="14" y="98" width="523" height="1" uuid="95ffdb96-b00c-467a-a7cd-76d0d6a811db"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="127" width="106" height="20" uuid="d35f71d3-fb90-442e-a164-99be06fdd617"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BAIXA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="170" width="524" height="1" uuid="8b548be8-6f3b-4329-a478-fbfe8fe74ef4"/>
+				</line>
+				<line>
+					<reportElement x="14" y="245" width="524" height="1" uuid="846552bf-e317-4ca1-8fac-6ee1f650570e"/>
+				</line>
+				<staticText>
+					<reportElement x="138" y="36" width="278" height="20" uuid="43a15b67-d4c0-4483-ba9e-3124ccc3c705"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Descrição]]></text>
+				</staticText>
+				<line>
+					<reportElement x="316" y="58" width="1" height="339" uuid="a46459de-433e-4af8-ac40-bfaed0bf6e00"/>
+				</line>
+				<staticText>
+					<reportElement x="133" y="68" width="179" height="20" uuid="45706d97-029b-43b7-beb1-8592ae150e32"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ENFOQUE QUALITATIVO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="319" y="59" width="113" height="38" uuid="b490d886-fc41-4eee-8e68-c2cc9d94cae6"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ENFOQUE QUANTITATIVO
+(QUANDO UTILIZANDO, LEVAR EM CONSIDERAÇÃO A ATENUAÇÃO DO EPI OU EPC)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="104" width="178" height="65" uuid="410a2fe7-8991-49bb-a411-258cbead62e4"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição ocasional à baixas concentrações ou intensidades]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="322" y="104" width="107" height="66" uuid="81334607-f480-459d-8b13-e6c5d18d0f41"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição Média Estimada:
+
+Abaixo de 10% do LT  ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="399" width="525" height="34" uuid="5037b158-e150-42d9-8171-180d20b87f4c"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[LT – Limite de Tolerância
+Enfoque Quantitativo – Leva-se em consideração a exposição encontrada com a sua respectiva atenuação.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="432" y="37" width="3" height="360" uuid="f6b40a35-2528-4f12-87f5-98cd35eb651f"/>
+				</line>
+				<staticText>
+					<reportElement x="435" y="68" width="100" height="20" uuid="f10729a0-fb7e-4d3d-8d50-c03c2e2e9d8a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FATOR DE PROTEÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="438" y="104" width="97" height="65" uuid="97bc3d0d-fa9f-4bea-9bcc-27ae9822ab94"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[As medidas de controle existentes são adequadas, eficientes e há garantias de que sejam mantidas em longo prazo.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="438" y="175" width="97" height="65" uuid="fc9508b5-92b3-49f1-9a5a-b3b5b3424496"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[As medidas de controle existentes são adequadas e eficientes, mas não há garantias de que sejam mantidas em longo prazo.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="175" width="178" height="65" uuid="8272e20a-9364-4b6a-8216-cfec9ac13070"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição intermitente ao agente à baixa concentração ou intensidade
+Exposição ocasional ao agente à alta concentração ou intensidade
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="198" width="106" height="20" uuid="36c0e44b-8747-4e7f-8cd5-fd42e2b9b7fa"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MÉDIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="322" y="175" width="107" height="65" uuid="8f6a07ce-6b17-48f0-b39b-78c471dc72af"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição Média Estimada:
+
+entre   10% e 50% do LT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="250" width="178" height="87" uuid="13ac5b47-c443-44d2-b6ab-6466ba2e1dcd"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição permanente ao agente à concentrações ou intensidades significativas]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="281" width="106" height="20" uuid="54b1c439-d61e-4c61-b94c-3520be358606"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="438" y="250" width="97" height="87" uuid="3f3e698c-04c4-47cf-b8b3-5ee9c918b126"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[As medidas de controle existentes são adequadas mas apresentando desvios ou problemas significativos. A eficiência é duvidosa e não há garantias de manutenção adequada.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="322" y="250" width="107" height="87" uuid="15255b96-b886-405d-a870-2f0d28b4a94c"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição Média Estimada:
+
+Acima de 50% do LT (NÍVEL DE AÇÃO)]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="337" width="524" height="1" uuid="7fe45e03-a8ba-48cb-b105-4d83f2101b84"/>
+				</line>
+				<staticText>
+					<reportElement x="322" y="343" width="107" height="51" uuid="5a139831-273c-4267-9e56-134cb2312e34"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição Média Estimada:
+
+Acima do LT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="359" width="106" height="20" uuid="9513718a-9d7f-4a79-b7ee-659d1fdc64e4"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MUITO ALTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="438" y="343" width="97" height="51" uuid="7f4157cf-b0fd-4c72-8167-a1bf2473190a"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Medidas de controle inexistentes ou as medidas existentes são reconhecidamente inadequadas.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="343" width="178" height="51" uuid="66c17932-9811-40dd-a1a0-c3a30a92eac2"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Exposição permanente ao agente à alta concentração ou intensidade]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="113" y="438" width="329" height="20" uuid="02f5df5d-c96f-477f-97ce-cb2491f25670"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[GRAU DE EXPOSIÇÃO]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="116" y="466" width="324" height="100" uuid="4ceb64f4-94bb-486d-84f9-e6c6204ef1d3"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="121" y="490" width="68" height="14" uuid="2906f29b-6103-4235-bf4b-371756d824a8"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BAIXA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="121" y="510" width="68" height="14" uuid="f903112a-ef99-4fbe-aa2d-92f104175c4c"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MÉDIA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="121" y="530" width="68" height="14" uuid="0f1b3bda-e96d-4f50-b907-87ae51b07e01"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="121" y="549" width="68" height="14" uuid="6e100e03-fa28-4c06-997e-2454b02216f2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MUITO ALTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="530" width="68" height="14" uuid="63baa022-cfd7-4f77-b0b5-13bf811fa1dc"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[INCERTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="510" width="68" height="14" uuid="4d996fd7-6b98-4fb3-b19c-337b6df17032"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DE ATENÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="490" width="68" height="14" uuid="4a790c27-1b23-478e-84b5-36b26bc4531a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DE ATENÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="549" width="68" height="14" uuid="871fd7f9-1fb5-4667-aff6-d6a6454d2bb4"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CRÍTICA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="201" y="470" width="68" height="14" uuid="84ebe153-d9df-4fcb-937b-48b35bbd111b"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PERMANENTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="281" y="530" width="68" height="14" uuid="d66f3f8b-dbda-4110-a32b-e3251bac64af"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[INCERTA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="281" y="510" width="68" height="14" uuid="e766b81c-fd73-48e3-b142-123299ddb3c2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DE ATENÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="281" y="470" width="68" height="14" uuid="43528cc0-62ef-4754-923f-fdc5622098fd"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PERMANENTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="281" y="490" width="68" height="14" uuid="4c7126db-7ac9-4de1-ac87-a78065828710"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DE ATENÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="281" y="549" width="68" height="14" uuid="23dda567-06d1-4dfd-92db-c48117ba5f11"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CRÍTICA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="361" y="530" width="68" height="14" uuid="3cc6015f-9ded-45eb-a39f-8aedafe1b98a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DE ATENÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="361" y="510" width="68" height="14" uuid="a8599067-5b9f-4eda-8cb0-6fc4dd025902"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IRRELEVANTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="361" y="470" width="68" height="14" uuid="a52e491a-1127-4f1e-853a-9862ed839325"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[OCASIONAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="361" y="490" width="68" height="14" uuid="c10182a7-a01f-4660-839d-6bdfa4d4acee"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IRRELEVANTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="361" y="549" width="68" height="14" uuid="f7324d09-8729-4f82-9b6c-4b452940ccb4"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CRÍTICA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="195" y="466" width="1" height="100" uuid="85c5bcfd-aeee-45e5-9880-19f535c7347b"/>
+				</line>
+				<line>
+					<reportElement x="275" y="466" width="1" height="100" uuid="6b63db85-d8bb-4696-97e9-c3f34a898ff4"/>
+				</line>
+				<line>
+					<reportElement x="355" y="466" width="1" height="100" uuid="4b8a97ad-4880-4cd7-82a9-ad0ebf587d9d"/>
+				</line>
+				<line>
+					<reportElement x="116" y="486" width="324" height="1" uuid="0601112a-cb02-40f9-ab57-de663c99f30c"/>
+				</line>
+				<line>
+					<reportElement x="116" y="506" width="324" height="1" uuid="57fb644b-f4ca-43eb-b13c-703cb9ef6d9b"/>
+				</line>
+				<line>
+					<reportElement x="116" y="526" width="324" height="1" uuid="abd3cf3c-9f34-4130-b547-fc902fbc7f28"/>
+				</line>
+				<line>
+					<reportElement x="116" y="546" width="324" height="1" uuid="f7977a81-9da5-40c2-a0be-cc53c279a557"/>
+				</line>
+				<staticText>
+					<reportElement x="14" y="589" width="525" height="11" uuid="46e1e946-b2ce-4d5b-b4d9-59b446081f74"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	A avaliação do Risco pode ser representada pela seguinte expressão:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="608" width="511" height="20" uuid="039c0581-aaf1-478c-a299-e442505efe1a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APRECIAÇÃO DA EXPOSIÇÃO = GRAU DE EXPOSIÇÃO (Probabilidade) X POTENCIAL DE DANO (Severidade)]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="703">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="703" uuid="f803f7ba-ebc2-4e43-be29-bd150decfe87"/>
+				<staticText>
+					<reportElement x="113" y="7" width="329" height="20" uuid="6c1075f2-1871-431e-b6d5-e749d7d130e6"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[POTENCIAL DE DANO À SAÚDE (SEVERIDADE)]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="14" y="37" width="524" height="528" uuid="1c774095-4d55-46e3-94aa-016f8e815e73"/>
+				</rectangle>
+				<frame>
+					<reportElement mode="Opaque" x="15" y="38" width="522" height="27" backcolor="#F0F0F0" uuid="5cf093dd-a682-4656-902d-e43c09b35051"/>
+				</frame>
+				<line>
+					<reportElement x="128" y="37" width="1" height="528" uuid="dfdf23b9-ade4-47ae-aea2-086cc634cc47"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="42" width="100" height="20" uuid="fae72d72-5d21-449a-9b5d-9ab818b43b1e"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Categoria]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="65" width="523" height="1" uuid="935b921f-bcf1-4a17-84f8-fbca9766523b"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="95" width="106" height="20" uuid="ab0c7a2b-321d-40a6-987e-5c94fd75bf23"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[LEVE]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="138" width="524" height="1" uuid="cfdb3471-fc90-4d8f-97b5-e753b9d510bd"/>
+				</line>
+				<line>
+					<reportElement x="14" y="230" width="524" height="1" uuid="6c39ee18-cff7-4f6d-ac65-c310c2dabdb8"/>
+				</line>
+				<staticText>
+					<reportElement x="138" y="42" width="278" height="20" uuid="95769fb7-17fc-490f-90e6-a26fec6fa845"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Descrição]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="72" width="401" height="65" uuid="f340ccc8-c2ea-4460-9d2c-f28345a6e4c3"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• O agente, na condição verificada, não representa risco potencial de dano à saúde ou efeitos reversíveis de pouca importância ou não confirmados apenas suspeitos.
+• Para Contato – não irritante à pele , olhos e membranas mucosas
+• O agente não é considerado Xenobiótico.
+• Tomando por base os Limites de Tolerância -  agente sem limites de tolerância
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="577" width="525" height="34" uuid="2cd36b09-cc45-47eb-8a7a-a0dc1c6682cf"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Assim, para cada agente evidenciado, em função da combinação  da Probabilidade de exposição com os possíveis efeitos que este agente poderá causar a saúde do trabalhador (Severidade), estabeleceremos uma graduação para o risco da exposição ocupacional, de acordo com a matriz de risco abaixo:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="142" width="401" height="84" uuid="ed782ef9-8562-4fa3-b1dd-c71831eb5a67"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Efeitos reversíveis à saúde
+• Para contato – levemente irritante para Pele, olhos e mucosas. Vapores e Fumos irritantes em contato com a pele, olhos e membranas mucosas.
+• Sem evidência de carcinogenicidade, teratogenicidade ou mutagenicidade. (ACGIH A4 ou A5).
+• Tomando por base os Limites de Tolerância -  acima de 500 ppm (vapores e gases),  acima de 10 mg/m³ (particulados)
+• Biossegurança : baixo risco individual para o trabalhador e para a coletividade, com baixa probabilidade de causar doença ao ser humano. (NR-32 )
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="142" width="106" height="84" uuid="5f58d9be-2b68-4054-974c-3a37eee80ee6"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BAIXO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="235" width="401" height="98" uuid="0fa02d54-0cbd-4c6e-b3ef-b21387ac2ca9"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Efeitos reversíveis, mas severos, à saúde
+• Agente apresenta TLV-Stel
+• Para Contato -  Irritante para membranas mucosas, olhos, pele, sistema respiratório superior.
+• Carcinogênico, teratogênico ou mutagênico confirmado somente para animais. (ACGIH A3).
+• Tomando por base os Limites de Tolerância -  entre 101 e 500 ppm (vapores e gases),  entre 1,1 e 10 mg/m³ (particulados)
+• Biossegurança : risco individual moderado para o trabalhador e com baixa probabilidade de disseminação para  a coletividade. Podem causar doenças ao ser humano, para as quais existem meios eficazes de profilaxia ou tratamento. (NR-32 )
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="235" width="106" height="98" uuid="c38cc2c1-c1cc-4d67-9b75-b9a2f2362dfc"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MÉDIO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="338" width="524" height="1" uuid="e3db1177-1786-4df3-8195-07fa23e78ca5"/>
+				</line>
+				<staticText>
+					<reportElement x="20" y="343" width="106" height="104" uuid="294993e1-971b-4029-aadf-155235fcd3ad"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="343" width="401" height="104" uuid="d9dddbe5-d13c-4c1b-864c-9f3665094bfe"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Efeitos Irreversíveis à saúde
+• Agente apresenta TLV-CEIL (Valor-Teto)
+• Para Contato – Altamente irritante para membranas mucosas, olhos, pele, sistema respiratório e digestivo, resultando em lesões irreversíveis limitantes da capacidade funcional.
+• Suspeito de ser carcinogênico, teratogênico ou mutagênico para seres humanos. (ACGIH A2).
+• Tomando por base os Limites de Tolerância -  entre 11 e 100 ppm (vapores e gases),  entre 0,1 e 1,0 mg/m³ (particulados)
+• Biossegurança : risco individual elevado para o trabalhador e com probabilidade de disseminação para  a coletividade. Podem causar doenças e infecções graves ao ser humano, para as quais nem sempre existem meios eficazes de profilaxia ou tratamento. (NR-32 )
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="20" y="458" width="106" height="103" uuid="14ea8f1c-35e2-490e-a1a8-c7dff4b223b0"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IMINENTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="134" y="458" width="401" height="103" uuid="6632c217-1462-4181-ba55-feadb4246e7f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Ameaça de vida, lesão incapacitante ou doença.
+• Agente apresenta baixo IDLH
+• Para Contato – Efeito cáustico e corrosivo severo sobre a pele, mucosa e olhos (pode causar perda da visão), podendo resultar em morte ou lesões incapacitantes.
+• Carcinogênico, teratogênico ou mutagênico confirmado para seres humanos (ACGIH A1).
+• Tomando por base os Limites de Tolerância -  <= 10 ppm (vapores e gases),  < 0,1 mg/m³ (particulados)
+• Biossegurança : risco individual elevado para o trabalhador e com elevada probabilidade de disseminação para  a coletividade. Apresenta grande poder de transmissibilidade de um indivíduo a outro. Podem causar doenças graves ao ser humano, para as quais não existem meios eficazes de profilaxia ou tratamento. (NR-32 )
+]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="453" width="524" height="1" uuid="510e2568-f45a-4ccd-a104-b9274b9b9dc3"/>
+				</line>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706" uuid="fe063348-f576-46f7-8309-3e538ac4be50"/>
+				<image hAlign="Center" vAlign="Middle">
+					<reportElement x="20" y="16" width="457" height="230" uuid="79fcb001-c598-47a6-85b4-659425c487d8"/>
+					<imageExpression><![CDATA["repo:grafico1.jpg"]]></imageExpression>
+				</image>
+				<rectangle>
+					<reportElement x="14" y="297" width="524" height="328" uuid="98b5345e-e024-4c6e-b212-a0fbc072628e"/>
+				</rectangle>
+				<frame>
+					<reportElement mode="Opaque" x="15" y="298" width="522" height="42" backcolor="#F0F0F0" uuid="daf13825-a1a8-48ee-b720-d69f57a39b98"/>
+				</frame>
+				<staticText>
+					<reportElement x="20" y="302" width="76" height="35" uuid="46a2cac9-e6db-4737-8247-d3e07c76703a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Risco
+(exposição resultante)]]></text>
+				</staticText>
+				<line>
+					<reportElement x="98" y="297" width="1" height="328" uuid="da5f7b2e-d272-4299-83c0-f797d156d1b8"/>
+				</line>
+				<staticText>
+					<reportElement mode="Opaque" x="20" y="344" width="73" height="82" backcolor="#339900" uuid="b44c3cbd-040d-4f4b-a984-63c142bbbec4"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BAIXO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="20" y="434" width="73" height="39" backcolor="#FFFF00" uuid="6a98938c-754d-4bf5-b17f-4b7cf06fbaa5"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MODERADO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="189" y="528" width="346" height="97" uuid="43d01ba3-ca38-4aa6-8418-272bbc8ff766"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• O trabalho não deve ser iniciado até que o risco tenha sido reduzido para o nível MODERADO/ALTO;
+• Provavelmente recursos consideráveis deverão ser alocados para reduzir o risco, o que implica em escalar o plano de ações a níveis mais elevados de responsabilidade;
+• Quando o trabalho se encontrar em progresso, ação urgente deve ser adotada;
+• Procedimentos de controle operacional, planos de emergência e objetivos e metas são mandatários.
+]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="339" width="523" height="1" uuid="3e55759a-5c10-4584-856f-61fb11d8ce32"/>
+				</line>
+				<staticText>
+					<reportElement x="189" y="344" width="346" height="85" uuid="e8b15d86-7983-49d2-af05-999b848692b4"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Nenhuma ação adicional é necessária;
+• Considerações podem ser feitas para avaliar soluções mais efetivas e de menor custo ou ainda melhorias que não envolvem custo;
+• Procedimentos e/ou objetivos e metas são opcionais;
+• Registrar e informar aos trabalhadores.
+]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="522" width="524" height="1" uuid="578f92f7-1e90-4e49-af15-641b14435f3b"/>
+				</line>
+				<staticText>
+					<reportElement x="113" y="267" width="329" height="20" uuid="c97d6b15-1068-44e3-b4eb-a89372def5ce"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[APRECIAÇÃO DAS EXPOSIÇÃO RESULTANTE E POSSÍVEIS AÇÕES]]></text>
+				</staticText>
+				<line>
+					<reportElement x="14" y="430" width="524" height="1" uuid="e2cef7a9-4326-459f-8175-3c0c5dc7c285"/>
+				</line>
+				<staticText>
+					<reportElement x="189" y="435" width="346" height="83" uuid="1222a13b-66af-473a-b5fd-ff1f7afe5fa8"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[• Esforços devem ser feitos para reduzir o risco, porém os custos de prevenção devem ser cuidadosamente estimados e definidos;
+• Quando avaliadas e definidas como  aplicáveis, as medidas a implementar devem ter definidos seus responsáveis e prazos de conclusão;
+• Avaliações adicionais devem ser definidas,  para estabelecer mais precisamente  as medidas de controle a serem melhoradas;
+• Procedimentos de controle operacional e/ou planos de emergência são necessários.
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="20" y="528" width="73" height="90" forecolor="#FFFFFF" backcolor="#FF0000" uuid="faeb9c89-2de7-4580-9669-530d803583c2"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MUITO ALTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement mode="Opaque" x="20" y="479" width="73" height="39" forecolor="#FFFFFF" backcolor="#003366" uuid="775a67b1-0ed1-4247-bb80-b4cfef8cef9a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="102" y="302" width="76" height="35" uuid="a1aecb7d-73cc-45af-a2dc-9a9c266ae0ad"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Apreciação]]></text>
+				</staticText>
+				<line>
+					<reportElement x="180" y="297" width="1" height="328" uuid="2e12fb24-5e5e-40e2-98f1-66aa73b11727"/>
+				</line>
+				<staticText>
+					<reportElement x="103" y="344" width="74" height="85" uuid="8f5125b1-a2bc-4471-9330-ecc84b25e960"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[ACEITÁVEL
+
+​​O risco deve ser monitorado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="103" y="434" width="74" height="85" uuid="572c9863-93a6-4bcc-a73f-81f24f1aa370"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[TOLERÁVEL
+
+Estudar medidas para redução do risco.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="103" y="523" width="74" height="102" uuid="be2fa5e4-1529-4833-91d1-2eaa9654f8f0"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[INACEITÁVEL
+
+Paralisação da atividade e definição de ações corretivas para reduzir o risco]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706" uuid="4aee0878-bd32-46b9-94ea-6f1a502e15da"/>
+				<staticText>
+					<reportElement x="13" y="24" width="527" height="44" uuid="ff2933f2-d6de-440f-9d7c-0139f8f0e1d0"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Observação: A classificação da priorização de ações é dada considerando a exposição resultante x critérios de incerteza em ordem decrescente. Quanto maior o resultado da multiplicação ” exposição resultante x critérios de incerteza” maior a prioridade na busca de mais informações (por exemplo, avaliação quantitativa).]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="104" width="145" height="14" uuid="83a22b6c-4504-43f7-bdb6-961da2baa911"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[X. AVALIAÇÃO DO PROGRAMA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="132" width="525" height="47" uuid="e4d5a885-5f7a-480a-ac4a-60f2dfad1f1b"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Atendendo a metodologia de Avaliação das Exposições Ocupacionais, definida neste Programa, bem como à NR-9 da Portaria 3214, será efetuado, no mínimo anualmente, uma avaliação global do Programa, a fim de se verificar o cumprimento do Plano de Ações fixado e a eficácia das ações implementadas, atendendo assim ao item “VII” deste Programa.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="232" width="525" height="127" uuid="c666a8d5-ddec-445b-ba5c-0d8f90f9e18f"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[1) – Sounis, Emílio. Manual de Higiene e Medicina do Trabalho. 3.ª ed., Ícone editora, São Paulo, SP, Brasil, 1991.
+
+2) – Gonçalves, Edwar Abreu. Manual de Segurança e Saúde no Trabalho. LTr Editora Ltda, São Paulo, SP, Brasil, 2000.
+
+3) – Burgess, William A. Identificação de Possíveis Riscos à Saúde do Trabalhador nos Diversos Processos Industriais. Trad. Ricardo Baptista. Ergo Editora, Belo Horizonte, MG, Brasil, 1997.
+
+4) – Torreira, Raúl Peragallo. Manual de Segurança Industrial. Margus Publicações, São Paulo, SP, Brasil, 1999.
+
+5) Santos, Ubiratan de Paula. Ruído Riscos e Prevenção. 3.ª ed., Editora Hucitec, São Paulo, SP, Brasil, 1999.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="14" y="204" width="145" height="14" uuid="88296227-7bfc-4246-a976-5095dac1bd5d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[XI. BIBLIOGRAFIA]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706" uuid="f434b987-a4ec-495c-826a-cc3f14afaf9b"/>
+				<staticText>
+					<reportElement x="14" y="326" width="525" height="48" uuid="7f16b66b-0874-44b5-91d7-ce2dcb1b870a"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="12" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ANEXOS
+
+QUALIFICAÇÃO DOS AGENTES / RISCOS]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706" uuid="26921790-a794-489b-9d51-634045d0e78f"/>
+				<staticText>
+					<reportElement x="170" y="9" width="209" height="20" uuid="4f871e24-4492-4155-b819-beb5418dda1d"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DISTRIBUIÇÃO DE CARGOS]]></text>
+				</staticText>
+				<subreport>
+					<reportElement x="0" y="55" width="554" height="651" isPrintWhenDetailOverflows="true" uuid="d36627a5-ce6d-476f-96f4-0d59566120e3"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_PPRA_VERSOES">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PPRA_VERSOES}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:relatorio_distribuicao_cargos.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="186">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="186" uuid="49e6871d-e484-4461-91a2-9700358d9580"/>
+				<staticText>
+					<reportElement x="288" y="35" width="91" height="14" uuid="3620b51b-6150-4523-bc10-567250dcd27d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Nome Fantasia:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="18" y="35" width="78" height="14" uuid="67a16254-9927-4a43-85b1-d7a11ee43663"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Razão Social:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="75" y="35" width="206" height="14" uuid="13a3276d-7e05-4668-b0c4-d5828078f145"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="356" y="35" width="195" height="14" uuid="0c8bd89e-78e6-4a19-85fc-35a34b4e0bcb"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome_fantasia}]]></textFieldExpression>
+				</textField>
+				<subreport>
+					<reportElement x="0" y="63" width="555" height="123" isPrintWhenDetailOverflows="true" uuid="dfd3fc2f-87ff-49a8-857d-0e5ceff6395d"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_PPRA_VERSOES">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PPRA_VERSOES}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:relatorio_grupos_homogeneos.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706" uuid="aa8ed8cd-b3f0-46e3-94e8-0c0752c10716"/>
+				<subreport>
+					<reportElement x="0" y="34" width="555" height="672" uuid="210f5b44-9cb6-4a8d-bece-069656db7ec8"/>
+					<subreportParameter name="CODIGO_CLIENTE">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_PPRA_VERSOES">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PPRA_VERSOES}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_prevencao_riscos_ambientais.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="706">
+			<frame>
+				<reportElement x="0" y="0" width="555" height="706" uuid="dd76213c-7882-4d08-810f-7b4969e9907d"/>
+				<staticText>
+					<reportElement x="15" y="60" width="525" height="47" uuid="5579b7a8-8e29-4912-8082-d8719d7c53e9"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[	Este documento foi digitado datado e assinado na presente folha. ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="15" y="32" width="145" height="14" uuid="2f933245-800e-4ce5-b1df-44aae49a5aa3"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[XI. ENCERRAMENTO]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="16" y="126" width="516" height="20" uuid="e5ca86ac-5fa1-415d-8cc2-c26d271cbb87"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cidade} + ", " + new SimpleDateFormat("dd/MM/yyyy").format(new Date())]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="17" y="188" width="518" height="14" uuid="69d7c5ce-7790-4b6f-a7d9-efe475c8fc9f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Responsáveis Técnicos pela Elaboração do Programa:]]></text>
+				</staticText>
+				<frame>
+					<reportElement style="bordered" x="47" y="276" width="184" height="70" uuid="bfa6d311-307e-4d8d-80e4-a8fdcb620df4"/>
+					<textField>
+						<reportElement x="0" y="0" width="184" height="70" uuid="c853eb89-7dd7-4471-b7dd-daba1a8bd60e"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="8"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{medico} + '\n' + $F{especialidade} + '\nRegistro ' + $F{descricao_conselho_profissional} + '/' + $F{conselho_uf} + ' nº ' + $F{numero_conselho} + ' - ' + $F{conselho_uf}]]></textFieldExpression>
+					</textField>
+				</frame>
+			</frame>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="37">
+			<image>
+				<reportElement x="241" y="6" width="55" height="26" uuid="f7ea7149-408a-47c8-8e2b-22353428d4e7"/>
+				<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="453" y="2" width="100" height="20" uuid="6caf1cca-d513-4790-b8af-a1cc20e057da"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

@@ -1,0 +1,13 @@
+[ACO]
+create;buonny;AcoesMelhoriasTipo
+create;buonny/AcoesMelhoriasTipo;index
+create;buonny/AcoesMelhoriasTipo;listagem
+create;buonny/AcoesMelhoriasTipo;incluir
+create;buonny/AcoesMelhoriasTipo;editar
+create;buonny/AcoesMelhoriasTipo;editar_status
+create;buonny;AreaAtuacao
+create;buonny/AreaAtuacao;index
+create;buonny/AreaAtuacao;listagem
+create;buonny/AreaAtuacao;incluir
+create;buonny/AreaAtuacao;editar
+create;buonny/AreaAtuacao;editar_status

@@ -1,0 +1,11 @@
+[ACO]
+create;buonny;TiposAfastamento
+create;buonny/TiposAfastamento;index
+create;buonny/TiposAfastamento;incluir
+create;buonny/TiposAfastamento;editar
+create;buonny/TiposAfastamento;listagem
+create;buonny;MotivosAfastamento
+create;buonny/MotivosAfastamento;index
+create;buonny/MotivosAfastamento;incluir
+create;buonny/MotivosAfastamento;editar
+create;buonny/MotivosAfastamento;listagem

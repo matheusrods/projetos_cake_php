@@ -1,0 +1,56 @@
+
+                                                                                                               Data: 6/11/2013  07:00
+                                                                  Romaneio
+                                                                                                               Nro:   43661
+
+
+ Placa do veícu ABC 3333                                                     Ajudantes:   Luiz Carlos Silva de Frei/Vicente Antonio dos
+                                                                                          Santo
+ Nome do        Francisco Neto da Silva                                      CPF do motor 27921792871
+ motorista:
+
+ Km de saída:   117.262      Km de chegad                                    Hr de saída: 07:00     Hr de chegad
+
+
+ Doc Nota F Remetente   Destinatári Endereço de entrega                            Cidade Des UFBairro de entrega Vol Peso  Frete  Valor NF
+ 569 444509 SCHNEIDER C BOBST GROUP Avenida Henri Bobst, 401                       Itatiba    SPBairro da Ponte    1  9,03  25,16  2.219,60
+
+ 569 444534 SCHNEIDER C VULKAN DO B Rodovia Engenheiro Constancio Cintra, s/nº     Itatiba    SPBairro da Ponte    1  2,58  25,16  1.898,71
+
+ 568 443900 SCHNEIDER C MON-TER ( I Avenida Osvaldo Berto, 220                     Itatiba    SPDistrito Industri  4 21,67  25,16  1.887,39
+
+ 569 444338 SCHNEIDER C MON-TER ( I Avenida Osvaldo Berto, 220                     Itatiba    SPDistrito Industri  3  8,16  25,16   740,82
+
+ 0   444067 SCHNEIDER C MAK PAINEIS Rua Osasco, 1231                               Cajamar    SPParque Empresaria 14 71,88 177,60  1.914,54
+
+ 568 435326 BAYER HEALT SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  1  0,51  25,16   499,86
+
+ 568 443461 AK6 EMPREEN SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  7 18,04  21,02   766,12
+
+ 568 2245   INDUSTRIA E SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  1  1,00  21,02  1.769,87
+
+ 568 34557  SCHNEIDER J SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  2 10,00  50,77  5.157,56
+
+ 568 42782  SCHNEIDER S SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  1 10,00  25,16   732,60
+
+ 568 443389 ACECO TI LT SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  2 19,85  21,02  4.311,65
+
+ 569 443460 ELETRICA NE SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  1  1,00  21,02    10,72
+
+ 568 40221\ BARKEV MATE SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  3  3,00  21,02  1.207,17
+     40222\
+     40223
+
+ 568 24268  BARKEV MAT. SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  1  1,00  22,32    37,79
+
+ 569 443407 DIMENSIONAL SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  1 66,00  90,38  9.799,10
+
+ 568 443363 VULKAN DO B SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  2 19,29  25,16  2.610,33
+
+ 569 443270 SPI INTEGRA SCHNEIDER C Avenida Marginal do Ribeirao dos Cristais, 200 Cajamar    SPDistrito de Jorda  2  4,14  21,02  1.161,48
+
+ Total de      CTRC:  17    Coleta:  0                                                                            47 67,15 643,31  6.725,31
+ embarques:
+
+
+ Assinatura Motorista __________________

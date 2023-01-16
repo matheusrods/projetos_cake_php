@@ -1,0 +1,13 @@
+[ACO]
+create;buonny;Treinamentos
+create;buonny/Treinamentos;index
+create;buonny/Treinamentos;listagem
+create;buonny/Treinamentos;incluir
+create;buonny/Treinamentos;editar 
+create;buonny/Treinamentos;treinamento_por_cliente
+create;buonny/Treinamentos;listagem_treinamento_por_cliente
+create;buonny/Atribuicoes;get_campos_atribuicoes
+create;buonny/Ghe;get_campos_ghe
+create;buonny/Setores;get_campos_setores
+create;buonny/Cargos;get_campos_cargos
+create;buonny/Clientes;get_campos_tomador

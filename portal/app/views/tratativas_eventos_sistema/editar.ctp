@@ -1,0 +1,3 @@
+<?php echo $this->BForm->create('TTesiTratativaEventoSistema', array('url' => array('controller' => 'tratativas_eventos_sistema','action' => 'editar', $this->passedArgs[0]), 'enctype' => 'multipart/form-data')); ?>
+<?php echo $this->element('tratativas_eventos_sistema/fields', array('edit_mode' => true)); ?>
+<?php echo $javascript->codeblock('jQuery(document).ready(function() {setup_mascaras(); });'); ?> 

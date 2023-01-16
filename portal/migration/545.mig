@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;Anexos
+create;buonny/Anexos;index
+create;buonny/Anexos;listagem_anexos_reprovados_clientes
+create;buonny/Anexos;anexos_reprovados
+create;buonny/Anexos;listagem_reprovados
+create;buonny/Anexos;modal_reprovados
+create;buonny/Anexos;upload_exame
+create;buonny/Anexos;upload_ficha_clinica

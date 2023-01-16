@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;UnidadesMedicao
+create;buonny/UnidadesMedicao;index
+create;buonny/UnidadesMedicao;listagem
+create;buonny/UnidadesMedicao;incluir
+create;buonny/UnidadesMedicao;editar
+create;buonny/UnidadesMedicao;editar_status

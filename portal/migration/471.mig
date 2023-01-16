@@ -1,0 +1,14 @@
+[ACO]
+create;buonny;PreFaturamento
+create;buonny/PreFaturamento;alterar
+create;buonny/PreFaturamento;gestao
+create;buonny/PreFaturamento;gestao_filtros
+create;buonny/PreFaturamento;gestao_listagem
+create;buonny/PreFaturamento;modal_analise
+create;buonny/PreFaturamento;alertaParaValidador
+
+
+
+
+
+

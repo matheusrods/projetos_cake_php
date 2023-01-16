@@ -1,0 +1,2 @@
+<?php echo $this->BForm->create('ExcecaoFormula', array('url' => array('controller' => 'excecoes_formulas', 'action' => 'editar', $this->passedArgs[0]))); ?>
+<?php echo $this->element('excecoes_formulas/fields'); ?>

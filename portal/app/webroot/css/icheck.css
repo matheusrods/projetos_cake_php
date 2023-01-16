@@ -1,0 +1,49 @@
+/* iCheck plugin Square skin
+			----------------------------------- */
+.icheckbox_square,
+.iradio_square {
+    display: inline-block;
+    *display: inline;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    width: 48px;
+    height: 48px;
+    background: url(/portal/img/todosbem/square@2x.png) no-repeat;
+    border: none;
+    cursor: pointer;
+}
+
+.icheckbox_square {
+    background-position: 0 0;
+}
+.icheckbox_square.hover {
+    background-position: -24px 0;
+}
+.icheckbox_square.checked {
+    background-position: -48px 0;
+}
+.icheckbox_square.disabled {
+    background-position: -72px 0;
+    cursor: default;
+}
+.icheckbox_square.checked.disabled {
+    background-position: -96px 0;
+}
+
+.iradio_square {
+    background-position: -240px 0;
+}
+.iradio_square.hover {
+    background-position: -386px 0;
+}
+.iradio_square.checked {
+    background-position: -336px 0;
+}
+.iradio_square.disabled {
+    background-position: -192px 0;
+    cursor: default;
+}
+.iradio_square.checked.disabled {
+    background-position: -239px 0;
+}

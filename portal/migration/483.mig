@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;MotivosAcrescimo
+create;buonny/MotivosAcrescimo;index
+create;buonny/MotivosAcrescimo;listagem
+create;buonny/MotivosAcrescimo;incluir
+create;buonny/MotivosAcrescimo;editar
+create;buonny/MotivosAcrescimo;atualiza_status

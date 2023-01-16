@@ -1,0 +1,2 @@
+<?php echo $this->BForm->create('TPesiPerifericoSimilar', array('url' => array('controller' => 'perifericos_similares', 'action' => 'incluir'))); ?>
+<?php echo $this->element('perifericos_similares/fields'); ?>

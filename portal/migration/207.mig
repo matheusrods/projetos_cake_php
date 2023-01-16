@@ -1,0 +1,5 @@
+[ACO]
+create;buonny;FornecedoresCapacidadeAgenda
+create;buonny/FornecedoresCapacidadeAgenda;index
+create;buonny/FornecedoresCapacidadeAgenda;listagem
+create;buonny/FornecedoresCapacidadeAgenda;editar

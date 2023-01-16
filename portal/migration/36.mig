@@ -1,0 +1,13 @@
+[ACO]
+create;buonny;GruposEconomicos
+create;buonny/GruposEconomicos;index
+create;buonny/GruposEconomicos;listagem
+create;buonny/GruposEconomicos;incluir
+create;buonny/GruposEconomicos;excluir
+create;buonny/GruposEconomicos;editar
+create;buonny;GruposEconomicosClientes
+create;buonny/GruposEconomicosClientes;index
+create;buonny/GruposEconomicosClientes;incluir
+create;buonny/GruposEconomicosClientes;excluir
+create;buonny/Clientes;carrega_cliente
+create;buonny/Clientes;buscar_codigo

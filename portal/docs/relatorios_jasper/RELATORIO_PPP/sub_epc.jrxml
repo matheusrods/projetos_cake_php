@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_epc" language="groovy" pageWidth="259" pageHeight="802" columnWidth="259" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="1.771561000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppp"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_GRUPOS_EXPOSICAO_RISCO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+CASE
+ger.controle
+WHEN 1 THEN 'Existente'
+WHEN 2 THEN 'Recomendado'
+ELSE 'N/D'
+END
+AS controle,
+ep.nome
+FROM RHHealth.dbo.grupos_exposicao_risco_epc ger
+    INNER JOIN  RHHealth.dbo.epc ep
+        ON(ep.codigo = ger.codigo_epc)
+where ger.codigo_grupos_exposicao_risco = $P{CODIGO_GRUPOS_EXPOSICAO_RISCO}]]>
+	</queryString>
+	<field name="controle" class="java.lang.String"/>
+	<field name="nome" class="java.lang.String"/>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<frame>
+				<reportElement  style="bordered" x="0" y="0" width="259" height="16"/>
+				<textField>
+					<reportElement  x="0" y="1" width="259" height="13"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome} + ' - ' + $F{controle}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

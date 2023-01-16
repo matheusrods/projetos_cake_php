@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_responsavel_monitoracao_bioologica" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="1.7715610000000013"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppp"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="style1" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="style2" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.0"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FUNCIONARIO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+CONVERT(VARCHAR(10), CFL.admissao, 103) AS data_inicial,
+case when (SELECT TOP 1 CONVERT(VARCHAR(10), admissao, 103) AS data_final FROM RHHealth.dbo.cliente_funcionario_log WHERE codigo > CFL.codigo ORDER BY admissao ASC) is null then '' end AS data_final,
+case when ME.nit is NULL then '' end as nit,
+CONCAT(CP.descricao, ': ', ME.numero_conselho) AS conselho_classe,
+case when ME.nome is null then '' end AS nome_profissional
+FROM RHHealth.dbo.cliente_funcionario_log CFL
+    INNER JOIN RHHealth.dbo.funcionarios FU  ON (FU.codigo = CFL.codigo_funcionario)
+    INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo_cliente_funcionario = cfl.codigo
+    inner JOIN RHHealth.dbo.cliente_log CL ON (CL.codigo = CFL.codigo_cliente)
+    LEFT JOIN RHHealth.dbo.medicos ME  ON (ME.codigo = CL.codigo_medico_pcmso)
+    LEFT JOIN RHHealth.dbo.conselho_profissional CP ON (CP.codigo = ME.numero_conselho)
+WHERE CFL.codigo_funcionario = $P{CODIGO_FUNCIONARIO}
+GROUP BY CFL.data_inclusao, CFL.admissao, cfl.codigo, me.nit, cp.descricao, me.numero_conselho, me.nome
+ORDER BY CFL.data_inclusao ASC]]>
+	</queryString>
+	<field name="data_inicial" class="java.lang.String"/>
+	<field name="data_final" class="java.lang.String"/>
+	<field name="nit" class="java.lang.String"/>
+	<field name="conselho_classe" class="java.lang.String"/>
+	<field name="nome_profissional" class="java.lang.String"/>
+	<columnHeader>
+		<band height="22" splitType="Stretch">
+			<frame>
+				<reportElement  style="style1" x="0" y="0" width="555" height="22"/>
+				<staticText>
+					<reportElement  x="5" y="0" width="131" height="22"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[18.1- Período]]></text>
+				</staticText>
+				<line>
+					<reportElement  x="136" y="0" width="1" height="22"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement  x="141" y="0" width="132" height="22"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[18.2 - NIT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="282" y="0" width="131" height="22"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[18.3 - Registro Conselho de Classe]]></text>
+				</staticText>
+				<line>
+					<reportElement  x="277" y="0" width="1" height="22"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement  x="421" y="0" width="132" height="22"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[18.4- Nome do Profissional Legalmente habilitado]]></text>
+				</staticText>
+				<line>
+					<reportElement  x="417" y="0" width="1" height="22"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<frame>
+				<reportElement  style="style2" x="0" y="1" width="555" height="14"/>
+				<textField>
+					<reportElement  x="3" y="1" width="133" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_inicial} + ' até ' + $F{data_final}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement  x="142" y="1" width="133" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA['N/D']]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement  x="282" y="1" width="133" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{conselho_classe}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement  x="422" y="1" width="133" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome_profissional}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement  x="136" y="0" width="1" height="14"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement  x="277" y="0" width="1" height="14"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement  x="417" y="0" width="1" height="14"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

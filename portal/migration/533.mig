@@ -1,0 +1,12 @@
+[ACO]
+create;buonny/AuditoriasNcs;requisitos
+create;buonny/AuditoriasNcs;requisitos_listagem
+create;buonny/AuditoriasNcs;requisitos_incluir
+create;buonny/AuditoriasNcs;requisitos_editar
+create;buonny/AuditoriasNcs;monta_lista_titulos
+create;buonny/AuditoriasNcs;atualiza_status_tema
+create;buonny/AuditoriasNcs;atualiza_status_titulo
+create;buonny/AuditoriasNcs;atualiza_status_requisito
+create;buonny/AuditoriasNcs;confirma_titulo
+create;buonny/AuditoriasNcs;confirma_requisito
+create;buonny/AuditoriasNcs;requisitos_listagem_itens

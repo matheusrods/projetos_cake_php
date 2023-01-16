@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;ConsultaPedidosExames
+create;buonny/ConsultaPedidosExames;baixa_exames_sintetico
+create;buonny/ConsultaPedidosExames;baixa_exames_sintetico_listagem
+create;buonny/ConsultaPedidosExames;baixa_exames_analitico
+create;buonny/ConsultaPedidosExames;baixa_exames_analitico_listagem
+create;buonny/ConsultaPedidosExames;exportExamesBaixados

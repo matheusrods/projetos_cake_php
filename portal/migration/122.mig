@@ -1,0 +1,11 @@
+[ACO]
+create;buonny;Fotos
+create;buonny/Fotos;incluir
+create;buonny/Fotos;editar
+create;buonny/Fotos;listagem
+create;buonny/Fotos;enviar
+create;buonny/Fotos;_upload
+create;buonny/Fotos;remove_arquivo
+create;buonny/PropostasCredenciamento;etapa1
+create;buonny/PropostasCredenciamento;etapa2
+create;buonny/PropostasCredenciamento;minha_proposta

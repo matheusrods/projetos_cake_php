@@ -1,0 +1,5 @@
+[ACO]
+create;buonny;UsuariosIps
+create;buonny/UsuariosIps;listar
+create;buonny;UsuariosLogs
+create;buonny/UsuariosLogs;listar

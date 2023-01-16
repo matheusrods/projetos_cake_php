@@ -1,0 +1,7 @@
+[ACO]
+create;buonny/Importar;importar_pedido_exame
+create;buonny/Importar;exportar_importacao_pedidos_exame_processada
+create;buonny/Importar;eliminar_importacao_pedido_exame
+create;buonny/Importar;gerenciar_importacao_pedidos_exame
+create;buonny/Importar;importacao_pedido_exame_listagem
+create;buonny/Importar;importacao_pedidos_exame

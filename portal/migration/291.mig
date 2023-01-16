@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;PagamentosTransacoes
+create;buonny/PagamentosTransacoes;listar_titulos_pagos
+create;buonny/PagamentosTransacoes;listar_titulos_pagos_por_centro_custo
+create;buonny/PagamentosTransacoes;listar_titulos_pagos_por_centro_custo_sub_codigo
+create;buonny/PagamentosTransacoes;listar_titulos_pagos_por_centro_custo_sub_codigo_conta

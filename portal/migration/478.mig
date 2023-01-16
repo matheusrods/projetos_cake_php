@@ -1,0 +1,3 @@
+[ACO]
+create;buonny/PedidosExames;log_pedidos 
+create;buonny/PedidosExames;get_log_pedidos

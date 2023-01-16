@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_exposicao_fatores_risco" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppp"/>
+	<property name="ireport.jasperserver.url" value="http:// jasperprd.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="borda_nao_cima">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.0"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FUNCIONARIO" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\fabio.potame\\Documents\\relatorio ppp\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+GE.codigo,
+CONVERT(VARCHAR(10), CF.data_inclusao, 103) as inicial,
+(SELECT TOP 1 CONVERT(VARCHAR(10), data_inclusao, 103) as data_inclusao from RHHealth.dbo.cliente_funcionario_log WHERE codigo > CF.codigo ORDER BY admissao ASC) as final,
+CASE
+	WHEN ISNULL(GE.codigo_grupo_homogeneo, 0) > 0 THEN 'GHE'
+	ELSE 'Individual'
+	END AS tipo
+FROM RHHealth.dbo.cliente_funcionario CF
+    INNER JOIN RHHealth.dbo.funcionarios FU ON(FU.codigo = CF.codigo_funcionario)
+	inner join RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo_cliente_funcionario = CF.codigo
+    INNER JOIN RHHealth.dbo.cargos CA  ON(CA.codigo = fsc.codigo_cargo)
+    inner JOIN RHHealth.dbo.setores SE ON(SE.codigo = fsc.codigo_setor)
+    LEFT JOIN RHHealth.dbo.clientes_setores CS ON(CS.codigo_cliente = CF.codigo_cliente)
+    INNER JOIN RHHealth.dbo.grupo_exposicao GE  ON(GE.codigo_cargo = CA.codigo AND GE.codigo_cliente_setor = CS.codigo)
+WHERE CF.codigo_funcionario = $P{CODIGO_FUNCIONARIO}
+GROUP BY CF.data_inclusao, GE.codigo_grupo_homogeneo, CF.codigo, GE.codigo;]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="inicial" class="java.lang.String"/>
+	<field name="final" class="java.lang.String"/>
+	<field name="tipo" class="java.lang.String"/>
+	<columnHeader>
+		<band height="19" splitType="Stretch">
+			<frame>
+				<reportElement  style="bordered" x="0" y="0" width="555" height="19"/>
+				<staticText>
+					<reportElement  x="0" y="2" width="100" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[15.1-Período]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="100" y="2" width="37" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[15.2-Tipo]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="138" y="2" width="68" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[15.3-Fator de
+risco]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="207" y="2" width="78" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[15.4-Intensidade/
+Concentração]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="286" y="2" width="69" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[15.5-Técnica
+utilizada]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="356" y="2" width="68" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[15.6-EPC
+Eficaz]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="425" y="2" width="69" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[15.7-EPI
+Eficaz]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="495" y="2" width="60" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[15.8-CA EPI]]></text>
+				</staticText>
+				<line>
+					<reportElement  x="100" y="0" width="1" height="19"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement  x="137" y="0" width="1" height="19"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement  x="206" y="0" width="1" height="19"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement  x="285" y="0" width="1" height="19"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement  x="355" y="0" width="1" height="19"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement  x="424" y="0" width="1" height="19"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement  x="494" y="0" width="1" height="19"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<frame>
+				<reportElement  style="borda_nao_cima" x="0" y="0" width="555" height="15"/>
+				<textField>
+					<reportElement  x="102" y="0" width="35" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement  x="0" y="0" width="99" height="15"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{inicial} + (($F{final} != null)?  ' até ' + $F{final} : '')]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement  x="100" y="0" width="1" height="15"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement  x="137" y="0" width="1" height="15"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<subreport>
+					<reportElement  x="138" y="0" width="417" height="15"/>
+					<subreportParameter name="CODIGO_GRUPO_EXPOSICAO">
+						<subreportParameterExpression><![CDATA[$F{codigo}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_riscos.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

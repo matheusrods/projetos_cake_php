@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;Atestados
+create;buonny/Atestados;index
+create;buonny/Atestados;incluir
+create;buonny/Atestados;editar
+create;buonny/Atestados;lista_atestados
+create;buonny/Atestados;lista_funcionarios
+create;buonny/Atestados;sub_filtro_cliente_funcionario
+create;buonny/Atestados;retorna_codigo_grupo_economico

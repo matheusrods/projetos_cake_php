@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/ConsultasAgendas;moderacao_anexos
+create;buonny/ConsultasAgendas;moderacao_anexos_listagem
+create;buonny/ConsultasAgendas;modal_avaliacao_anexo
+create;buonny/ConsultasAgendas;salvar_moderacao_status

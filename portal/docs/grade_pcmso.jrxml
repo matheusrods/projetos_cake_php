@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="grade_pcmso" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="93fd2f99-aa4f-445c-a6b0-7dd8b5ef591f">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="CODIGO_EXAME" class="java.lang.Integer"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT exames.descricao AS exame_descricao FROM RHHealth.dbo.itens_pedidos_exames
+    INNER JOIN RHHealth.dbo.pedidos_exames
+        ON (pedidos_exames.codigo = itens_pedidos_exames.codigo_pedidos_exames)
+     INNER JOIN RHHealth.dbo.exames
+        ON (exames.codigo = itens_pedidos_exames.codigo_exame)
+    INNER JOIN RHHealth.dbo.aplicacao_exames
+        ON (aplicacao_exames.codigo_exame = itens_pedidos_exames.codigo_exame)
+     INNER JOIN RHHealth.dbo.cliente_funcionario
+        ON (cliente_funcionario.codigo = pedidos_exames.codigo_cliente_funcionario)
+WHERE pedidos_exames.codigo = ($P!{CODIGO_PEDIDO_EXAME})
+AND aplicacao_exames.codigo_exame in ( 370, 376, 538, 537, 534 ) -- codigo exame]]>
+	</queryString>
+	<field name="exame_descricao" class="java.lang.String"/>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement uuid="faa1794e-e201-44ce-8f34-6658c6643639" x="22" y="2" width="200" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{exame_descricao}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

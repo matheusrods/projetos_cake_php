@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="unidade_per_capita" language="groovy" pageWidth="802" pageHeight="555" orientation="Landscape" columnWidth="802" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="3.890613690150008"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/demonstrativo_percapita_1"/>
+	<property name="ireport.jasperserver.url" value="http:// jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/demonstrativo_percapita_files/unidade_percapita.jrxml"/>
+	<parameter name="MES_REFERENCIA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[9]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ANO_REFERENCIA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[2017]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE_PAGADOR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[20]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_UNIDADE" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+	RHHealth.publico.Ufn_decode_utf8_string(funcionario.nome) AS nome_funcionario,
+	RHHealth.publico.distancia_dois_pontos(funcionario.cpf) AS cpf_funcionario,
+	RHHealth.publico.Ufn_decode_utf8_string(cargo.descricao) AS descricao_cargo,
+	RHHealth.publico.Ufn_decode_utf8_string(setor.descricao) AS descricao_setor,
+	ClienteFuncionario.codigo AS codigo_matricula,
+	COALESCE(ClienteFuncionario.matricula,'') AS matricula,
+	COALESCE(CONVERT(VARCHAR(10),itempedidoalocacao.data_inclusao_cliente_funcionario,103),'') AS data_inclusao,
+	COALESCE(CONVERT(VARCHAR(10),itempedidoalocacao.admissao,103),'') AS data_admissao,
+	COALESCE(CONVERT(VARCHAR(10),itempedidoalocacao.data_demissao,103),'') AS data_demissao,
+	COALESCE(itempedidoalocacao.dias_cobrado,itempedidoalocacao.ultimo_dia_mes,'') AS dias_cobrados,
+	itempedidoalocacao.valor AS valor
+FROM RHHealth.dbo.itens_pedidos_alocacao itempedidoalocacao
+INNER JOIN RHHealth.dbo.pedidos pedido ON itempedidoalocacao.codigo_pedido = pedido.codigo
+INNER JOIN RHHealth.dbo.cliente clientepagador ON itempedidoalocacao.codigo_cliente_pagador = clientepagador.codigo
+INNER JOIN RHHealth.dbo.cliente clientealocacao ON itempedidoalocacao.codigo_cliente_alocacao = clientealocacao.codigo
+INNER JOIN RHHealth.dbo.funcionarios funcionario ON itempedidoalocacao.codigo_funcionario = funcionario.codigo
+INNER JOIN RHHealth.dbo.setores setor ON itempedidoalocacao.codigo_setor = setor.codigo
+INNER JOIN RHHealth.dbo.cargos cargo ON itempedidoalocacao.codigo_cargo = cargo.codigo
+LEFT JOIN RHHealth.dbo.cliente_funcionario ClienteFuncionario ON ClienteFuncionario.codigo = itempedidoalocacao.codigo_cliente_funcionario
+WHERE clientepagador.codigo = $P{CODIGO_CLIENTE_PAGADOR}
+  AND pedido.mes_referencia = $P{MES_REFERENCIA}
+  AND pedido.ano_referencia = $P{ANO_REFERENCIA}
+  AND itempedidoalocacao.codigo_cliente_alocacao = $P{CODIGO_UNIDADE}
+ORDER BY clientepagador.codigo,
+         clientealocacao.codigo,
+         funcionario.nome]]>
+	</queryString>
+	<field name="nome_funcionario" class="java.lang.String"/>
+	<field name="cpf_funcionario" class="java.lang.String"/>
+	<field name="descricao_cargo" class="java.lang.String"/>
+	<field name="descricao_setor" class="java.lang.String"/>
+	<field name="codigo_matricula" class="java.lang.Integer"/>
+	<field name="matricula" class="java.lang.String"/>
+	<field name="data_inclusao" class="java.lang.String"/>
+	<field name="data_admissao" class="java.lang.String"/>
+	<field name="data_demissao" class="java.lang.String"/>
+	<field name="dias_cobrados" class="java.lang.Integer"/>
+	<field name="valor" class="java.math.BigDecimal"/>
+	<variable name="total_cliente_pagador" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{valor}]]></variableExpression>
+		<initialValueExpression><![CDATA[BigDecimal.ZERO]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="12">
+			<staticText>
+				<reportElement x="225" y="2" width="138" height="10" forecolor="#646464"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Setor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="502" y="2" width="61" height="10" forecolor="#646464"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Código Matrícula]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="2" width="163" height="10" forecolor="#646464"/>
+				<textElement>
+					<font fontName="Arial" size="8" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Nome]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="363" y="2" width="139" height="10" forecolor="#646464"/>
+				<textElement>
+					<font fontName="Arial" size="8" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Cargo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="163" y="2" width="62" height="10" forecolor="#646464"/>
+				<textElement>
+					<font fontName="Arial" size="8" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[CPF]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="572" y="2" width="35" height="10" forecolor="#646464"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Matrícula]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="610" y="2" width="50" height="10" forecolor="#646464"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Data Inclusão]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="663" y="2" width="41" height="10" forecolor="#646464"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Admissão]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="707" y="2" width="41" height="10" forecolor="#646464"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Demissão]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="749" y="2" width="17" height="10" forecolor="#646464"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Dias]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="767" y="2" width="35" height="10" forecolor="#646464"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false" isItalic="true" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<textField>
+				<reportElement x="225" y="1" width="138" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descricao_setor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="363" y="1" width="139" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descricao_cargo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="1" width="163" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome_funcionario}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="163" y="1" width="62" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cpf_funcionario}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="610" y="1" width="50" height="10"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data_inclusao}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="663" y="1" width="41" height="10"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data_admissao}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="707" y="1" width="41" height="10"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{data_demissao}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="502" y="1" width="61" height="10"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo_matricula}]]></textFieldExpression>
+			</textField>
+			<textField pattern="¤ #,##0.00">
+				<reportElement x="767" y="1" width="35" height="10"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="572" y="1" width="35" height="10"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{matricula}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="749" y="1" width="17" height="10">
+					<printWhenExpression><![CDATA[$F{dias_cobrados} != 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dias_cobrados}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+</jasperReport>

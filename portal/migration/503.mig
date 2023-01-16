@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;PdaConfigRegra
+create;buonny/PdaConfigRegra;index_pda_regra
+create;buonny/PdaConfigRegra;listagem_pda_regra
+create;buonny/PdaConfigRegra;incluir_pda_regra
+create;buonny/PdaConfigRegra;editar_pda_regra

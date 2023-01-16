@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Demonstrativo de Serviços" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/demostrativo_exame_complementar"/>
+	<property name="ireport.jasperserver.url" value="http:// jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="DATA_FIM" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DATA_INICIAL" class="java.lang.String"/>
+	<parameter name="CODIGO_CLIENTE_PAGADOR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\willians.pedroso\\AppData\\Local\\Temp\\jstmp\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+CASE WHEN acps2.codigo_cliente_pagador IS NOT NULL THEN acli.nome_fantasia ELSE mcli.nome_fantasia END AS nome_pagador,
+convert(varchar(10),CONVERT(date,$P{DATA_INICIAL},106),103) as data_inicial,
+convert(varchar(10),CONVERT(date,$P{DATA_FIM},106),103) as data_fim,
+sum(isnull(acps2.valor, mcps2.valor)) as valor_assinatura
+from RHHealth.dbo.pedidos_exames pe
+left join RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo = pe.codigo_func_setor_cargo
+left join RHHealth.dbo.cliente_funcionario cf on cf.codigo = fsc.codigo_cliente_funcionario
+left join RHHealth.dbo.cliente mcli on mcli.codigo = cf.codigo_cliente_matricula
+left join RHHealth.dbo.cliente acli on acli.codigo = fsc.codigo_cliente_alocacao
+left join RHHealth.dbo.funcionarios f on f.codigo = cf.codigo_funcionario
+inner join RHHealth.dbo.itens_pedidos_exames ipe on ipe.codigo_pedidos_exames = pe.codigo
+left join RHHealth.dbo.itens_pedidos_exames_baixa ipeb on ipeb.codigo_itens_pedidos_exames = ipe.codigo
+inner join RHHealth.dbo.exames e on e.codigo = ipe.codigo_exame
+left join RHHealth.dbo.cliente_produto acp on acp.codigo_cliente = fsc.codigo_cliente_alocacao and acp.codigo_produto = 59
+left join RHHealth.dbo.cliente_produto_servico2 acps2 on acps2.codigo_cliente_produto = acp.codigo and acps2.codigo_servico = e.codigo_servico
+left join RHHealth.dbo.cliente_produto mcp on mcp.codigo_cliente = cf.codigo_cliente_matricula and mcp.codigo_produto = 59
+left join RHHealth.dbo.cliente_produto_servico2 mcps2 on mcps2.codigo_cliente_produto = mcp.codigo and mcps2.codigo_servico = e.codigo_servico
+where ipeb.data_inclusao between $P{DATA_INICIAL} and $P{DATA_FIM}
+	and isnull(acps2.valor, mcps2.valor)>0
+	and isnull(acps2.codigo_cliente_pagador, mcps2.codigo_cliente_pagador) = $P{CODIGO_CLIENTE_PAGADOR}
+GROUP BY CASE WHEN acps2.codigo_cliente_pagador IS NOT NULL THEN acli.nome_fantasia ELSE mcli.nome_fantasia END;]]>
+	</queryString>
+	<field name="nome_pagador" class="java.lang.String"/>
+	<field name="data_inicial" class="java.lang.String"/>
+	<field name="data_fim" class="java.lang.String"/>
+	<field name="valor_assinatura" class="java.math.BigDecimal"/>
+	<group name="grp_cliente_pagador">
+		<groupExpression><![CDATA[$P{CODIGO_CLIENTE_PAGADOR}]]></groupExpression>
+		<groupHeader>
+			<band height="54">
+				<textField pattern="dd/MM/yyyy">
+					<reportElement isPrintRepeatedValues="false" x="0" y="2" width="555" height="14"/>
+					<textElement textAlignment="Center">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Periodo de " + $F{data_inicial} +" até " + $F{data_fim}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement mode="Transparent" x="79" y="16" width="476" height="14"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$P{CODIGO_CLIENTE_PAGADOR} + " - " + $F{nome_pagador}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement mode="Transparent" x="0" y="16" width="79" height="14" forecolor="#646464"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Cliente Pagador:]]></text>
+				</staticText>
+				<line>
+					<reportElement mode="Opaque" x="0" y="51" width="555" height="1" forecolor="#646464"/>
+				</line>
+				<staticText>
+					<reportElement mode="Transparent" x="0" y="36" width="79" height="14" forecolor="#646464"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Produto:]]></text>
+				</staticText>
+				<line>
+					<reportElement mode="Opaque" x="0" y="31" width="555" height="1" forecolor="#646464"/>
+				</line>
+				<staticText>
+					<reportElement mode="Transparent" x="79" y="36" width="219" height="14" forecolor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Arial" size="10" isBold="true" isItalic="false"/>
+					</textElement>
+					<text><![CDATA[Exames Complementares]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="33">
+				<staticText>
+					<reportElement x="354" y="5" width="118" height="20"/>
+					<textElement>
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Total Cliente Pagador:]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="441" y="5" width="109" height="20"/>
+					<textElement textAlignment="Right">
+						<font fontName="Arial" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{valor_assinatura}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement mode="Opaque" x="0" y="20" width="555" height="1" forecolor="#646464"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="37" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="0" width="555" height="21"/>
+				<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="18" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Demonstrativo de Serviços]]></text>
+			</staticText>
+			<line>
+				<reportElement mode="Opaque" x="0" y="31" width="555" height="1"/>
+			</line>
+			<textField>
+				<reportElement mode="Transparent" x="455" y="21" width="100" height="10" forecolor="#646464"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isItalic="true" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="2" y="0" width="79" height="32"/>
+				<imageExpression><![CDATA["repo:file_1506606255695.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="59">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="59"/>
+				<subreportParameter name="DATA_FIM">
+					<subreportParameterExpression><![CDATA[$P{DATA_FIM}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATA_INICIAL">
+					<subreportParameterExpression><![CDATA[$P{DATA_INICIAL}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE_PAGADOR">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE_PAGADOR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:unidade_funcionario_exame"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="42" splitType="Stretch">
+			<textField>
+				<reportElement mode="Transparent" x="455" y="2" width="100" height="10"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}.toString()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement mode="Opaque" x="0" y="1" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="2" width="229" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[Buonny Projetos e Serviços]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

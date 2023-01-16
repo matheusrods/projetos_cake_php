@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_distribuicao_cargos" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="1.5421731577181266"/>
+	<property name="ireport.x" value="19"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppra"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/relatorio_ppra_files/relatorio_distribuicao_cargos.jrxml"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="0"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="1000"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Produção)"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="BORDER-DOWN" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.0"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<style name="BORDERED" mode="Opaque">
+		<pen lineWidth="1.0"/>
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String"/>
+	<parameter name="IMP_SETOR_CARGO_VAZIO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+	( SELECT
+count(scf.codigo) as count
+from RHHealth.dbo.cliente_funcionario scf
+       INNER JOIN RHHealth.dbo.funcionario_setores_cargos fscc
+        ON(fscc.codigo_cliente_funcionario = scf.codigo AND fscc.codigo = (select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_funcionario = scf.codigo order by 1 desc))
+where fscc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+AND fscc.codigo_setor = csc.codigo_setor
+AND fscc.codigo_cargo = csc.codigo_cargo
+AND scf.ativo <> 0
+) as count,
+    RHHealth.publico.Ufn_decode_utf8_string(ISNULL(ghe.descricao, '')) AS descricao_grupo_homogeneo,
+    RHHealth.publico.Ufn_decode_utf8_string(ISNULL(se.descricao, '')) AS descricao_setor,
+    RHHealth.publico.Ufn_decode_utf8_string(ISNULL(ca.descricao, '')) AS descricao_cargo
+FROM RHHealth.dbo.clientes_setores_cargos csc
+    LEFT JOIN RHHealth.dbo.grupos_homogeneos_exposicao_detalhes ghed
+        ON(ghed.codigo_setor = csc.codigo_setor AND ghed.codigo_cargo = csc.codigo_cargo)
+    LEFT JOIN RHHealth.dbo.grupos_homogeneos_exposicao ghe
+        ON(ghe.codigo = ghed.codigo_grupo_homogeneo)
+    INNER JOIN RHHealth.dbo.setores se
+        ON(se.codigo = csc.codigo_setor)
+    INNER JOIN RHHealth.dbo.cargos ca
+        ON(ca.codigo = csc.codigo_cargo)
+WHERE csc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE} AND ca.ativo = 1 AND se.ativo = 1
+AND (SELECT COUNT(scf.codigo) AS count
+     FROM RHHealth.dbo.cliente_funcionario scf
+      INNER JOIN RHHealth.dbo.funcionario_setores_cargos fscc ON (fscc.codigo_cliente_funcionario = scf.codigo
+       AND fscc.codigo = (SELECT TOP 1 codigo
+		FROM RHHealth.dbo.funcionario_setores_cargos
+		WHERE codigo_cliente_funcionario = scf.codigo
+		ORDER BY 1 DESC))
+     WHERE fscc.codigo_cliente_alocacao = $P{CODIGO_CLIENTE}
+       AND fscc.codigo_setor = csc.codigo_setor
+       AND fscc.codigo_cargo = csc.codigo_cargo
+       AND scf.ativo <> 0) >= $P{IMP_SETOR_CARGO_VAZIO}
+GROUP BY csc.codigo_setor, csc.codigo_cargo, ghe.descricao, se.descricao, ca.descricao]]>
+	</queryString>
+	<field name="count" class="java.lang.Integer"/>
+	<field name="descricao_grupo_homogeneo" class="java.lang.String"/>
+	<field name="descricao_setor" class="java.lang.String"/>
+	<field name="descricao_cargo" class="java.lang.String"/>
+	<columnHeader>
+		<band height="22">
+			<frame>
+				<reportElement style="BORDERED" mode="Transparent" x="0" y="0" width="555" height="21" />
+				<line>
+					<reportElement x="155" y="0" width="1" height="21" />
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="312" y="0" width="1" height="21" />
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="451" y="0" width="1" height="21" />
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="0" y="0" width="155" height="21" />
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SETOR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="156" y="0" width="155" height="21" />
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CARGO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="314" y="0" width="138" height="21" />
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[GHE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="452" y="0" width="103" height="21" />
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[QUANT. FUNCIONÁRIOS]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<frame>
+				<reportElement style="BORDER-DOWN" x="0" y="0" width="555" height="20" />
+				<textField>
+					<reportElement x="0" y="0" width="155" height="20" />
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descricao_setor}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="156" y="0" width="155" height="20" />
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descricao_cargo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="452" y="0" width="103" height="20" />
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{count}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="155" y="0" width="1" height="20" />
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="312" y="0" width="1" height="20" />
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="451" y="0" width="1" height="20" />
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<textField>
+					<reportElement x="314" y="0" width="138" height="20" />
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descricao_grupo_homogeneo}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

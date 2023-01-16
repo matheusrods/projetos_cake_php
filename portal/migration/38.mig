@@ -1,0 +1,16 @@
+[ACO]
+create;buonny;Fornecedores
+create;buonny/Fornecedores;index
+create;buonny/Fornecedores;listagem
+create;buonny/Fornecedores;incluir
+create;buonny/Fornecedores;carrega_combos_formulario
+create;buonny/Fornecedores;editar
+create;buonny/Fornecedores;usuarios
+create;buonny/Fornecedores;buscar_codigo
+create;buonny/Fornecedores;listagem_visualizar
+create;buonny/Fornecedores;auto_completar
+create;buonny/Fornecedores;contatos_por_fornecedores
+create;buonny/Fornecedores;preparaDados
+create;buonny/Fornecedores;atualizar
+create;buonny/Fornecedores;excluir
+create;buonny/Fornecedores;listar

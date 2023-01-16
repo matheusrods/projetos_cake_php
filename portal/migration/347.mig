@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;RemessaBancaria
+create;buonny/RemessaBancaria;index
+create;buonny/RemessaBancaria;listagem
+create;buonny/RemessaBancaria;gerar_remessa
+create;buonny/RemessaBancaria;importar_remessa
+create;buonny/RemessaBancaria;importar_retorno

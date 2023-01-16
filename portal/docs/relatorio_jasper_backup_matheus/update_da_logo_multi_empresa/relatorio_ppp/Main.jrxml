@@ -1,0 +1,1011 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="previdencia_social" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f7d6eada-08ba-4943-9a52-f03de57744ca">
+	<property name="ireport.zoom" value="1.9487171000000123"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="538"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppp"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FUNCIONARIO" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\RELATORIO_PPP\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+TOP 1
+CASE
+  WHEN cl.codigo_documento_real IS NULL THEN RHHealth.publico.ufn_formata_cnpj(cl.codigo_documento)
+  WHEN cl.codigo_documento_real = '' THEN RHHealth.publico.ufn_formata_cnpj(cl.codigo_documento)
+  ELSE RHHealth.publico.ufn_formata_cnpj(cl.codigo_documento_real)
+  END AS codigo_documento,
+(
+SELECT DISTINCT count(cf2.codigo) FROM RHHealth.dbo.cliente_funcionario cf2
+    INNER JOIN RHHealth.dbo.funcionarios fu2
+        ON(fu2.codigo = cf2.codigo_funcionario AND fu2.deficiencia > 0)
+WHERE cf2.codigo_cliente = cl.codigo
+) AS br_pdh,
+cl.codigo,
+cl.razao_social,
+cl.cnae,
+fu.codigo AS codigo_funcionario,
+fu.nome,
+me.codigo,
+ISNULL(me.nome, '') AS profissional_responsavel,
+ISNULL(me.nit, '') AS profissional_nit,
+ISNULL(fu.nit, '') AS nit,
+CONVERT(NVARCHAR, fu.data_nascimento, 103) AS data_nascimento,
+CASE fu.sexo
+WHEN 'M' THEN 'Masculino'
+WHEN 'F' THEN 'Feminino'
+END AS sexo,
+ISNULL(fu.ctps, '') AS ctps,
+CONVERT(NVARCHAR, cf.admissao, 103) as admissao
+FROM RHHealth.dbo.cliente_funcionario cf
+   INNER JOIN RHHealth.dbo.funcionarios fu ON(fu.codigo = cf.codigo_funcionario)
+   INNER JOIN RHHealth.dbo.funcionario_setores_cargos fsc ON (cf.codigo = fsc.codigo_cliente_funcionario)
+   INNER JOIN RHHealth.dbo.cliente cl ON (cl.codigo = fsc.codigo_cliente_alocacao)
+   LEFT JOIN RHHealth.dbo.medicos ME ON(me.codigo = cl.codigo_medico_responsavel)
+WHERE cf.codigo_funcionario = $P{CODIGO_FUNCIONARIO}
+ORDER BY cf.admissao DESC]]>
+	</queryString>
+	<field name="br_pdh" class="java.lang.Integer"/>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="codigo_funcionario" class="java.lang.Integer"/>
+	<field name="codigo_documento" class="java.lang.String"/>
+	<field name="razao_social" class="java.lang.String"/>
+	<field name="cnae" class="java.lang.String"/>
+	<field name="nome" class="java.lang.String"/>
+	<field name="profissional_responsavel" class="java.lang.String"/>
+	<field name="profissional_nit" class="java.lang.String"/>
+	<field name="nit" class="java.lang.String"/>
+	<field name="data_nascimento" class="java.lang.String"/>
+	<field name="sexo" class="java.lang.String"/>
+	<field name="ctps" class="java.lang.String"/>
+	<field name="admissao" class="java.lang.String"/>
+	<columnHeader>
+		<band height="62" splitType="Stretch">
+			<image>
+				<reportElement x="206" y="0" width="143" height="62" uuid="cc8c851b-cfb2-474d-9217-2d0487f8f145"/>
+				<imageExpression><![CDATA["repo:logo_previdecia_social.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="450" y="5" width="100" height="40" uuid="a87b8118-dfe1-4d98-be08-78702c08e98f">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="253" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="11" width="555" height="23" uuid="42a82f35-23db-4821-b516-6abc6463b8e5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ANEXO XV
+INSTRUÇÃO NORMATIVA Nº 77 /PRES/INSS, DE 21 DE JANEIRO DE 2015]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="33" width="555" height="14" forecolor="#FF0000" uuid="ab90fa0f-c4a8-49e9-8702-5bd096170a59"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[(Revogado pela IN INSS/PRES nº 85, de 18/02/2016 - DOU de 19/02/2016)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="46" width="555" height="14" uuid="01c86c17-9ab4-45a2-bdf7-c355ac7aeda1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PERFIL PROFISSIOGRÁFICO PREVIDENCIÁRIO – PPP]]></text>
+			</staticText>
+			<frame>
+				<reportElement style="bordered" x="0" y="70" width="555" height="141" uuid="93c8c701-4724-448f-a920-0fc8963efa87"/>
+				<staticText>
+					<reportElement x="5" y="1" width="100" height="10" uuid="af2b236e-0db4-461e-822d-310687a2c888"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[DADOS ADMINISTRATIVOS]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="11" width="555" height="1" uuid="fb9b019d-6961-4b9d-bf30-dde1cad77d6e"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="12" width="252" height="10" uuid="2e2752dd-5a93-4c1f-af1d-5093faeaa55a"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[1-CNPJ do Domicílio Tributário/CEI:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="262" y="12" width="184" height="10" uuid="5fa39eb2-52c9-48dc-9655-a10ae0637993"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[2-Nome Empresarial:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="451" y="12" width="100" height="10" uuid="e5e46820-577b-47f2-89c9-79eefcbe6a0e"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[3-CNAE:]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="33" width="555" height="1" uuid="95728a7b-d813-480d-96d9-9be9d859546f"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="259" y="12" width="1" height="21" uuid="c73336fc-680e-48b9-843e-28d779bffe6a"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="446" y="12" width="1" height="21" uuid="bed271c5-7c4e-4d73-8d99-fbda9d260fbd"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="446" y="34" width="1" height="21" uuid="1b7dd820-27b8-407b-88fc-ea4bf3ed7506"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="261" y="34" width="184" height="10" uuid="3572a8ac-95b5-48b3-a1c5-9485ac2572b9"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[5-BR/PDH]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="55" width="555" height="1" uuid="98ce26d4-fd49-40a9-a80d-e2713efee291"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="451" y="34" width="100" height="10" uuid="e2acb55d-d955-4dd8-8c0b-d9c0d255ed2f"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[6-NIT]]></text>
+				</staticText>
+				<line>
+					<reportElement x="259" y="34" width="1" height="21" uuid="d8dca800-baf6-471d-b386-63ecb7d63c92"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="34" width="252" height="10" uuid="e2310de7-b5ac-49b3-bf7a-58ebd73cadea"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[4-Nome do Trabalhador]]></text>
+				</staticText>
+				<line>
+					<reportElement x="446" y="56" width="1" height="21" uuid="05c3bded-d4fa-4cbd-84d1-18cc6f40f2f4"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="77" width="555" height="1" uuid="50738f6a-cf13-4b79-a387-29ac48e4ef67"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="448" y="56" width="107" height="10" uuid="906b9140-3133-4a8e-b98e-6ba668e4903f"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[11-Regime Revezamento]]></text>
+				</staticText>
+				<line>
+					<reportElement x="183" y="56" width="1" height="21" uuid="7bb7b8c5-f95e-461e-ab6b-b8b6694efab8"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="56" width="86" height="10" uuid="89d0ed2d-4bbe-4184-a5b3-86f419df1221"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[7-Data de Nascimento]]></text>
+				</staticText>
+				<line>
+					<reportElement x="91" y="56" width="1" height="22" uuid="81dbea88-990a-418a-8ba2-19e3d04c109b"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="96" y="56" width="86" height="10" uuid="be52d2ac-40a6-4334-89be-edd51d79c295"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[8-Sexo (F/M)]]></text>
+				</staticText>
+				<line>
+					<reportElement x="343" y="56" width="1" height="22" uuid="abea3fed-f3a1-4d05-9d08-908b11429918"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="188" y="56" width="154" height="10" uuid="4978a93f-ea37-4c98-bb05-086bc89bb1b9"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[9- CTPS (Nº, Série e UF)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="348" y="56" width="97" height="10" uuid="f413fe8b-f968-4335-bb67-0908c14bf2e3"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[10-Data de Admissão]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="80" width="545" height="10" uuid="147b1719-af3b-478e-ab3b-6514cc38ede8"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[12-CAT REGISTRADA:]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="92" width="555" height="1" uuid="4a03daa7-613c-429d-b946-a37ab00906d4"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="112" width="555" height="1" uuid="aed5b78f-9640-4c9f-b9b0-b36ab1995029"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="142" y="93" width="1" height="19" uuid="d3f99478-6f62-452c-b612-541a7e739c82"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="275" y="93" width="1" height="19" uuid="563e3e02-544d-4eab-94f6-3ba1482be224"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="421" y="93" width="1" height="19" uuid="0b619ec5-999f-4e47-844f-4f1ed09eeaad"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="95" width="86" height="10" uuid="a5e99f89-2bd4-4b44-b483-03a39f31adf3"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[12.1-Data do Registro]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="148" y="95" width="86" height="10" uuid="8adbef00-ad68-41d5-8a56-cd74b3377d9c"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[12.2-Número da CAT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="281" y="95" width="86" height="10" uuid="6b4425c7-9996-4e00-8ca5-79fba6455c22"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[12.1-Data do Registro]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="427" y="95" width="86" height="10" uuid="e60102e3-6ddf-4b20-a009-6b7be817d8c6"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[12.2-Número da CAT]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="5" y="22" width="252" height="12" uuid="ea94bd5d-6f34-4f4b-839e-eabfc8dd9b4b"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{codigo_documento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="262" y="22" width="184" height="12" uuid="ebbc26cf-1602-43fc-b344-a54f3149f14c"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{razao_social}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="451" y="22" width="97" height="12" uuid="1f115f48-947e-492e-b724-29690b0139eb"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cnae}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="43" width="252" height="12" uuid="daeeb31b-3f07-414f-81aa-e757831ce392"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="451" y="43" width="97" height="12" uuid="72435cbf-8b7a-4c36-9626-a60d1bd87a40"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nit}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="5" y="65" width="85" height="12" uuid="4e241fa7-8325-4f02-b374-275ac7559a96"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{data_nascimento}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="96" y="65" width="85" height="12" uuid="293d36c0-535d-4250-b2c9-c64e6058e1d4"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{sexo}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="188" y="65" width="155" height="12" uuid="0ff9e863-6693-4015-965d-e559741acb59"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{ctps}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="348" y="65" width="97" height="12" uuid="78bdae25-a9cc-4698-bd1c-373355c443f3"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{admissao}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="5" y="115" width="545" height="10" uuid="bdc37fac-9be8-4ace-8d66-48af0e15ae5b"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[13- LOTAÇÃO E ATRIBUIÇÃO:]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="127" width="555" height="1" uuid="f9c130de-02e9-40c4-8d3c-b0a1d2ff0a89"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="128" width="91" height="10" uuid="37e440cf-c310-479d-8dca-1723da581ac9"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[13.1- Período]]></text>
+				</staticText>
+				<line>
+					<reportElement x="98" y="128" width="1" height="13" uuid="19c02e37-c5d9-4f61-8033-7078dbf5480b"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="103" y="128" width="72" height="10" uuid="9e8c68a8-4ff7-4acb-bfec-0d64676047ef"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[13.2-CNPJ/CEI
+]]></text>
+				</staticText>
+				<line>
+					<reportElement x="178" y="128" width="1" height="13" uuid="e1b060a9-321d-4c9b-9399-84c1b484aee8"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="184" y="128" width="67" height="10" uuid="52e0ed1d-1d42-4547-a556-26ae4fc81269"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[13.3-Setor]]></text>
+				</staticText>
+				<line>
+					<reportElement x="252" y="128" width="1" height="13" uuid="748b5efe-3171-4d8f-a728-1ae2b1da7b51"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="327" y="128" width="1" height="13" uuid="c732a131-b0b6-4324-87b5-604b60443fff"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="257" y="128" width="67" height="10" uuid="6386417c-24c1-4da8-9c8c-139a4ea971b0"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[13.4-Cargo]]></text>
+				</staticText>
+				<line>
+					<reportElement x="404" y="128" width="1" height="13" uuid="562388be-277b-4fe3-a402-0625594f85f0"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="332" y="128" width="67" height="10" uuid="576ef1f1-d8c2-4ace-8b42-02137f1a4282"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[13.5-Função]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="409" y="128" width="67" height="10" uuid="3c16f3ad-f1ba-4efb-98dc-b5f785f528d2"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[13.6-CBO]]></text>
+				</staticText>
+				<line>
+					<reportElement x="479" y="128" width="1" height="13" uuid="8e5072ea-1dc9-4f46-8437-771553882643"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="483" y="128" width="67" height="10" uuid="6455b200-123e-45f6-9306-01feba0c26ed"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[13.7-Código GFIP]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="261" y="43" width="184" height="12" uuid="29142828-b4ef-4e0f-b9e7-dbd39bba32dc"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{br_pdh}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<subreport>
+				<reportElement stretchType="RelativeToBandHeight" x="1" y="212" width="554" height="40" uuid="1331b311-2ed8-4e23-ae16-fcda34d048cb"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_FUNCIONARIO">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FUNCIONARIO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_lotacao_e_atribuicao.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="69">
+			<subreport>
+				<reportElement x="0" y="30" width="555" height="38" uuid="8c8647a5-0541-49bb-ab3f-c6a45d7cd3bb"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_FUNCIONARIO">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FUNCIONARIO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_profissiografia.jrxml"]]></subreportExpression>
+			</subreport>
+			<frame>
+				<reportElement style="bordered" x="0" y="1" width="555" height="27" uuid="c41cfd36-3838-4443-af1c-2089957d9600"/>
+				<staticText>
+					<reportElement x="5" y="16" width="91" height="10" uuid="766edacb-64f1-4f7e-805d-38f5a7193370"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[14.1- Período]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="13" width="555" height="1" uuid="0f5941c6-ef24-4169-a334-9bc2bb025a09"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="96" y="14" width="1" height="13" uuid="66c75bb1-61b6-43b1-a34a-e6702cacd25a"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="2" width="545" height="10" uuid="408f2f21-955b-4bec-b7d4-0935309fa28d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[14- PROFISSIOGRAFIA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="102" y="16" width="445" height="10" uuid="06370bba-6e68-4982-8b4c-01aedca0b72f"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[14.2- Descrição das Atividades]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="63">
+			<frame>
+				<reportElement style="bordered" x="0" y="5" width="555" height="27" uuid="fee687aa-f7d3-45ff-8e57-13c615dfe916"/>
+				<line>
+					<reportElement x="0" y="12" width="555" height="1" uuid="793a0e21-de80-4c2d-8570-fb1cf0189151"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="3" y="15" width="545" height="10" uuid="45052415-8a46-4bd6-aab6-1e9ba53f4ebd"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[15- EXPOSIÇÃO A FATORES DE RISCOS:
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="3" y="1" width="100" height="10" uuid="879653c9-7e1c-4989-9013-a7ba1d2b58cf"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[REGISTROS AMBIENTAIS]]></text>
+				</staticText>
+			</frame>
+			<subreport>
+				<reportElement x="0" y="32" width="554" height="31" uuid="c8488e51-d6a2-441f-b791-c9fe58ecd0fb"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_FUNCIONARIO">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FUNCIONARIO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_exposicao_fatores_risco.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="192">
+			<frame>
+				<reportElement style="bordered" x="0" y="-1" width="555" height="139" uuid="5e05e98c-15b8-452d-bb5a-a3895a8b27a0"/>
+				<line>
+					<reportElement x="0" y="12" width="555" height="1" uuid="c1cb06bb-e525-472c-a958-2f12727af825"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="88" width="555" height="1" uuid="2878cddf-afb7-49cd-adcd-a31c63cc3259"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="114" width="555" height="1" uuid="2059512b-77d5-4f4b-ad0b-f6f5af91f674"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="38" width="555" height="1" uuid="734e344f-40de-4328-9039-d5a25a89ee69"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="64" width="555" height="1" uuid="441a54fe-5d24-4055-b612-21850529d4c3"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="1" y="40" width="493" height="23" uuid="2cba65eb-d686-4472-a8da-0f92fc7e3411"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Foram observadas as condições de funcionamento e do uso ininterrupto do EPI ao longo do tempo, conforme especificação técnica do fabricante, ajustada às condições de campo.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="3" y="1" width="491" height="10" uuid="a9d2dadd-ac5b-4b6a-ab02-3ed213471f3d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[15.9- ATENDIMENTO AOS REQUISITOS DAS NR-06 E NR-09 DO MTE PELOS EPI INFORMADOS:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="495" y="1" width="59" height="10" uuid="bdd8f692-cec8-4efd-8dae-00bb9494a8a7"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Sim/Não]]></text>
+				</staticText>
+				<line>
+					<reportElement x="494" y="0" width="1" height="12" uuid="ed963e72-3e2d-4a4a-a87b-cf98be0313d6"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="1" y="14" width="493" height="23" uuid="bea184fd-7ba3-454a-8734-db8705539241"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Foi tentada a implementação de medidas de proteção coletiva, de caráter administrativo ou de organização do trabalho, optando-se pelo EPI por inviabilidade técnica, insuficiência ou interinidade, ou ainda em caráter complementar ou emergencial.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="494" y="115" width="1" height="24" uuid="4968b9e6-5c70-4e79-9283-48a046e5e068"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="494" y="89" width="1" height="26" uuid="a6ba6560-427e-4f80-9384-b2584241d7c1"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="2" y="65" width="493" height="23" uuid="e405541c-6c9c-4f51-969f-c920fd164056"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Foi observado o prazo de validade, conforme Certificado de Aprovação – CA do MTE.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="2" y="90" width="493" height="23" uuid="f54f6e30-a4a7-4790-bd38-a46c134e477f"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Foi observada a periodicidade de troca definida pelos programas ambientais, comprovada mediante recibo assinado pelo usuário em época própria.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="494" y="13" width="1" height="25" uuid="a36b3ff1-1ab3-4c09-9553-05b9ed318cd6"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="2" y="115" width="493" height="23" uuid="c9c8031f-61da-4659-8092-97b216f915aa"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[Foi observada a higienização.]]></text>
+				</staticText>
+				<line>
+					<reportElement x="494" y="65" width="1" height="24" uuid="dfdd3125-8c71-4fe8-a5b1-63154a8c894f"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="494" y="39" width="1" height="25" uuid="a029bef5-bea8-44c7-84c4-4680983adf99"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="138" width="555" height="14" uuid="63973389-b226-49e9-a741-735678c553a1"/>
+				<staticText>
+					<reportElement x="5" y="2" width="493" height="10" uuid="84861059-7ae8-40b3-99d4-bb792d4533aa"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[16- RESPONSÁVEL PELOS REGISTROS AMBIENTAIS:]]></text>
+				</staticText>
+			</frame>
+			<subreport>
+				<reportElement x="0" y="152" width="555" height="40" uuid="895818d2-2314-4e14-ba3a-bafea7ef9c55"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$F{codigo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_FUNCIONARIO">
+					<subreportParameterExpression><![CDATA[$F{codigo_funcionario}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_responsavel_registros_ambientais.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="104">
+			<frame>
+				<reportElement style="bordered" x="0" y="2" width="555" height="45" uuid="1455e553-659e-48b1-a8be-0095acb9ca54"/>
+				<line>
+					<reportElement x="0" y="28" width="555" height="1" uuid="95b2933a-f6a8-440c-a562-3aefbaa73ac8"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="15" width="555" height="1" uuid="56a8b57e-eff1-41b7-b152-4cff2934cb4b"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="17" width="545" height="10" uuid="56a75462-eb9b-421d-8101-015940a988b6"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<text><![CDATA[17-EXAMES MÉDICOS CLÍNICOS E COMPLEMENTARES (Quadros I e II, da NR-07):
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="4" width="545" height="10" uuid="aa447280-c9f9-40db-abc6-7c9140e86f59"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[RESULTADOS DE MONITORAÇÃO BIOLÓGICA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="4" y="32" width="100" height="10" uuid="e5ac02c3-2a95-4ed8-baae-ce37a5b28781"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[17.1- Data]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="116" y="32" width="100" height="10" uuid="dbe9c1e4-c570-4ba1-83e4-80e2bdd989b3"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[17.2-Tipo]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="226" y="32" width="100" height="10" uuid="856c934a-2e8f-4743-891f-6149ed189b2b"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[17.3- Natureza]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="337" y="32" width="100" height="10" uuid="f132a7cc-2120-4b48-ae83-f610735537f7"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[17.4- Exame (R/S)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="448" y="32" width="100" height="10" uuid="3d45d332-4070-43cc-b240-4dc9c86c97ff"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[17.5- Indicação de Resultados]]></text>
+				</staticText>
+				<line>
+					<reportElement x="110" y="29" width="1" height="16" uuid="f3b338e5-7f95-4903-9e66-40ddebbf556a"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="221" y="29" width="1" height="16" uuid="325f1ffb-1629-465a-a93e-e798cb898e29"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="331" y="29" width="1" height="16" uuid="d4e12329-3948-4e5d-926e-5eadb402d5b3"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="443" y="29" width="1" height="16" uuid="b49231bd-c519-478a-8f40-552010b4041b"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="50" width="555" height="14" uuid="5da3cdee-a932-462c-9c27-5b7792deb079"/>
+				<staticText>
+					<reportElement x="5" y="4" width="493" height="10" uuid="57fd82b0-c34a-4777-be96-e2e59c1737f0"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[18- RESPONSÁVEL PELA MONITORAÇÃO BIOLÓGICA:]]></text>
+				</staticText>
+			</frame>
+			<subreport>
+				<reportElement x="0" y="64" width="556" height="40" uuid="944746e7-6a21-474c-8165-9cec4b46f902"/>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$F{codigo}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_responsavel_monitoracao_bioologica.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="248">
+			<frame>
+				<reportElement style="bordered" x="0" y="0" width="555" height="89" uuid="3acab304-a01c-409d-a36e-1a813363ee92"/>
+				<line>
+					<reportElement x="0" y="15" width="555" height="1" uuid="2dc532ce-8652-4f88-a11e-51420cd9f717"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="5" y="17" width="545" height="71" uuid="15a76aa1-2c55-4328-850a-e4aa427a3a07"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8" isBold="false" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[	Declaramos, para todos os fins de direito, que as informações prestadas neste documento são verídicas e foram transcritas fielmente dos registros administrativos, das demonstrações ambientais e dos programas médicos de responsabilidade da empresa. É de nosso conhecimento que a prestação de informações falsas neste documento constitui crime de falsificação de documento público. nos termos do art. 297 do Código Penal e, também, que tais informações são de caráter privativo do trabalhador, constituindo crime, nos termos da lei nº 9.029 de 13 de abril de 1995, práticas discriminatórias decorrentes de sua exigibilidade por outrem, bem como de sua divulgação para terceiros, ressalvado quando exigida pelos órgãos públicos competentes]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="4" width="545" height="10" uuid="ddf4585b-8b20-452a-9403-8f49659b7186"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[RESPONSÁVEIS PELAS INFORMAÇÕES]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="89" width="555" height="100" uuid="a469f6cd-2f79-4cae-bfa8-606e306eb844"/>
+				<staticText>
+					<reportElement x="5" y="2" width="100" height="10" uuid="4a176992-a6b1-4c25-8413-e6efb240d12d"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[19- Data emissão PPP]]></text>
+				</staticText>
+				<line>
+					<reportElement x="105" y="0" width="1" height="100" uuid="bed47381-cd1a-4c50-9601-ece593e8e403"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<line>
+					<reportElement x="0" y="15" width="555" height="1" uuid="bca7bb39-5a8e-434c-b661-9b7888b6c171"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="110" y="2" width="441" height="10" uuid="c18cbfe4-816b-406d-8ba2-b38cc9386772"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[20- REPRESENTAÇÃO LEGAL DA  EMPRESA]]></text>
+				</staticText>
+				<line>
+					<reportElement x="106" y="51" width="449" height="1" uuid="6a8280e8-87a5-4fa1-802e-450a52fd3870"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="110" y="18" width="135" height="10" uuid="cbf307a0-2dae-4236-b21d-0149faa841a7"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[20.1- NIT]]></text>
+				</staticText>
+				<line>
+					<reportElement x="245" y="16" width="1" height="84" uuid="a176fab0-e881-4edb-83f7-45457586dcdb"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<staticText>
+					<reportElement x="251" y="18" width="135" height="10" uuid="26291c32-d81f-4592-83f1-aadede66b6b1"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[20.2- Nome]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="109" y="83" width="135" height="10" uuid="ba5500be-d3b3-4a55-8dc4-94d2871679ad"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[(Carimbo)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="329" y="89" width="135" height="10" uuid="0ece980c-b858-4f18-9ddd-ccc441eeebae"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[(Assinatura)]]></text>
+				</staticText>
+				<line>
+					<reportElement x="307" y="86" width="187" height="1" uuid="5316e50b-1cfb-4e0c-8f28-4eeff299be09"/>
+					<graphicElement>
+						<pen lineWidth="0.5"/>
+					</graphicElement>
+				</line>
+				<textField>
+					<reportElement x="262" y="28" width="285" height="20" uuid="f2969497-120f-4744-a07c-ced689255487"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{profissional_responsavel}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="120" y="29" width="114" height="20" uuid="b2bf959c-27cb-44a7-9648-92fc3ae74a12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{profissional_nit}]]></textFieldExpression>
+				</textField>
+				<textField pattern="dd/MM/yyyy">
+					<reportElement x="3" y="16" width="100" height="83" uuid="d66a0102-f370-4598-b049-c283e00f6dbd"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="189" width="555" height="14" uuid="fc7d7565-a82e-4fcc-80ff-d50a4083bd08"/>
+				<staticText>
+					<reportElement x="5" y="2" width="135" height="10" uuid="2211f426-eea8-43db-a656-929969869f93"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<text><![CDATA[OBSERVAÇÕES:]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement style="bordered" x="0" y="203" width="555" height="44" uuid="ecbdabc7-d38d-474f-b51e-3d5a84635c83"/>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="31" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band/>
+	</pageFooter>
+</jasperReport>

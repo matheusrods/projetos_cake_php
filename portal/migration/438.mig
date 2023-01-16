@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/NotasFiscaisServico;demonstrativo_contas_medicas
+create;buonny/NotasFiscaisServico;demonstrativo_contas_medicas_listagem
+create;buonny/NotasFiscaisServico;listagem_demonstrativo_contas_medicas

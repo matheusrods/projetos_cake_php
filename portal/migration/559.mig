@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Competencias
+create;buonny/Competencias;index
+create;buonny/Competencias;listagem
+create;buonny/Competencias;incluir
+create;buonny/Competencias;editar 
+create;buonny/Competencias;atualiza_status_competencias

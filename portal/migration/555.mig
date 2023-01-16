@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Temas
+create;buonny/Temas;index
+create;buonny/Temas;listagem
+create;buonny/Temas;incluir
+create;buonny/Temas;editar 
+create;buonny/Temas;atualiza_status_temas

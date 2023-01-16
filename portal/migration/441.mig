@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;TipoDigitalizacao
+create;buonny/TipoDigitalizacao;index
+create;buonny/TipoDigitalizacao;listagem
+create;buonny/TipoDigitalizacao;incluir
+create;buonny/TipoDigitalizacao;editar
+create;buonny/TipoDigitalizacao;atualiza_status

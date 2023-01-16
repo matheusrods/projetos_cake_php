@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/Usuarios;por_fornecedor
+create;buonny/Usuarios;listagem_por_fornecedor
+create;buonny/Usuarios;incluir_por_fornecedor
+create;buonny/Usuarios;editar_por_fornecedor

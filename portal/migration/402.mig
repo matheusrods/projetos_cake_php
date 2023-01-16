@@ -1,0 +1,17 @@
+[ACO]	
+create;buonny/Clientes;cliente_terceiros
+create;buonny/Clientes;incluir_terceiros
+create;buonny/Clientes;editar_terceiros
+create;buonny/Clientes;listagem_terceiros
+
+create;buonny/Cargos;cargo_terceiros
+create;buonny/Cargos;incluir_terceiros
+create;buonny/Cargos;editar_terceiros
+create;buonny/Cargos;listagem_terceiros
+create;buonny/Cargos;atualiza_status_terceiros
+
+create;buonny/Setores;setor_terceiros
+create;buonny/Setores;incluir_terceiros
+create;buonny/Setores;editar_terceiros
+create;buonny/Setores;listagem_terceiros
+create;buonny/Setores;atualiza_status_terceiros

@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;RiscosAtributosDetalhes
+create;buonny/RiscosAtributosDetalhes;index
+create;buonny/RiscosAtributosDetalhes;buscar_efeitos_criticos
+create;buonny/RiscosAtributosDetalhes;listagem
+create;buonny/RiscosAtributosDetalhes;listagem_buscar_efeitos_criticos
+create;buonny/RiscosAtributosDetalhes;incluir
+create;buonny/RiscosAtributosDetalhes;editar
+create;buonny/RiscosAtributosDetalhes;atualiza_status

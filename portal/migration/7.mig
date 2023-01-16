@@ -1,0 +1,13 @@
+[ACO]
+create;buonny/Painel;modulo_admin
+create;buonny/Painel;modulo_financeiro
+create;buonny/Painel;modulo_buonnysat
+create;buonny/Painel;modulo_comercial
+create;buonny/Painel;modulo_juridico
+create;buonny/Painel;modulo_buonnycredit
+create;buonny/Painel;modulo_teleconsult
+create;buonny/Painel;modulo_rh
+create;buonny/Painel;sem_modulo
+create;buonny/Clientes;visualizar_clientes
+create;buonny;ItensNotasFiscais
+create;buonny/ItensNotasFiscais;comparativo_anual

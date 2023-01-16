@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/TecnicasMedicao;index_terceiros
+create;buonny/TecnicasMedicao;lista_terceiros
+create;buonny/TecnicasMedicao;incluir_terceiros
+create;buonny/TecnicasMedicao;editar_terceiros

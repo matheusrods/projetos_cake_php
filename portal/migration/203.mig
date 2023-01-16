@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/Medicos;buscar_medico_readonly
+create;buonny/Medicos;buscar_listagem_readonly
+create;buonny/Medicos;buscar_medico

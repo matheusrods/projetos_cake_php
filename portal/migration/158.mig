@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Consultas
+create;buonny/Consultas;index
+create;buonny/Consultas;consulta_documentos_pendentes
+create;buonny/Consultas;consulta_propostas
+create;buonny/Consultas;consulta_valor_medio_por_servico
+

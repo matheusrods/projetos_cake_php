@@ -1,0 +1,121 @@
+<?php
+class CidFixture extends CakeTestFixture {
+	var $name = 'Cid';
+	var $table = 'cid';
+	
+	public $fields = array(
+	  'codigo' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'length' => NULL, 'key' => 'primary',),
+	  'descricao' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 255, ),
+	  'codigo_usuario_inclusao' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'length' => NULL, ),
+	  'data_inclusao' => array('type' => 'datetime', 'null' => false, 'default' => '(getdate())', 'length' => NULL, ),
+	  'codigo_usuario_alteracao' => array('type' => 'integer', 'null' => true, 'default' => NULL, 'length' => NULL, ),
+	  'data_alteracao' => array('type' => 'datetime', 'null' => true, 'default' => NULL, 'length' => NULL, ),
+	  'ativo' => array('type' => 'integer', 'null' => false, 'default' => '((1))', 'length' => NULL, ),
+	  'codigo_cid10' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 255, ),
+	);
+	
+	public $records = array(
+	    array(
+	      'codigo' => 14198,
+	      'codigo_usuario_inclusao' => 61891,
+	      'codigo_usuario_alteracao' => NULL,
+	      'data_inclusao' => '2016-10-05 14:05:31',
+	      'data_alteracao' => NULL,
+	      'ativo' => 1,
+	      'descricao' => 'Z99.9 Depend maquina e aparelho capacitante NE',
+	      'codigo_cid10' => 'Z999 ',
+	    ),
+	    array(
+	      'codigo' => 14197,
+	      'codigo_usuario_inclusao' => 61891,
+	      'codigo_usuario_alteracao' => NULL,
+	      'data_inclusao' => '2016-10-05 14:05:31',
+	      'data_alteracao' => NULL,
+	      'ativo' => 1,
+	      'descricao' => 'Z99.8 Depend outr maq e aparelhos capacitantes',
+	      'codigo_cid10' => 'Z998 ',
+	    ),
+	    array(
+	      'codigo' => 14196,
+	      'codigo_usuario_inclusao' => 61891,
+	      'codigo_usuario_alteracao' => NULL,
+	      'data_inclusao' => '2016-10-05 14:05:31',
+	      'data_alteracao' => NULL,
+	      'ativo' => 1,
+	      'descricao' => 'Z99.3 Dependencia de cadeira de rodas',
+	      'codigo_cid10' => 'Z993 ',
+	    ),
+	    array(
+	      'codigo' => 14195,
+	      'codigo_usuario_inclusao' => 61891,
+	      'codigo_usuario_alteracao' => NULL,
+	      'data_inclusao' => '2016-10-05 14:05:31',
+	      'data_alteracao' => NULL,
+	      'ativo' => 1,
+	      'descricao' => 'Z99.2 Dependencia de dialise renal',
+	      'codigo_cid10' => 'Z992 ',
+	    ),
+	    array(
+	      'codigo' => 14194,
+	      'codigo_usuario_inclusao' => 61891,
+	      'codigo_usuario_alteracao' => NULL,
+	      'data_inclusao' => '2016-10-05 14:05:31',
+	      'data_alteracao' => NULL,
+	      'ativo' => 1,
+	      'descricao' => 'Z99.1 Dependencia de respirador',
+	      'codigo_cid10' => 'Z991 ',
+	    ),
+	    array(
+	      'codigo' => 14193,
+	      'codigo_usuario_inclusao' => 61891,
+	      'codigo_usuario_alteracao' => NULL,
+	      'data_inclusao' => '2016-10-05 14:05:31',
+	      'data_alteracao' => NULL,
+	      'ativo' => 1,
+	      'descricao' => 'Z99.0 Dependencia de aspirador',
+	      'codigo_cid10' => 'Z990 ',
+	    ),
+	    array(
+	      'codigo' => 14192,
+	      'codigo_usuario_inclusao' => 61891,
+	      'codigo_usuario_alteracao' => NULL,
+	      'data_inclusao' => '2016-10-05 14:05:31',
+	      'data_alteracao' => NULL,
+	      'ativo' => 1,
+	      'descricao' => 'Z99 Depend maquinas e disp capacitantes NCOP',
+	      'codigo_cid10' => 'Z99 ',
+	    ),
+	    array(
+	      'codigo' => 14191,
+	      'codigo_usuario_inclusao' => 61891,
+	      'codigo_usuario_alteracao' => NULL,
+	      'data_inclusao' => '2016-10-05 14:05:31',
+	      'data_alteracao' => NULL,
+	      'ativo' => 1,
+	      'descricao' => 'Z98.8 Outr estados pos-cirurgicos espec',
+	      'codigo_cid10' => 'Z988 ',
+	    ),
+	    array(
+	      'codigo' => 14190,
+	      'codigo_usuario_inclusao' => 61891,
+	      'codigo_usuario_alteracao' => NULL,
+	      'data_inclusao' => '2016-10-05 14:05:31',
+	      'data_alteracao' => NULL,
+	      'ativo' => 1,
+	      'descricao' => 'Z98.2 Presenca de disp de drenagem do liquor',
+	      'codigo_cid10' => 'Z982 ',
+	    ),
+	    array(
+	      'codigo' => 14189,
+	      'codigo_usuario_inclusao' => 61891,
+	      'codigo_usuario_alteracao' => NULL,
+	      'data_inclusao' => '2016-10-05 14:05:31',
+	      'data_alteracao' => NULL,
+	      'ativo' => 1,
+	      'descricao' => 'Z98.1 Artrodese',
+	      'codigo_cid10' => 'Z981 ',
+	    ),
+	);
+}
+
+?>

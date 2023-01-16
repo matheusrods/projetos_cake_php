@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_materiais_pronto_socorro.jrxml" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.6105100000000008"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_pcmso"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="BORDERED">
+		<box>
+			<pen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+		</box>
+	</style>
+	<style name="bordas-baixo">
+		<box>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[DECLARE @codigo_cliente_unidade INTEGER = CONVERT(INTEGER, $P{CODIGO_CLIENTE});
+DECLARE @descricao NVARCHAR(MAX);
+DECLARE @texto_padrao NVARCHAR(MAX) = N'ÃLCOOLÂ 70% -Â FrascoÂ deÂ 100Â ml
+ALGODÃƒO -Â BolasÂ individuais
+ATADURA - 2Â RolosÂ (20cm)Í¾Â 1Â RoloÂ (15cm)
+BANDÂ­AID - CaixaÂ comÂ 10Â unidades
+ESPARADRAPOÂ  - FitaÂ HipoalergÃªnicaÂ (RoloÂ deÂ 5cmÂ XÂ 4,5m)
+TERMÃ”METRO ColunaÂ deÂ Hg
+TESOURA SemÂ Ponta
+SOROÂ FISIOLÃ“GICO - FrascoÂ deÂ 500mlÂ (SoluÃ§Ã£oÂ FisiolÃ³gicaÂ NaClÂ 0,9%)
+ÃGUAÂ OXIGENADAÂ 10Â volumes - FrascoÂ deÂ 100ml';
+SELECT TOP(1) @descricao = pmps.descricao
+FROM RHHealth.dbo.pcmso_materiais_pronto_socorro pmps
+WHERE pmps.codigo_cliente_unidade = @codigo_cliente_unidade AND pmps.codigo_cliente_matriz = (SELECT TOP(1)
+    ge.codigo_cliente
+FROM RHHealth.dbo.grupos_economicos ge
+INNER JOIN RHHealth.dbo.grupos_economicos_clientes gec
+ON gec.codigo_grupo_economico = ge.codigo
+WHERE gec.codigo_cliente = @codigo_cliente_unidade);
+SELECT RHHealth.dbo.ufn_decode_utf8_string(ISNULL(@descricao, @texto_padrao)) as descricao;]]>
+	</queryString>
+	<field name="descricao" class="java.lang.String"/>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<frame>
+				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="555" height="10" isPrintWhenDetailOverflows="true"/>
+				<textField isStretchWithOverflow="true">
+					<reportElement isPrintRepeatedValues="false" x="10" y="0" width="545" height="10"/>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{descricao}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

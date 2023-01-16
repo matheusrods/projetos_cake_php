@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;OrigemFerramenta
+create;buonny/OrigemFerramenta;index
+create;buonny/OrigemFerramenta;listagem
+create;buonny/OrigemFerramenta;incluir
+create;buonny/OrigemFerramenta;editar_status
+create;buonny/OrigemFerramenta;editar

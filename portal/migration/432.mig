@@ -1,0 +1,11 @@
+[ACO]
+create;buonny;Consultas
+create;buonny/Consultas;ppra_pcmso_pendente_terceiros
+create;buonny/Consultas;listagem_ppra_pcmso_pendente_terceiros
+create;buonny/Consultas;carrega_combos_grupo_economico
+create;buonny/Consultas;retorna_codigo_grupo_economico
+create;buonny/Consultas;autocomplete_funcionario
+create;buonny/Consultas;ppra_pcmso_pendente_sc_terceiros
+create;buonny/Consultas;listagem_ppra_pcmso_pendente_sc_terceiros
+create;buonny/Consultas;modal_validar_pcmso
+create;buonny/Consultas;valida_pcmso

@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Cliente WEB" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ASO"/>
+	<property name="ireport.jasperserver.url" value="http:// jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.zoom" value="1.8150000000000055"/>
+	<property name="ireport.x" value="45"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/ASO_files/ASO_jrxml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="subrelatorio_risco" mode="Opaque" backcolor="#F0F0F0" fill="Solid">
+		<pen lineWidth="1.0"/>
+		<box>
+			<pen lineWidth="1.0"/>
+			<topPen lineWidth="1.0"/>
+			<leftPen lineWidth="1.0"/>
+			<bottomPen lineWidth="1.0"/>
+			<rightPen lineWidth="1.0"/>
+		</box>
+	</style>
+	<subDataset name="dataset1"/>
+	<parameter name="CODIGO_CLIENTE_FUNCIONARIO" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\fabio.potame\\Documents\\relatorio aso\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_FORNECEDOR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_EXAME_ASO" class="java.lang.String">
+		<defaultValueExpression><![CDATA[52]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+  pe.codigo AS codigo_pedido_exame,
+  cf.codigo AS codigo_cliente_funcionario,
+  CASE
+    WHEN pe.exame_admissional = 1 THEN 'Exame admissional'
+    WHEN pe.exame_periodico = 1 THEN 'Exame periódico'
+    WHEN pe.exame_demissional = 1 THEN 'Exame demissional'
+    WHEN pe.exame_retorno = 1 THEN 'Retorno ao trabalho'
+    WHEN pe.exame_mudanca = 1 THEN 'Mudança de função'
+    WHEN pe.qualidade_vida = 1 THEN 'Qualidade de vida'
+    WHEN pe.exame_monitoracao = 1 THEN 'Monitoração Pontual'
+    ELSE ''
+  END AS tipo_exame,
+  RHHealth.publico.Ufn_decode_utf8_string(SUBSTRING(c.razao_social,1,50)) AS empresa_nome,
+  CASE
+    WHEN c.codigo_documento_real IS NULL THEN RHHealth.publico.ufn_formata_cnpj(c.codigo_documento)
+    WHEN c.codigo_documento_real = '' THEN RHHealth.publico.ufn_formata_cnpj(c.codigo_documento)
+    ELSE RHHealth.publico.ufn_formata_cnpj(c.codigo_documento_real)
+  END AS empresa_cnpj,
+  UPPER(ce.logradouro) AS empresa_endereco,
+  ce.numero AS empresa_numero,
+  UPPER(ce.bairro) AS empresa_bairro,
+  UPPER(ce.cidade) AS empresa_cidade,
+  Concat('', ce.estado_abreviacao, ' ') AS empresa_uf,
+  ce.cep AS empresa_cep,
+  RHHealth.publico.Ufn_decode_utf8_string(f.nome) AS funcionario_nome,
+  CONVERT(nvarchar, f.data_nascimento, 103) AS funcionario_nascimento,
+  FLOOR(DATEDIFF(DAY, f.data_nascimento, GETDATE()) / 365.25) AS funcionario_idade,
+  f.codigo AS funcionario_codigo,
+  f.rg AS funcionario_rg,
+  Concat('', f.rg_orgao, ' ') AS funcionario_emissor,
+  f.cpf AS funcionario_cpf,
+  f.sexo AS funcionario_sexo,
+  cf.matricula AS matricula,
+  RHHealth.publico.Ufn_decode_utf8_string(st.descricao) AS funcionario_setor,
+  RHHealth.publico.Ufn_decode_utf8_string(cg.descricao) AS funcionario_cargo,
+  c.e_tomador as tomador,
+  case when c.e_tomador = 1 THEN cliMatriz.razao_social end as matriz_nome,
+  case
+	when c.e_tomador = 1 THEN
+		CASE
+			WHEN cliMatriz.codigo_documento_real IS NULL THEN RHHealth.publico.ufn_formata_cnpj(cliMatriz.codigo_documento)
+			WHEN cliMatriz.codigo_documento_real = '' THEN RHHealth.publico.ufn_formata_cnpj(cliMatriz.codigo_documento)
+			ELSE RHHealth.publico.ufn_formata_cnpj(cliMatriz.codigo_documento_real)
+		  END
+  end as matriz_cnpj,
+  case when c.e_tomador = 1 THEN UPPER(cliMatrizEnd.logradouro) END AS matriz_endereco,
+  case when c.e_tomador = 1 THEN cliMatrizEnd.numero END AS matriz_numero,
+  case when c.e_tomador = 1 THEN UPPER(cliMatrizEnd.bairro) END AS matriz_bairro,
+  case when c.e_tomador = 1 THEN UPPER(cliMatrizEnd.cidade) END AS matriz_cidade,
+  case when c.e_tomador = 1 THEN Concat('', cliMatrizEnd.estado_abreviacao, ' ') END AS matriz_uf,
+  case when c.e_tomador = 1 THEN cliMatrizEnd.cep END AS matriz_cep,
+  RHHealth.publico.Ufn_decode_utf8_string(CONCAT(feden.logradouro,' ',feden.numero,', ',feden.bairro,', ',feden.cidade,', ',feden.estado_abreviacao)) as fornecedor_endereco,
+  ge.vias_aso as vias_aso
+FROM rhhealth.dbo.pedidos_exames pe
+INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = pe.codigo_func_setor_cargo
+INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = fsc.codigo_cliente_funcionario
+INNER JOIN rhhealth.dbo.cliente c ON c.codigo = fsc.codigo_cliente_alocacao
+INNER JOIN rhhealth.dbo.cliente_endereco ce ON (ce.codigo_cliente = c.codigo AND ce.codigo_tipo_contato = 2)
+INNER JOIN rhhealth.dbo.funcionarios f ON f.codigo = cf.codigo_funcionario
+INNER JOIN rhhealth.dbo.setores st ON st.codigo = fsc.codigo_setor
+INNER JOIN rhhealth.dbo.cargos cg ON cg.codigo = fsc.codigo_cargo
+INNER JOIN RHHealth.dbo.grupos_economicos_clientes gec on gec.codigo_cliente = pe.codigo_cliente
+INNER JOIN RHHealth.dbo.grupos_economicos ge on ge.codigo = gec.codigo_grupo_economico
+INNER JOIN RHHealth.dbo.itens_pedidos_exames ipe on (pe.codigo = ipe.codigo_pedidos_exames and ipe.codigo_exame = $P{CODIGO_EXAME_ASO})
+INNER JOIN RHHealth.dbo.fornecedores_endereco feden on ipe.codigo_fornecedor = feden.codigo_fornecedor
+LEFT JOIN RHHealth.dbo.funcionario_setores_cargos fsc_matriz on fsc_matriz.codigo = (select top 1 codigo from RHHealth.dbo.funcionario_setores_cargos where codigo_cliente_alocacao = gec.codigo_cliente order by codigo desc)
+LEFT JOIN RHHealth.dbo.cliente cliMatriz on cliMatriz.codigo = fsc_matriz.codigo_cliente_referencia
+LEFT JOIN rhhealth.dbo.cliente_endereco cliMatrizEnd ON (cliMatrizEnd.codigo_cliente = cliMatriz.codigo AND cliMatrizEnd.codigo_tipo_contato = 2)
+WHERE pe.codigo = $P{CODIGO_PEDIDO_EXAME}]]>
+	</queryString>
+	<field name="codigo_pedido_exame" class="java.lang.Integer"/>
+	<field name="codigo_cliente_funcionario" class="java.lang.Integer"/>
+	<field name="tipo_exame" class="java.lang.String"/>
+	<field name="empresa_nome" class="java.lang.String"/>
+	<field name="empresa_cnpj" class="java.lang.String"/>
+	<field name="empresa_endereco" class="java.lang.String"/>
+	<field name="empresa_numero" class="java.lang.Integer"/>
+	<field name="empresa_bairro" class="java.lang.String"/>
+	<field name="empresa_cidade" class="java.lang.String"/>
+	<field name="empresa_uf" class="java.lang.String"/>
+	<field name="empresa_cep" class="java.lang.String"/>
+	<field name="funcionario_nome" class="java.lang.String"/>
+	<field name="funcionario_nascimento" class="java.lang.String"/>
+	<field name="funcionario_idade" class="java.math.BigDecimal"/>
+	<field name="funcionario_codigo" class="java.lang.Integer"/>
+	<field name="funcionario_rg" class="java.lang.String"/>
+	<field name="funcionario_emissor" class="java.lang.String"/>
+	<field name="funcionario_cpf" class="java.lang.String"/>
+	<field name="funcionario_sexo" class="java.lang.String"/>
+	<field name="matricula" class="java.lang.String"/>
+	<field name="funcionario_setor" class="java.lang.String"/>
+	<field name="funcionario_cargo" class="java.lang.String"/>
+	<field name="tomador" class="java.lang.Boolean"/>
+	<field name="matriz_nome" class="java.lang.String"/>
+	<field name="matriz_cnpj" class="java.lang.String"/>
+	<field name="matriz_endereco" class="java.lang.String"/>
+	<field name="matriz_numero" class="java.lang.Integer"/>
+	<field name="matriz_bairro" class="java.lang.String"/>
+	<field name="matriz_cidade" class="java.lang.String"/>
+	<field name="matriz_uf" class="java.lang.String"/>
+	<field name="matriz_cep" class="java.lang.String"/>
+	<field name="fornecedor_endereco" class="java.lang.String"/>
+	<field name="vias_aso" class="java.lang.Integer"/>
+	<variable name="TEM_ALTURA_CONFINADO" class="java.lang.String" resetType="None">
+		<initialValueExpression><![CDATA["0"]]></initialValueExpression>
+	</variable>
+	<columnHeader>
+		<band height="38">
+			<staticText>
+				<reportElement x="130" y="4" width="305" height="30" forecolor="#009999"/>
+				<textElement textAlignment="Center">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[ASO - ATESTADO DE SAÚDE OCUPACIONAL]]></text>
+			</staticText>
+			<image>
+				<reportElement x="5" y="4" width="120" height="29">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<imageExpression><![CDATA["repo:/reports/RHHealth/ASO_files/logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="450" y="5" width="100" height="30">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="75">
+			<rectangle>
+				<reportElement x="0" y="16" width="555" height="29" forecolor="#000000" backcolor="#F0F0F0"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="4" y="34" width="69" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cidade/UF:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="4" width="553" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Empresa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="25" width="69" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Endereço:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="1" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="328" y="25" width="52" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Bairro:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="328" y="34" width="52" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CEP:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="73" y="16" width="255" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{matriz_nome}) ? $F{matriz_nome} : $F{empresa_nome}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="4" y="16" width="69" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Razão Social:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="73" y="34" width="255" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{matriz_cidade}) ? $F{matriz_cidade} + " / " + $F{matriz_uf} : $F{empresa_cidade} + " / " + $F{empresa_uf}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="380" y="25" width="171" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{matriz_bairro}) ? $F{matriz_bairro} : $F{empresa_bairro}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="380" y="34" width="171" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{matriz_cep}) ? $F{matriz_cep} : $F{empresa_cep}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="73" y="25" width="255" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{matriz_endereco}) ? $F{matriz_endereco} + ", " + $F{matriz_numero} : $F{empresa_endereco} + ", " + $F{empresa_numero}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="328" y="16" width="52" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CNPJ:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="380" y="16" width="171" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{matriz_cnpj}) ? $F{matriz_cnpj} : $F{empresa_cnpj}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement x="1" y="46" width="553" height="27" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{tomador}]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement x="0" y="0" width="553" height="11"/>
+					<textElement textAlignment="Center">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Identificação do Posto de Trabalho]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement x="4" y="13" width="545" height="11" forecolor="#000000" backcolor="#F0F0F0"/>
+				</rectangle>
+				<staticText>
+					<reportElement x="5" y="12" width="69" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Razão Social:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="73" y="12" width="255" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{empresa_nome}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="328" y="12" width="52" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CNPJ:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="378" y="12" width="171" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{empresa_cnpj}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="52">
+			<rectangle>
+				<reportElement x="0" y="13" width="555" height="38" forecolor="#000000" backcolor="#F0F0F0"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="5" y="13" width="53" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nome:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="13" width="40" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Código:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="27" width="53" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RG:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="34" width="53" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Setor:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="244" y="27" width="72" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Órgão Emissor:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="20" width="53" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nascimento:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="5" y="41" width="53" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cargo:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="20" width="40" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Idade:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="420" y="27" width="40" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sexo:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="59" y="13" width="355" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_nome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="315" y="20" width="99" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_cpf}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="460" y="13" width="88" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_codigo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="59" y="34" width="355" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_setor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="59" y="41" width="355" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_cargo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="460" y="20" width="88" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_idade}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="59" y="20" width="174" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_nascimento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="315" y="27" width="99" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_emissor}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="1" width="555" height="11"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Funcionário]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="59" y="27" width="174" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_rg}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="244" y="20" width="72" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CPF:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="460" y="27" width="88" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_sexo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="420" y="34" width="40" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Matrícula:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="460" y="34" width="88" height="8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{matricula}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="46">
+			<staticText>
+				<reportElement x="0" y="1" width="554" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Médico Coordenador do PCMSO]]></text>
+			</staticText>
+			<frame>
+				<reportElement style="subrelatorio_risco" x="0" y="13" width="555" height="31"/>
+				<subreport>
+					<reportElement x="1" y="0" width="553" height="31"/>
+					<subreportParameter name="CODIGO_CLIENTE_FUNCIONARIO">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE_FUNCIONARIO}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_PEDIDO_EXAME">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:subrelatorio_medico_responsavel.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="83" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RISCOS:]]></text>
+			</staticText>
+			<frame>
+				<reportElement style="subrelatorio_risco" stretchType="RelativeToBandHeight" x="0" y="12" width="555" height="71"/>
+				<subreport>
+					<reportElement style="subrelatorio_risco" stretchType="RelativeToBandHeight" mode="Transparent" x="2" y="1" width="553" height="70"/>
+					<subreportParameter name="CODIGO_CLIENTE_FUNCIONARIO">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE_FUNCIONARIO}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_PEDIDO_EXAME">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<returnValue subreportVariable="TEM_ALTURA_CONFINADO" toVariable="TEM_ALTURA_CONFINADO"/>
+					<subreportExpression><![CDATA["repo:subrelatorio_riscos.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="27">
+			<rectangle>
+				<reportElement x="0" y="14" width="555" height="13" forecolor="#000000" backcolor="#F0F0F0"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="1" y="1" width="553" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EM CUMPRIMENTO ÀS PORTARIAS N° 3214/78, 3164/82, 12/83, 24/94 e 08/96 NR7 DO MINISTÉRIO DO TRABALHO E EMPREGO PARA FINS DE EXAME:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="293" y="15" width="261" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA['Tipo de exame ocupacional: ' + $F{tipo_exame}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="64" y="15" width="123" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo_pedido_exame}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="5" y="15" width="76" height="10"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cód. Pedido:]]></text>
+			</staticText>
+		</band>
+		<band height="48">
+			<staticText>
+				<reportElement x="0" y="1" width="555" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EXAMES:]]></text>
+			</staticText>
+			<frame>
+				<reportElement style="subrelatorio_risco" x="0" y="14" width="555" height="32"/>
+				<subreport>
+					<reportElement x="2" y="0" width="553" height="32"/>
+					<subreportParameter name="CODIGO_CLIENTE_FUNCIONARIO">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE_FUNCIONARIO}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_PEDIDO_EXAME">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:subrelatorio_exames.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+		<band height="54">
+			<rectangle>
+				<reportElement x="2" y="14" width="553" height="38" forecolor="#000000" backcolor="#F0F0F0"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="355" y="14" width="170" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[[    ]  -  Inapto para Função.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="81" y="14" width="151" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[[    ]  -  Apto para Função.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="1" width="552" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PARECER:]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="73" y="26" width="444" height="23">
+					<printWhenExpression><![CDATA[( $F{tipo_exame}.toString().toLowerCase().equals("exame demissional") ? ($V{TEM_ALTURA_CONFINADO}.toString() != "0" ? false : true) : true)]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="CODIGO_PEDIDO_EXAME">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:subrelatorio_parecer.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="57">
+			<staticText>
+				<reportElement x="2" y="40" width="450" height="17"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Quantidade de vias para impressão:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="125" y="40" width="100" height="17"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{vias_aso}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="1" width="552" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OBSERVAÇÕES:]]></text>
+			</staticText>
+			<frame>
+				<reportElement style="subrelatorio_risco" stretchType="RelativeToBandHeight" x="1" y="12" width="555" height="24"/>
+				<subreport>
+					<reportElement style="subrelatorio_risco" stretchType="RelativeToBandHeight" mode="Transparent" x="2" y="1" width="553" height="20"/>
+					<subreportParameter name="CODIGO_PEDIDO_EXAME">
+						<subreportParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:subrelatorio_observ.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+	</detail>
+	<lastPageFooter>
+		<band height="170">
+			<line>
+				<reportElement x="18" y="102" width="199" height="1"/>
+			</line>
+			<line>
+				<reportElement x="329" y="103" width="199" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="86" y="105" width="90" height="11"/>
+				<textElement>
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Médico Examinador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="378" y="105" width="128" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Assinatura Funcionário]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="117" width="25" height="14"/>
+				<textElement>
+					<font size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+				</textElement>
+				<text><![CDATA[CPF: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="402" y="116" width="149" height="15"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcionario_cpf}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="338" y="64" width="200" height="20"/>
+				<textElement>
+					<font size="9"/>
+				</textElement>
+				<text><![CDATA[Declaro ter recebido 2° via deste ASO.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="40" width="100" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[____/____/_______]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="76" y="40" width="100" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[____/____/_______]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="150" width="555" height="16" forecolor="#000000" backcolor="#F0F0F0"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="1" y="139" width="552" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ENDEREÇO PRESTADOR:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="6" y="150" width="542" height="16"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fornecedor_endereco}]]></textFieldExpression>
+			</textField>
+		</band>
+	</lastPageFooter>
+</jasperReport>

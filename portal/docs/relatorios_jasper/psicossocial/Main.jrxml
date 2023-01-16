@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="9f3fd5ee-99fd-4631-8498-9bc5284f8763">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="210"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/psicossocial"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String"/>
+	<parameter name="CODIGO_FORNECEDOR" class="java.lang.String"/>
+	<parameter name="CODIGO_CLIENTE_FUNCIONARIO" class="java.lang.String"/>
+	<parameter name="CODIGO_FUNC_SETOR_CARGO" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\PHP-Workspace\\RH-Health\\c-care\\c-care\\c-care\\docs\\relatorios_jasper\\psicossocial\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select f.nome
+from RHHealth.dbo.pedidos_exames pe
+	inner join RHHealth.dbo.funcionarios f on pe.codigo_funcionario = f.codigo
+where pe.codigo = $P{CODIGO_PEDIDO_EXAME}]]>
+	</queryString>
+	<field name="nome" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="36" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="9" width="555" height="20" forecolor="#009999" uuid="8166c010-b1a1-40ed-8e27-a82c88b3ea0d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Avaliação Psicossocial]]></text>
+			</staticText>
+			<image>
+				<reportElement x="5" y="4" width="120" height="29" uuid="a5b79184-b453-4bd3-8512-73fc6803d2de">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<imageExpression><![CDATA["repo:logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="450" y="3" width="100" height="30" uuid="010d51bc-9175-49b3-9108-5390c0c5563b">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="148" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="69" width="555" height="59" uuid="7ca01c04-1a50-4e1e-8b03-e0c8c183f643"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="20" width="555" height="29" uuid="8756629e-fd4c-4d0b-95c6-c7e4b73fa37b"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="0" width="555" height="20" backcolor="#000066" uuid="5a00ec93-e343-43bf-967a-3619b10edb23"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="20" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="c67fa1b2-c324-48d1-a825-d466a8f078a0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TESTE SRQ 20 - Self Report Questionnaire.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="20" width="552" height="29" uuid="a887db53-b8f2-471a-8c72-a055425baaab"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Teste que avalia a saúde mental. Por favor, leia estas instruções antes de preencher as questões abaixo.
+É muito importante que todos que estão preenchendo o questionário sigam as mesmas instruções.]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="49" width="555" height="20" backcolor="#000066" uuid="f4205e9e-52db-478a-9520-1a97c4a0b311"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="49" width="555" height="20" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="65a04d78-463b-4008-82df-e0d53fcacb9e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Instruções]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="70" width="552" height="58" uuid="e83d233d-c21e-465b-beb6-8102fb671678"/>
+				<textElement>
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Estas questões são relacionadas a certas dores e problemas que podem ter lhe incomodado nos últimos 30 dias.
+Se você acha que a questão se aplica a você e você teve o problema descrito nos últimos 30 dias responda SIM. Por outro lado, se a questão não se aplica a você e você não teve o problema nos últimos 30 dias, responda NÃO.
+OBS: Lembre-se que o diagnóstico definitivo só pode ser fornecido por um profissional.]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="128" width="555" height="20" backcolor="#000066" uuid="d0b0a4d0-76ef-4b20-8f30-28a1d25ac37c"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="3" y="128" width="460" height="20" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="b68db0f2-f8bf-4386-8374-de06d43cc94e"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Perguntas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="463" y="128" width="92" height="20" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="a7b83829-804f-46fd-b90c-7ec64d68a0b0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Respostas]]></text>
+			</staticText>
+		</band>
+		<band height="57">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="56" uuid="46c2fcaf-8437-438c-b532-ffad8f3366e9"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:perguntas.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="118">
+			<rectangle>
+				<reportElement x="0" y="13" width="463" height="20" uuid="d3f97968-9bf5-419a-89da-de4c6b49acd8"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="463" y="13" width="92" height="20" uuid="0102584c-8862-4ec7-8fd6-7148e35ed99f"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="3" y="13" width="97" height="20" uuid="9e133856-2879-4ad0-987e-cc83322c6c8c"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="33" width="555" height="20" uuid="b0fbf62b-707a-4438-8bf5-5d15441163fc"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="53" width="555" height="20" uuid="b4ef0e5b-8b6f-4a88-866a-a8adf6d451f7"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="3" y="33" width="82" height="20" uuid="8c923eba-0a33-404b-b79f-578629bab2a8"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nome:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="53" width="82" height="20" uuid="82d30678-28bb-417b-9ea4-709fff5b24e1"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="44" y="33" width="511" height="20" uuid="38f0b0df-698c-4097-b991-aa5a449f3537"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="509" y="13" width="46" height="20" uuid="ad67fbaa-da22-4f96-af58-13c74fa25508"/>
+			</rectangle>
+		</band>
+	</detail>
+</jasperReport>

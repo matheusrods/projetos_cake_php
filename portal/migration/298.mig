@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Cat
+create;buonny/Cat;index
+create;buonny/Cat;listagem
+create;buonny/Cat;incluir
+create;buonny/Cat;editar
+create;buonny/Cat;excluir

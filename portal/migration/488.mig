@@ -1,0 +1,9 @@
+[ACO]
+create;buonny/Clientes;visualizar_clientes_gestao_de_risco
+create;buonny/Clientes;editar_cliente_gestao_de_risco
+create;buonny/Clientes;pre_faturamento
+create;buonny/Clientes;pre_faturamento_filtros
+create;buonny/Clientes;alertaParaAnalisador
+create;buonny/Clientes;prefaturamento_exportar
+create;buonny/Clientes;config_cliente_validador
+create;buonny/Clientes;carrega_combos_validador

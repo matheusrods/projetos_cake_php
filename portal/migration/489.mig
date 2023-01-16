@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;RelatorioInsalubridade
+create;buonny/RelatorioInsalubridade;index
+create;buonny/RelatorioInsalubridade;listagem
+create;buonny/RelatorioInsalubridade;exportar_listagem
+create;buonny;RelatorioPericulosidade
+create;buonny/RelatorioPericulosidade;index
+create;buonny/RelatorioPericulosidade;listagem
+create;buonny/RelatorioPericulosidade;exportar_listagem

@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Fotos
+create;buonny/Fotos;index
+create;buonny/Fotos;enviar
+create;buonny/Fotos;listagem
+create;buonny/Fotos;remove_arquivo
+create;buonny/Fotos;_upload

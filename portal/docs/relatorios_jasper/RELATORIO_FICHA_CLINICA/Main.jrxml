@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ficha_clinica_v3" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" >
+	<property name="ireport.zoom" value="1.2396694214876038"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="689"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ficha_clinica"/>
+	<property name="ireport.jasperserver.url" value="http://gol.local.buonny:8090/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/relatorio_ficha_clinica_files/relatorio_ficha_clinica_jrxml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<style name="style1">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\fabio.potame\\Documents\\ficha_clinica\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_FICHA_CLINICA" class="java.lang.String"/>
+	<parameter name="CODIGO_FUNCIONARIO" class="java.lang.String"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String"/>
+	<parameter name="URL_MATRIZ_LOGOTIPO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+TOP 1
+	fc.codigo,
+	fc.data_inclusao,
+	fc.incluido_por,
+	fc.hora_inicio_atendimento,
+	fc.hora_fim_atendimento,
+	fc.ativo,
+	fc.codigo_pedido_exame,
+	fc.codigo_medico,
+    RHHealth.publico.ufn_decode_utf8_string(fc.observacao) as observacao,
+	ISNULL(fc.pa_sistolica, 0) pa_sistolica,
+	ISNULL(fc.pa_diastolica, 0) pa_diastolica,
+	ISNULL(fc.pulso, 0) pulso,
+	ISNULL(fc.circunferencia_abdominal,0) circunferencia_abdominal,
+	CAST(ISNULL(fc.peso_kg, 0) as VARCHAR) peso_kg,
+	CAST(ISNULL(fc.peso_gr, 0 )as VARCHAR) peso_gr,
+	CAST(ISNULL(fc.altura_mt, 0) as VARCHAR) altura_mt,
+	CAST(ISNULL(fc.altura_cm ,0) as VARCHAR) altura_cm,
+	(CASE WHEN fc.imc is not null then fc.imc else '' end ) imc,
+	(CASE WHEN fc.imc is null or fc.imc = '' THEN 'Não informado'
+		WHEN fc.imc > '0' AND fc.imc  < '18.5' THEN 'Magro ou baixo peso'
+		WHEN fc.imc >= '18.5' AND fc.imc  < '24.99' THEN 'Normal ou eutrófico'
+		WHEN fc.imc >= '25' AND fc.imc  < '29.99' THEN 'Sobrepeso ou pré-obeso'
+		WHEN fc.imc >= '30' AND fc.imc  < '34.99' THEN 'Obesidade'
+		WHEN fc.imc >= '35' AND fc.imc  < '39.99' THEN 'Obesidade'
+		WHEN fc.imc >= '40' THEN 'Obesidade (grave)'
+		END) as msg_imc,
+	ISNULL(fc.circunferencia_quadril, 0) circunferencia_quadril,
+	fc.parecer,
+	RHHealth.publico.ufn_decode_utf8_string(me.nome) as nome,
+	me.numero_conselho,
+	ISNULL(me.conselho_uf, '') as conselho_uf,
+	cp.descricao,
+	RHHealth.publico.ufn_decode_utf8_string(fu.nome) as nome_funcionario,
+	RHHealth.publico.ufn_formata_cpf(fu.cpf) as cpf,
+
+	(case when fc.parecer_altura IS NOT NULL then
+		case when (fc.parecer_altura = '1') THEN 'S'
+		ELSE 'N'
+		END
+	ELSE 'NULL'
+	END) as altura,
+	(case when fc.parecer_espaco_confinado IS NOT NULL then
+		case when (fc.parecer_espaco_confinado = '1') THEN 'S'
+		ELSE 'N'
+		END
+	ELSE 'NULL'
+	END) as confinado,
+	(SELECT COUNT(codigo) FROM RHHealth.dbo.ufn_riscos($P{CODIGO_PEDIDO_EXAME}) WHERE codigo IN(50, 4402, 3451, 4450)) as trabalho_altura_espaco_confinado,
+    CASE
+        WHEN pe.exame_admissional = 1 THEN 'Exame admissional'
+        WHEN pe.exame_periodico = 1 THEN 'Exame periódico'
+        WHEN pe.exame_demissional = 1 THEN 'Exame demissional'
+        WHEN pe.exame_retorno = 1 THEN 'Retorno ao trabalho'
+        WHEN pe.exame_mudanca = 1 THEN 'Mudança de cargo'
+        WHEN pe.qualidade_vida = 1 THEN 'Qualidade de vida'
+        WHEN pe.exame_monitoracao = 1 THEN 'Monitoração Pontual'
+        ELSE ''
+    END AS tipo_exame,
+	(SELECT	ri.risco_caracterizado_por_altura
+FROM rhhealth.dbo.pedidos_exames ped
+	INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = ped.codigo_func_setor_cargo
+	INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = fsc.codigo_cliente_funcionario
+	INNER JOIN RHHealth.dbo.cliente c ON c.codigo = cf.codigo_cliente_matricula
+	INNER JOIN RHHealth.dbo.cargos cg ON cg.codigo = fsc.codigo_cargo
+	INNER JOIN RHHealth.dbo.setores st ON st.codigo = fsc.codigo_setor
+	INNER JOIN RHHealth.dbo.clientes_setores cs ON (cs.codigo_setor = st.codigo AND cs.codigo_cliente_alocacao = fsc.codigo_cliente_alocacao)
+	INNER JOIN RHHealth.dbo.grupo_exposicao ge  ON (ge.codigo_cargo = cg.codigo AND ge.codigo_cliente_setor = cs.codigo)
+	INNER JOIN RHHealth.dbo.grupos_exposicao_risco ger ON (ger.codigo_grupo_exposicao = ge.codigo)
+	INNER JOIN RHHealth.dbo.riscos ri ON (ri.codigo = ger.codigo_risco)
+WHERE ped.codigo = pe.codigo and ri.risco_caracterizado_por_altura is not null and ri.risco_caracterizado_por_altura <> 0) as risco_altura,
+
+	(SELECT	ri.risco_caracterizado_por_trabalho_confinado
+FROM rhhealth.dbo.pedidos_exames ped
+	INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = ped.codigo_func_setor_cargo
+	INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = fsc.codigo_cliente_funcionario
+	INNER JOIN RHHealth.dbo.cliente c ON c.codigo = cf.codigo_cliente_matricula
+	INNER JOIN RHHealth.dbo.cargos cg ON cg.codigo = fsc.codigo_cargo
+	INNER JOIN RHHealth.dbo.setores st ON st.codigo = fsc.codigo_setor
+	INNER JOIN RHHealth.dbo.clientes_setores cs ON (cs.codigo_setor = st.codigo AND cs.codigo_cliente_alocacao = fsc.codigo_cliente_alocacao )
+	INNER JOIN RHHealth.dbo.grupo_exposicao ge  ON (ge.codigo_cargo = cg.codigo AND ge.codigo_cliente_setor = cs.codigo)
+	INNER JOIN RHHealth.dbo.grupos_exposicao_risco ger ON (ger.codigo_grupo_exposicao = ge.codigo)
+	INNER JOIN RHHealth.dbo.riscos ri ON (ri.codigo = ger.codigo_risco)
+WHERE ped.codigo = pe.codigo and ri.risco_caracterizado_por_trabalho_confinado is not null and ri.risco_caracterizado_por_trabalho_confinado <> 0) as risco_confinado
+
+FROM RHHealth.dbo.fichas_clinicas fc
+	inner join rhhealth.dbo.pedidos_exames pe ON pe.codigo = fc.codigo_pedido_exame
+	INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = pe.codigo_func_setor_cargo
+	INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = fsc.codigo_cliente_funcionario
+	INNER JOIN RHHealth.dbo.cliente c ON c.codigo = cf.codigo_cliente_matricula
+	INNER JOIN RHHealth.dbo.cargos cg ON cg.codigo = fsc.codigo_cargo
+	INNER JOIN RHHealth.dbo.setores st ON st.codigo = fsc.codigo_setor
+	INNER JOIN RHHealth.dbo.clientes_setores cs ON (cs.codigo_setor = st.codigo )
+	left JOIN RHHealth.dbo.grupo_exposicao ge  ON (ge.codigo_cargo = cg.codigo AND ge.codigo_cliente_setor = cs.codigo)
+	left JOIN RHHealth.dbo.grupos_exposicao_risco ger ON (ger.codigo_grupo_exposicao = ge.codigo)
+	left JOIN RHHealth.dbo.riscos ri ON (ri.codigo = ger.codigo_risco)
+	left JOIN RHHealth.dbo.grupos_riscos gr ON (gr.codigo = ri.codigo_grupo)
+	INNER JOIN RHHealth.dbo.medicos me ON(me.codigo = fc.codigo_medico)
+	INNER JOIN RHHealth.dbo.conselho_profissional cp ON(cp.codigo = me.codigo_conselho_profissional)
+	LEFT JOIN RHHealth.dbo.funcionarios fu ON(fu.codigo = cf.codigo_funcionario)
+WHERE fc.codigo = $P{CODIGO_FICHA_CLINICA}]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="data_inclusao" class="java.sql.Timestamp"/>
+	<field name="incluido_por" class="java.lang.String"/>
+	<field name="hora_inicio_atendimento" class="java.lang.String"/>
+	<field name="hora_fim_atendimento" class="java.lang.String"/>
+	<field name="ativo" class="java.lang.Integer"/>
+	<field name="codigo_pedido_exame" class="java.lang.Integer"/>
+	<field name="codigo_medico" class="java.lang.Integer"/>
+	<field name="pa_sistolica" class="java.lang.Integer"/>
+	<field name="pa_diastolica" class="java.lang.Integer"/>
+	<field name="pulso" class="java.lang.Integer"/>
+	<field name="circunferencia_abdominal" class="java.math.BigDecimal"/>
+	<field name="peso_kg" class="java.lang.String"/>
+	<field name="peso_gr" class="java.lang.String"/>
+	<field name="altura_mt" class="java.lang.String"/>
+	<field name="altura_cm" class="java.lang.String"/>
+	<field name="imc" class="java.lang.String"/>
+	<field name="msg_imc" class="java.lang.String"/>
+	<field name="circunferencia_quadril" class="java.math.BigDecimal"/>
+	<field name="parecer" class="java.lang.Integer"/>
+	<field name="nome" class="java.lang.String"/>
+	<field name="numero_conselho" class="java.lang.String"/>
+	<field name="conselho_uf" class="java.lang.String"/>
+	<field name="descricao" class="java.lang.String"/>
+	<field name="nome_funcionario" class="java.lang.String"/>
+	<field name="cpf" class="java.lang.String"/>
+	<field name="altura" class="java.lang.String"/>
+	<field name="confinado" class="java.lang.String"/>
+	<field name="trabalho_altura_espaco_confinado" class="java.lang.Integer"/>
+	<field name="tipo_exame" class="java.lang.String"/>
+	<field name="risco_altura" class="java.lang.Integer"/>
+	<field name="risco_confinado" class="java.lang.Integer"/>
+	<field name="observacao" class="java.lang.String"/>
+	<columnHeader>
+		<band height="37" splitType="Stretch">
+			<staticText>
+				<reportElement x="208" y="3" width="139" height="30" forecolor="#009999" />
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true" isUnderline="true"/>
+				</textElement>
+				<text><![CDATA[Ficha Clínica]]></text>
+			</staticText>
+			<textField pattern="dd MMMMM yyyy">
+				<reportElement x="347" y="8" width="100" height="20" />
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="6" y="5" width="73" height="26" >
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<imageExpression><![CDATA["repo:/reports/RHHealth/relatorio_ficha_clinica_files/logo_rhhealth.jpg"]]></imageExpression>
+			</image>
+			<image>
+				<reportElement x="450" y="5" width="100" height="30" >
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[(!$P{URL_MATRIZ_LOGOTIPO}.isEmpty())]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$P{URL_MATRIZ_LOGOTIPO}]]></imageExpression>
+			</image>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="100" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="100" />
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_PEDIDO_EXAME">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_PEDIDO_EXAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_FUNCIONARIO">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FUNCIONARIO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cabecalho.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="194">
+			<subreport>
+				<reportElement x="0" y="74" width="555" height="120" />
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_historico_familiar.jrxml"]]></subreportExpression>
+			</subreport>
+			<frame>
+				<reportElement style="style1" x="0" y="-1" width="556" height="75" />
+				<staticText>
+					<reportElement x="6" y="20" width="122" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Pressão arterial sistólica (mmHg):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="130" y="20" width="126" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pa_sistolica}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="130" y="33" width="126" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pa_diastolica}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="6" y="33" width="122" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Pressão arterial diastólica (mmHg):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="130" y="46" width="126" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{pulso}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="6" y="46" width="122" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Pulso (bpm):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="130" y="59" width="126" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{circunferencia_abdominal}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="6" y="59" width="122" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Circunferência abdominal (cm):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="286" y="20" width="38" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Peso (kg):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="326" y="20" width="57" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{peso_kg}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="286" y="33" width="38" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Altura (Mt):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="286" y="46" width="97" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Circunferência quadril (cm):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="385" y="46" width="126" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{circunferencia_quadril}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="425" y="20" width="82" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{peso_gr}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="385" y="20" width="38" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Peso (gr):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="326" y="33" width="57" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{altura_mt}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="385" y="33" width="38" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Altura (cm):]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="425" y="33" width="82" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{altura_cm}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="208" y="1" width="140" height="20" />
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MEDIÇÕES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="286" y="59" width="97" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IMC:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="385" y="59" width="38" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{imc}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="425" y="59" width="86" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{msg_imc}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="120">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="120" />
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_historico_pessoal.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="66">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="66" />
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_historico_gestacional.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="66">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="66" />
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_exames_preventivos.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="66">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="66" />
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_habitos_de_vida.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="40">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="40" />
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_historico_ocupacional.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="40">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="40" />
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_avaliacao_pcd.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="120">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="120" />
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_exame_fisico.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="27">
+			<subreport>
+				<reportElement x="0" y="0" width="555" height="27" />
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_resultado_exame.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="114">
+			<staticText>
+				<reportElement x="207" y="5" width="140" height="20" />
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OBSERVAÇÃO]]></text>
+			</staticText>
+			<frame>
+				<reportElement style="style1" stretchType="RelativeToBandHeight" x="0" y="26" width="555" height="77" isRemoveLineWhenBlank="true" />
+				<textField isStretchWithOverflow="true">
+					<reportElement stretchType="RelativeToBandHeight" x="0" y="1" width="548" height="75" />
+					<textElement textAlignment="Justified" verticalAlignment="Top">
+						<font size="6"/>
+						<paragraph leftIndent="10" rightIndent="10"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{observacao} != null) ? $F{observacao} : '']]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="155">
+			<line>
+				<reportElement x="55" y="99" width="126" height="1" />
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<textField>
+				<reportElement x="55" y="101" width="126" height="15" />
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="55" y="114" width="126" height="15" />
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descricao} + ': ' + $F{numero_conselho} + ' - ' + $F{conselho_uf}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="407" y="114" width="126" height="15" />
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA['CPF: ' + $F{cpf}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="407" y="100" width="126" height="15" />
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nome_funcionario}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="407" y="98" width="126" height="1" />
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+			<frame>
+				<reportElement style="style1" x="0" y="53" width="555" height="12" isRemoveLineWhenBlank="true" >
+					<printWhenExpression><![CDATA[$F{risco_confinado} != null]]></printWhenExpression>
+				</reportElement>
+				<textField>
+					<reportElement x="5" y="0" width="547" height="12" isRemoveLineWhenBlank="true" >
+						<printWhenExpression><![CDATA[($F{tipo_exame}.toString().toLowerCase().equals("exame demissional")) ? ($F{trabalho_altura_espaco_confinado}.toString().equals("0") ? true : false): true]]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{confinado} != 'NULL')?(($F{confinado}.equals('S'))? 'APTO PARA TRABALHAR EM ESPAÇO CONFINADO' :'INAPTO PARA TRABALHAR EM ESPAÇO CONFINADO' ) : '[    ]  -  Apto para espaço confinado		[    ]  -  Inapto para espaço confinado']]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="style1" x="1" y="40" width="555" height="12" isRemoveLineWhenBlank="true" >
+					<printWhenExpression><![CDATA[$F{risco_altura} != null]]></printWhenExpression>
+				</reportElement>
+				<textField>
+					<reportElement x="5" y="0" width="547" height="12" isRemoveLineWhenBlank="true" >
+						<printWhenExpression><![CDATA[($F{tipo_exame}.toString().toLowerCase().equals("exame demissional")) ? ($F{trabalho_altura_espaco_confinado}.toString().equals("0") ? true : false): true]]></printWhenExpression>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{altura} != 'NULL') ? (($F{altura}.equals('S'))? 'APTO PARA TRABALHAR EM ALTURA' : 'INAPTO PARA TRABALHAR EM ALTURA') : '[    ]  -  Apto para trabalho em altura	[    ]  -  Inapto para trabalho em altura']]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="style1" x="1" y="28" width="555" height="12" />
+				<textField>
+					<reportElement x="5" y="0" width="447" height="12" />
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{parecer} != null)? (($F{parecer})? 'APTO' : 'INAPTO') : '[    ]  -  Apto para Função.		[    ]  -  Inapto para Função.']]></textFieldExpression>
+				</textField>
+			</frame>
+			<staticText>
+				<reportElement x="208" y="5" width="140" height="20" />
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PARECER]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="34">
+			<textField>
+				<reportElement x="412" y="8" width="80" height="20" />
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="492" y="8" width="40" height="20" />
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1" y="8" width="164" height="10" />
+				<textElement textAlignment="Left">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA['Código do Pedido: ' + $P{CODIGO_PEDIDO_EXAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

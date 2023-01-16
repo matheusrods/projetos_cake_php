@@ -1,0 +1,7 @@
+[ACO]	
+create;buonny/Setores;index_externo
+create;buonny/Setores;listagem_externo
+create;buonny/Setores;editar_externo
+create;buonny/Cargos;index_externo
+create;buonny/Cargos;listagem_externo
+create;buonny/Cargos;editar_externo

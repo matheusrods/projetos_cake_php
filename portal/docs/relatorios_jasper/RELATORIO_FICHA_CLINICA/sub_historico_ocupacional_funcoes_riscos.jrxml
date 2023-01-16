@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_historico_ocupacional_funcoes_riscos" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ficha_clinica"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<parameter name="CODIGO_FICHA_CLINICA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[12091]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+	RHHealth.publico.ufn_decode_utf8_string(funcao) as funcao,
+	RHHealth.publico.ufn_decode_utf8_string(risco) as risco,
+	inicio, termino,
+	RHHealth.publico.ufn_decode_utf8_string(risco_outros) as risco_outros
+FROM RHHealth.dbo.temp_table_riscos WHERE codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} AND codigo_ficha_clinica_questao = 174]]>
+	</queryString>
+	<field name="funcao" class="java.lang.String"/>
+	<field name="risco" class="java.lang.String"/>
+	<field name="inicio" class="java.lang.String"/>
+	<field name="termino" class="java.lang.String"/>
+	<field name="risco_outros" class="java.lang.String"/>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<staticText>
+				<reportElement x="13" y="2" width="31" height="10" />
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Função:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="44" y="2" width="111" height="10" />
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{funcao}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="155" y="2" width="25" height="10" />
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Risco:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="437" y="2" width="24" height="10" />
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Inicio:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="291" y="2" width="34" height="10" />
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Término:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="16" y="12" width="28" height="10" />
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Outros:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="180" y="2" width="111" height="10" />
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{risco}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="461" y="2" width="89" height="10" />
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{termino}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="325" y="2" width="112" height="10" />
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inicio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="44" y="12" width="506" height="10" />
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{risco_outros} != null && !$F{risco_outros}.toString().equals("")) ? $F{risco_outros} : "-"]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="-1" width="550" height="1" />
+			</line>
+		</band>
+	</detail>
+</jasperReport>

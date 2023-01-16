@@ -1,0 +1,6 @@
+[ACO]
+create;buonny/NotasFiscaisServico;exibir_exames_consolidados
+create;buonny/NotasFiscaisServico;modal_consolidar
+create;buonny/NotasFiscaisServico;salvar_consolidacao
+create;buonny/NotasFiscaisServico;corrigir_valor_exame
+create;buonny/NotasFiscaisServico;salvar_valor_corrigido

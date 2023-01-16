@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;CorretorasContatos
+create;buonny/CorretorasContatos;formataInclusao
+create;buonny;CorretorasEnderecos
+create;buonny/CorretorasEnderecos;incluir
+create;buonny/CorretorasContatos;contatos_por_corretoras
+create;buonny/CorretorasContatos;incluir
+create;buonny/CorretorasContatos;editar
+create;buonny/CorretorasContatos;excluir

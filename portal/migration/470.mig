@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;ClienteAparelhoAudiometrico
+create;buonny/ClienteAparelhoAudiometrico;index
+create;buonny/ClienteAparelhoAudiometrico;incluir
+create;buonny/ClienteAparelhoAudiometrico;editar
+create;buonny/ClienteAparelhoAudiometrico;listagem

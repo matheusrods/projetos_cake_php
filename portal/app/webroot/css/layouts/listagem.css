@@ -1,0 +1,166 @@
+table {
+	margin-top: 40px;
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	margin-top: 10px;
+}
+
+.to-end {
+	align-items: center;
+	justify-content: flex-end;
+}
+.content-button {
+	padding: 9px;
+	/* box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 7px 0px; */
+	border-radius: 8px;
+	/* margin-left: 12px; */
+	background-color: black;
+	border: 1px solid black;
+	font-weight: bold;
+}
+.btn-save {
+	background-color: #00AA72 !important;
+	border: none;
+}
+.btn-exit {
+	background-color: #E0332B !important;
+	border: none;
+	height: 10px;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+}
+.both {
+	margin: 0;
+}
+
+
+
+.content-button:link {
+	color: #fff;
+	outline: none;
+	text-decoration: none;
+	transition: 0.5s;
+}
+
+.content-button:hover {
+	outline:  none;
+}
+
+
+.store .store__actions {
+	padding: 15px;
+}
+
+.store .store__columns {
+	display: flex;
+	flex-direction: column;
+}
+
+.store .store__columns .row{
+		padding: 15px;
+}
+
+.store .store__columns .divider {
+	width: 80%;
+	border: 1px solid red;
+	align-self: center;
+}
+
+.store .store__columns--title {
+	font-size: 20px;
+	
+}
+
+.input-field {
+	margin-left: 20px;
+	display: flex;
+	flex-direction: column;
+}
+.input-field, .note {
+	font-size: 11px;
+	color: gray;
+	padding: 2px;
+}
+.select2-container {
+	min-width: 20%;
+}
+.input-field .select2-selection {
+	height:	auto;
+	border: 1px solid gray;
+}
+.input-field .select2-selection__arrow {
+	/* padding-top: 15px; */
+}
+
+
+.centered {
+	text-align: center;
+}
+
+.small {
+	width: 10%;
+	margin-right: 30px;
+}
+.small input, .small select {
+	width: 100%;
+}
+
+.input-field label {
+	/* font-size: 14px; */
+	padding-bottom: 10px;
+	/* font-weight: bold; */
+}
+
+.input-field input, .input-field select{
+	/* padding: 12px; */
+	/* border: 1px solid gray; */
+}
+
+.input-field input::placeholder {
+	color: gray;
+	font-size: 15px;
+}
+
+.hidden {
+	display: none;
+}
+
+.clear-padding {
+	padding: 0 !important;
+}
+
+.full {
+	position: relative;
+	left: 30px;
+}
+
+.text-white {
+	color: #ffff !important;
+}
+
+.delete-row {
+	  padding: 1px;
+    height: 40px;
+    align-self: center;
+    margin-top: 25px;
+    background-color: transparent;
+    border: none;
+}
+
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
+td.disabled {
+	opacity: 0.8;
+}
+
+.icon-trash::before {
+	content: none !important;
+}

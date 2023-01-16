@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;UsuariosQuestionarios
+create;buonny/UsuariosQuestionarios;index
+create;buonny/UsuariosQuestionarios;listagem
+create;buonny/UsuariosQuestionarios;carrega_combos_grupo_economico
+create;buonny/UsuariosQuestionarios;export_listagem_questionarios

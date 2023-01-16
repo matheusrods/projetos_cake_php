@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;TiposSistIncendio
+create;buonny/TiposSistIncendio;index
+create;buonny/TiposSistIncendio;incluir
+create;buonny/TiposSistIncendio;editar
+create;buonny/TiposSistIncendio;listagem
+create;buonny/TiposSistIncendio;excluir

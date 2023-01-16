@@ -1,0 +1,7 @@
+[ACO]
+create;buonny/RiscosExame;aplicados
+create;buonny/RiscosExame;listagem_aplicados
+create;buonny/RiscosExame;filtro_combos_aplicados
+create;buonny/RiscosExame;filtro_tipos
+create;buonny/RiscosExame;filtro_tomadores
+create;buonny/RiscosExame;exportExamesAplicados

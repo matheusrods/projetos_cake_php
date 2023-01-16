@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;GruposExames
+create;buonny/GruposExames;index
+create;buonny/GruposExames;listagem
+create;buonny/GruposExames;lista_exames_grupo
+create;buonny/GruposExames;exclui_exames_grupo

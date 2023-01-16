@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;RiscosTipos
+create;buonny/RiscosTipos;index
+create;buonny/RiscosTipos;listagem
+create;buonny/RiscosTipos;incluir
+create;buonny/RiscosTipos;editar
+create;buonny/RiscosTipos;editar_status

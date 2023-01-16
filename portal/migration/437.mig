@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/NotasFiscaisServico;relatorio_exames_sem_nfs
+create;buonny/NotasFiscaisServico;relatorio_exames_sem_nfs_listagem
+create;buonny/NotasFiscaisServico;export_exames_sem_nfs

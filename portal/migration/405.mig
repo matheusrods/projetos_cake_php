@@ -1,0 +1,5 @@
+[ACO]	
+create;buonny;LogsIntegracoes
+create;buonny/LogsIntegracoes;integracao
+create;buonny/LogsIntegracoes;listagem_integracao
+create;buonny/LogsIntegracoes;visualiza_informacoes_integracao

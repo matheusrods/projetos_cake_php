@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;ItensPedidos
+create;buonny/ItensPedidos;index
+create;buonny/ItensPedidos;listagem
+create;buonny/ItensPedidos;incluir
+create;buonny/ItensPedidos;editar
+create;buonny/ItensPedidos;excluir

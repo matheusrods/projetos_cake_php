@@ -1,0 +1,1 @@
+<?= $this->Buonny->input_alvos_bandeiras_regioes($this, array_merge($alvos_bandeiras_regioes, array('force_model' => 'TViagViagem', 'input_codigo_cliente' => 'codigo_cliente')))?>

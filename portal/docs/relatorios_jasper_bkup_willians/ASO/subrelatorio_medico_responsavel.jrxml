@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subrelatorio_medico_responsavel" language="groovy" pageWidth="595" pageHeight="842" columnWidth="585" leftMargin="5" rightMargin="5" topMargin="5" bottomMargin="0" >
+	<property name="ireport.zoom" value="1.6105100000000014"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ASO"/>
+	<property name="ireport.jasperserver.url" value="http:// jasperprd.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="CODIGO_CLIENTE_FUNCIONARIO" class="java.lang.Integer"/>
+    <parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select
+		m.nome as medico_nome,
+        m.numero_conselho as medico_numero_conselho,
+        cp.descricao as medico_conselho,
+        RHHealth.publico.Ufn_decode_utf8_string(me.logradouro) as medico_endereco_logradouro,
+        me.numero as medico_endereco_numero,
+        me.bairro as medico_endereco_bairro,
+        me.complemento as medico_endereco_complemento,
+        ec.descricao as medico_endereco_cidade,
+        CONCAT('', ee.abreviacao, ' ') as medico_endereco_uf,
+        CONCAT('', m.conselho_uf, ' ') as medico_uf
+FROM rhhealth.dbo.pedidos_exames pe
+	INNER JOIN rhhealth.dbo.funcionario_setores_cargos fsc ON fsc.codigo = pe.codigo_func_setor_cargo
+	INNER JOIN rhhealth.dbo.cliente_funcionario cf ON cf.codigo = fsc.codigo_cliente_funcionario
+	INNER JOIN rhhealth.dbo.cliente c ON c.codigo = cf.codigo_cliente_matricula
+	INNER JOIN rhhealth.dbo.medicos m ON c.codigo_medico_pcmso = m.codigo
+	INNER JOIN rhhealth.dbo.conselho_profissional cp ON cp.codigo = m.codigo_conselho_profissional
+	LEFT JOIN rhhealth.dbo.medicos_endereco me ON me.codigo_medico = m.codigo
+	LEFT JOIN RHHealth.dbo.endereco_cidade ec ON (ec.codigo = me.codigo_cidade_endereco)
+	LEFT JOIN RHHealth.dbo.endereco_estado ee ON (ee.codigo = me.codigo_estado_endereco)
+WHERE pe.codigo = $P{CODIGO_PEDIDO_EXAME}]]>
+	</queryString>
+	<field name="medico_nome" class="java.lang.String"/>
+	<field name="medico_numero_conselho" class="java.lang.String"/>
+	<field name="medico_conselho" class="java.lang.String"/>
+	<field name="medico_endereco_logradouro" class="java.lang.String"/>
+	<field name="medico_endereco_numero" class="java.lang.String"/>
+	<field name="medico_endereco_bairro" class="java.lang.String"/>
+	<field name="medico_endereco_complemento" class="java.lang.String"/>
+	<field name="medico_endereco_cidade" class="java.lang.String"/>
+	<field name="medico_endereco_uf" class="java.lang.String"/>
+	<field name="medico_uf" class="java.lang.String"/>
+	<detail>
+		<band height="44" splitType="Stretch">
+			<staticText>
+				<reportElement  x="1" y="0" width="83" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nome:]]></text>
+			</staticText>
+			<textField>
+				<reportElement  x="84" y="0" width="305" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_nome}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement  x="395" y="0" width="54" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_conselho} + ":"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement  x="449" y="0" width="50" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_numero_conselho}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement  x="499" y="0" width="28" height="15"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[UF: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement  x="527" y="0" width="49" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_uf}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement  x="1" y="14" width="82" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Endereço:]]></text>
+			</staticText>
+			<textField>
+				<reportElement  x="83" y="14" width="306" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_endereco_logradouro}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement  x="449" y="14" width="127" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_endereco_numero}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement  x="395" y="14" width="54" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Número:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  x="248" y="28" width="59" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cidade/UF:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement  x="1" y="28" width="82" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Complemento:]]></text>
+			</staticText>
+			<textField>
+				<reportElement  x="83" y="28" width="155" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_endereco_complemento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement  x="307" y="28" width="269" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{medico_endereco_cidade} + " / " + $F{medico_endereco_uf}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

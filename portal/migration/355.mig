@@ -1,0 +1,5 @@
+[ACO]
+create;buonny/ClientesFuncionarios;consulta_vidas
+create;buonny/ClientesFuncionarios;consulta_vidas_listagem
+create;buonny/ClientesFuncionarios;consulta_vidas_analitico
+create;buonny/ClientesFuncionarios;consulta_vidas_analitico_listagem

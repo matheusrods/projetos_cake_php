@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;Cargos
+create;buonny/Cargos;index
+create;buonny/Cargos;listagem
+create;buonny/Cargos;incluir
+create;buonny/Cargos;editar
+create;buonny/Cargos;excluir

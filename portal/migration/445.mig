@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/MotivosAfastamento;index_externo
+create;buonny/MotivosAfastamento;listagem_externo
+create;buonny/MotivosAfastamento;editar_externo

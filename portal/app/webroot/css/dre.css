@@ -1,0 +1,128 @@
+.fixedColumn{
+	border-right: 4px solid #ccc;
+}
+
+.tableDiv > .table-dre td:first-child {
+	font-weight: bold;
+}
+
+.fixedHead{
+	border-bottom: 4px solid #ccc;
+}
+
+.table-dre th,
+.fixedHead td{
+	font-weight: bold;
+	background: #95b3d7;
+	text-align: center;
+	font-size: 14px;
+}
+
+.fixedTable{
+	margin-top: 5px;
+}
+
+.fixedContainer .fixedHead{
+	padding-left: 5px;
+}
+.fixedContainer .fixedTable{
+	padding-left: 5px;
+	text-align: right;
+}
+	
+.table-dre{
+	max-width:none;
+}	
+
+.table-dre th,
+.table-dre td{
+	padding: 2px 6px;
+	border: 2px solid #fff;
+	line-height: 20px;
+	width: 55px;
+	min-width: 55px;
+}	
+	
+.sub-topico-branco{
+	background: #FFFFFF;
+}
+.sub-topico-azul{
+	background: #dbe5f1;
+}
+.topico-branco{
+	background: #FFFFFF;
+	font-weight: bold;
+}
+.topico-azul{
+	background: #95b3d7;
+	font-weight: bold;
+}
+.table-dre td.sub-topico-branco.hover,
+.table-dre td.sub-topico-azul.hover,
+.table-dre td.topico-branco.hover,
+.table-dre td.topico-azul.hover{
+	background: #366092;
+	color: #FFFFFF;	
+}
+
+.fixedColumn .table-dre td{
+	padding-left: 20px;
+}
+
+.fixedColumn .table-dre td .ui-icon{
+	display:inline-block;
+	position: relative;
+	top: 1px;
+	cursor: pointer;
+	float: left;
+	margin-left: -16px;
+}
+
+#topicos{
+	margin-left: 0px;
+}
+
+#topicos li{
+	color: #000000;
+	border: 1px solid #ddd;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	line-height: 20px;
+	list-style: none;
+}
+
+#topicos li:hover,
+#topicos li:hover .formula,
+#topicos li:hover .regra{
+	background: #EEE;
+}
+
+#topicos li .ui-icon{
+	display:inline-block;
+	position: relative;
+	top: 3px;
+	left: 2px;
+	cursor: move;
+}
+
+#topicos li .formula,
+#topicos li .regra{
+	font-weight: normal;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	border: 1px solid #333;
+	padding: 4px 6px;
+	color: #333;
+	font-size: 11px;
+	margin-right: 4px;
+}
+
+#topicos .acoes{
+	float: right;
+	margin: -20px 10px 0 0;
+}
+
+.regra-modelo {
+	display:none;
+}

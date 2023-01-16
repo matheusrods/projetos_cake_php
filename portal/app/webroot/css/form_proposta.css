@@ -1,0 +1,44 @@
+.input-group-addon { background: #F9F9F9; }
+.form-group h3 { border-left: 5px solid #9D7497; padding-left: 5px; }
+.inline_labels label { display: inline-block; padding-top: 10px; }
+.control-group label { display: block; margin-top: 10px; }
+input[type="radio"] { margin: 0 10px 0 21px; }
+.form-control { background: #FFF; padding: 4px; }
+hr {border: 2px solid #CCC;}
+.form-control {border: 1px solid #CCC; }
+.input-group-addon {width: 205px; text-align: left;}
+.input-group {padding: 2px; width: 100%; font-size: 11px;}
+.inline_labels{border: 1px solid #CCC; background: #FFF;}
+.left {float: left;}
+.right {float: right;}
+input.error{background: #FFE5E5; color: #C9302C; border: 1px solid #C9302C;}
+
+.alert-error {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+}
+
+.error-message {
+	width: 100%; background: #FFE5E5; text-align: center; color: #C9302C; clear: both; font-size: 12px; font-weight: bold; border: 2px solid #BA6765;
+}
+
+.clear {clear: both}
+
+.periodo { padding: 10px; border: 1px solid #CCC; border-radius: 5px; margin-bottom: 10px; }
+.periodo .row { padding: 5px 15px; }
+.periodo .row .dias { float: left; padding: 5px 15px 0 0; }
+label.titulo { float: left; padding: 10px 5px; text-align: center; }
+
+#enderecos .form-group {
+	border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.red {color: #BD362F}
+
+input[type="text"]:disabled {
+    background: #CCC;
+}

@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorio_exposicoes" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="126"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ppra"/>
+	<property name="ireport.jasperserver.url" value="http:// jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<style name="bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="1.0"/>
+			<topPen lineWidth="1.0"/>
+			<leftPen lineWidth="1.0"/>
+			<bottomPen lineWidth="1.0"/>
+			<rightPen lineWidth="1.0"/>
+		</box>
+	</style>
+	<style name="ligth-bordered" mode="Opaque">
+		<box>
+			<pen lineWidth="0.25"/>
+			<topPen lineWidth="0.25"/>
+			<leftPen lineWidth="0.25"/>
+			<bottomPen lineWidth="0.25"/>
+			<rightPen lineWidth="0.25"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_SETOR" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Program Files (x86)\\Jaspersoft\\iReport-4.7.1\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="CODIGO_GRUPO_EXPOSICAO" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT
+ISNULL((
+SELECT grupos_riscos.descricao FROM RHHealth.dbo.grupos_riscos
+    WHERE grupos_riscos.codigo = ri.codigo_grupo
+), '') AS agente,
+    RHHealth.publico.Ufn_decode_utf8_string(ri.nome_agente) AS risco,
+    ISNULL(radec.descricao, '') AS efeito_critico,
+    ISNULL(radmp.descricao, '') AS meio_propagacao,
+    ISNULL(ecate.abreviacao, '') as tempo_exposicao_tipo,
+    ISNULL(ger.minutos_tempo_exposicao, '') AS tempo_exposicao_minutos,
+    ISNULL(ger.jornada_tempo_exposicao, '') AS tempo_exposicao_jornada,
+    ger.codigo AS CODIGO_GRUPOS_EXPOSICAO_RISCO,
+    ISNULL(RHHealth.publico.Ufn_decode_utf8_string(ge.observacao), '') AS observacao,
+    ISNULL(RHHealth.publico.Ufn_decode_utf8_string(ger.medidas_controle), '') AS medidas_controle ,
+    ISNULL(ecain.abreviacao, '') AS intensidade,
+    ISNULL(ecaer.abreviacao, '') AS exposicao_resultante,
+    ISNULL(ecapd.abreviacao, '') AS potencial_dano,
+    ISNULL(ecagr.abreviacao, '') AS grau_risco,
+    CASE WHEN ge.codigo_grupo_homogeneo IS NOT NULL THEN 1
+         ELSE 0
+         END as grupo_homogeneo,
+    CASE WHEN ger.codigo_tipo_medicao = 1 THEN 'Quantitativo'
+         WHEN ger.codigo_tipo_medicao = 2 THEN 'Qualitativo'
+         WHEN ger.codigo_tipo_medicao is null THEN ''
+    END AS tipo_medicao,
+    ISNULL(tm.abreviacao, '') AS tecnica_medicao,
+    ISNULL(ger.valor_maximo, '') AS limite_tolerancia,
+    ISNULL(ger.valor_medido, '') AS valor_medido,
+    ISNULL(RHHealth.publico.Ufn_decode_utf8_string(ger.medidas_controle_recomendada), '') as medidas_controle_recomendada
+FROM RHHealth.dbo.clientes_setores cs
+    INNER JOIN RHHealth.dbo.grupo_exposicao ge
+        ON (ge.codigo_cliente_setor = cs.codigo)
+    INNER JOIN RHHealth.dbo.grupos_exposicao_risco ger
+        ON (ger.codigo_grupo_exposicao = ge.codigo)
+    INNER JOIN  RHHealth.dbo.riscos ri
+        ON (ri.codigo = ger.codigo_risco)
+    LEFT JOIN RHHealth.dbo.riscos_atributos_detalhes radec
+        ON (radec.codigo = ger.codigo_efeito_critico)
+    LEFT JOIN RHHealth.dbo.riscos_atributos_detalhes radmp
+        ON (radmp.codigo = ger.codigo_risco_atributo)
+    LEFT JOIN RHHealth.dbo.exposicao_ocupacional_atributo ecate
+        ON (ecate.codigo = ger.tempo_exposicao)
+    LEFT JOIN RHHealth.dbo.exposicao_ocupacional_atributo ecain
+        ON (ecain.codigo = ger.intensidade)
+    LEFT JOIN RHHealth.dbo.exposicao_ocupacional_atributo ecaer
+        ON (ecaer.codigo = ger.resultante)
+    LEFT JOIN RHHealth.dbo.exposicao_ocupacional_atributo ecapd
+        ON (ecapd.codigo = ger.dano)
+    LEFT JOIN RHHealth.dbo.exposicao_ocupacional_atributo ecagr
+        ON (ecagr.codigo = ger.grau_risco)
+    LEFT JOIN RHHealth.dbo.tecnicas_medicao tm
+        ON (tm.codigo = ger.codigo_tecnica_medicao)
+WHERE ge.codigo = $P{CODIGO_GRUPO_EXPOSICAO}]]>
+	</queryString>
+	<field name="agente" class="java.lang.String"/>
+	<field name="risco" class="java.lang.String"/>
+	<field name="efeito_critico" class="java.lang.String"/>
+	<field name="meio_propagacao" class="java.lang.String"/>
+	<field name="tempo_exposicao_tipo" class="java.lang.String"/>
+	<field name="tempo_exposicao_minutos" class="java.lang.Integer"/>
+	<field name="tempo_exposicao_jornada" class="java.lang.Integer"/>
+	<field name="CODIGO_GRUPOS_EXPOSICAO_RISCO" class="java.lang.Integer"/>
+	<field name="observacao" class="java.lang.String"/>
+	<field name="medidas_controle" class="java.lang.String"/>
+	<field name="intensidade" class="java.lang.String"/>
+	<field name="exposicao_resultante" class="java.lang.String"/>
+	<field name="potencial_dano" class="java.lang.String"/>
+	<field name="grau_risco" class="java.lang.String"/>
+	<field name="grupo_homogeneo" class="java.lang.Integer"/>
+	<field name="tipo_medicao" class="java.lang.String"/>
+	<field name="tecnica_medicao" class="java.lang.String"/>
+	<field name="limite_tolerancia" class="java.lang.String"/>
+	<field name="valor_medido" class="java.lang.String"/>
+	<field name="medidas_controle_recomendada" class="java.lang.String"/>
+	<variable name="CODIGO_GRUPOS_EXPOSICAO_RISCO" class="java.lang.Integer">
+		<variableExpression><![CDATA[$F{CODIGO_GRUPOS_EXPOSICAO_RISCO}]]></variableExpression>
+	</variable>
+	<detail>
+		<band height="458">
+			<frame>
+				<reportElement  x="16" y="406" width="521" height="38"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<staticText>
+					<reportElement  x="3" y="3" width="100" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Observações:]]></text>
+				</staticText>
+				<textField>
+					<reportElement  x="3" y="14" width="512" height="20"/>
+					<textElement verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{observacao}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement  style="ligth-bordered" mode="Opaque" x="16" y="362" width="521" height="38"/>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<staticText>
+					<reportElement  x="3" y="4" width="132" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Medidas de Controle Recomendada:]]></text>
+				</staticText>
+				<textField>
+					<reportElement  x="3" y="14" width="512" height="20"/>
+					<textElement verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{medidas_controle_recomendada}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement  mode="Transparent" x="17" y="0" width="521" height="49"/>
+				<frame>
+					<reportElement  style="ligth-bordered" x="237" y="2" width="135" height="47"/>
+					<frame>
+						<reportElement  style="ligth-bordered" x="1" y="15" width="63" height="31"/>
+						<textField>
+							<reportElement  x="40" y="21" width="20" height="10"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{tempo_exposicao_jornada}]]></textFieldExpression>
+						</textField>
+						<staticText>
+							<reportElement  x="38" y="10" width="25" height="10"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="4" isBold="true"/>
+							</textElement>
+							<text><![CDATA[JORNADA]]></text>
+						</staticText>
+						<staticText>
+							<reportElement  x="3" y="10" width="13" height="10"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="4" isBold="true"/>
+							</textElement>
+							<text><![CDATA[TIPO]]></text>
+						</staticText>
+						<textField>
+							<reportElement  x="17" y="21" width="20" height="10"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{tempo_exposicao_minutos}]]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement  x="0" y="21" width="20" height="10"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{tempo_exposicao_tipo}]]></textFieldExpression>
+						</textField>
+						<staticText>
+							<reportElement  x="3" y="0" width="60" height="10"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="4" isBold="true"/>
+							</textElement>
+							<text><![CDATA[TEMPO DE EXPOSIÇÃO]]></text>
+						</staticText>
+						<staticText>
+							<reportElement  x="15" y="10" width="25" height="10"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="4" isBold="true"/>
+							</textElement>
+							<text><![CDATA[MINUTOS]]></text>
+						</staticText>
+					</frame>
+					<staticText>
+						<reportElement  x="2" y="0" width="132" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="4" isBold="true"/>
+						</textElement>
+						<text><![CDATA[EXPOSIÇÃO ]]></text>
+					</staticText>
+					<frame>
+						<reportElement  style="ligth-bordered" x="66" y="15" width="29" height="31"/>
+						<textField>
+							<reportElement  x="0" y="21" width="29" height="10"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[($F{grupo_homogeneo}.equals(1)) ? $F{intensidade} : '']]></textFieldExpression>
+						</textField>
+					</frame>
+					<frame>
+						<reportElement  style="ligth-bordered" x="97" y="15" width="36" height="31"/>
+						<textField>
+							<reportElement  x="0" y="21" width="36" height="10"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="5"/>
+							</textElement>
+							<textFieldExpression><![CDATA[($F{grupo_homogeneo}.equals(1)) ? $F{exposicao_resultante} : '']]></textFieldExpression>
+						</textField>
+						<textField>
+							<reportElement  x="0" y="0" width="36" height="14"/>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="4" isBold="true"/>
+							</textElement>
+							<textFieldExpression><![CDATA[($F{grupo_homogeneo}.equals(1)) ? 'EXPOSIÇÃO RESULTANTE' : '']]></textFieldExpression>
+						</textField>
+					</frame>
+					<textField>
+						<reportElement  x="66" y="15" width="29" height="14"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="4" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[($F{grupo_homogeneo}.equals(1)) ? 'INTENSIDADE' : '']]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement  style="ligth-bordered" x="373" y="2" width="38" height="23"/>
+					<textField>
+						<reportElement  x="0" y="13" width="38" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="5"/>
+						</textElement>
+						<textFieldExpression><![CDATA[($F{grupo_homogeneo}.equals(1)) ? $F{potencial_dano} : '']]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement  x="0" y="0" width="38" height="13"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="4" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[($F{grupo_homogeneo}.equals(1)) ? 'POTENCIAL DE DANO' : '']]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement  style="ligth-bordered" x="373" y="26" width="38" height="23"/>
+					<textField>
+						<reportElement  x="0" y="13" width="38" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="5"/>
+						</textElement>
+						<textFieldExpression><![CDATA[($F{grupo_homogeneo}.equals(1)) ? $F{grau_risco} : '']]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement  x="0" y="0" width="38" height="13"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="4" isBold="true"/>
+						</textElement>
+						<textFieldExpression><![CDATA[($F{grupo_homogeneo}.equals(1)) ? 'GRAU DE RISCO' : '']]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement  style="ligth-bordered" x="78" y="3" width="148" height="45"/>
+					<staticText>
+						<reportElement  x="5" y="0" width="132" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="4" isBold="true"/>
+						</textElement>
+						<text><![CDATA[MEIO DE PROPAGAÇÃO]]></text>
+					</staticText>
+					<textField>
+						<reportElement  x="0" y="10" width="148" height="32"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="5"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{meio_propagacao}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement  style="ligth-bordered" x="0" y="2" width="61" height="47"/>
+					<textField>
+						<reportElement  x="1" y="12" width="60" height="11"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="6"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{agente}]]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement  x="0" y="23" width="61" height="24"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="5"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{risco}]]></textFieldExpression>
+					</textField>
+					<staticText>
+						<reportElement  x="0" y="1" width="61" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="4" isBold="true"/>
+						</textElement>
+						<text><![CDATA[AGENTES / SUBSTÂNCIAS]]></text>
+					</staticText>
+				</frame>
+				<frame>
+					<reportElement  style="ligth-bordered" x="412" y="2" width="109" height="47"/>
+					<staticText>
+						<reportElement  x="0" y="0" width="52" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="4" isBold="true"/>
+						</textElement>
+						<text><![CDATA[AVALIAÇÃO AMBIENTAL]]></text>
+					</staticText>
+					<textField>
+						<reportElement  x="52" y="0" width="56" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="5"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{tipo_medicao}]]></textFieldExpression>
+					</textField>
+				</frame>
+				<frame>
+					<reportElement  style="ligth-bordered" x="413" y="13" width="107" height="35"/>
+					<textField>
+						<reportElement  x="52" y="2" width="55" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="5"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{tecnica_medicao}]]></textFieldExpression>
+					</textField>
+					<textField>
+						<reportElement  x="52" y="22" width="55" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="5"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{valor_medido}]]></textFieldExpression>
+					</textField>
+					<staticText>
+						<reportElement  x="1" y="22" width="50" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="4" isBold="true"/>
+						</textElement>
+						<text><![CDATA[VALOR MEDIDO]]></text>
+					</staticText>
+					<textField>
+						<reportElement  x="52" y="12" width="55" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="5"/>
+						</textElement>
+						<textFieldExpression><![CDATA[$F{limite_tolerancia}]]></textFieldExpression>
+					</textField>
+					<staticText>
+						<reportElement  x="1" y="12" width="50" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="4" isBold="true"/>
+						</textElement>
+						<text><![CDATA[LIMITE DE TOLERÂNCIA]]></text>
+					</staticText>
+					<staticText>
+						<reportElement  x="1" y="2" width="50" height="10"/>
+						<textElement textAlignment="Center" verticalAlignment="Middle">
+							<font size="4" isBold="true"/>
+						</textElement>
+						<text><![CDATA[TÉCNICAS DE MEDIÇÃO]]></text>
+					</staticText>
+				</frame>
+			</frame>
+			<frame>
+				<reportElement  style="ligth-bordered" x="16" y="113" width="521" height="64"/>
+				<subreport>
+					<reportElement  x="1" y="28" width="520" height="36"/>
+					<subreportParameter name="CODIGO_GRUPOS_EXPOSICAO_RISCO">
+						<subreportParameterExpression><![CDATA[$F{CODIGO_GRUPOS_EXPOSICAO_RISCO}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_epc.jrxml"]]></subreportExpression>
+				</subreport>
+				<staticText>
+					<reportElement  x="191" y="0" width="100" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[EPC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="2" y="18" width="82" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Tipo]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement  style="ligth-bordered" x="16" y="183" width="522" height="64"/>
+				<subreport>
+					<reportElement  x="1" y="18" width="518" height="46"/>
+					<subreportParameter name="CODIGO_GRUPOS_EXPOSICAO_RISCO">
+						<subreportParameterExpression><![CDATA[$F{CODIGO_GRUPOS_EXPOSICAO_RISCO}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_epi.jrxml"]]></subreportExpression>
+				</subreport>
+				<staticText>
+					<reportElement  x="188" y="0" width="100" height="17"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[EPI]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement  style="ligth-bordered" mode="Transparent" x="16" y="253" width="521" height="62"/>
+				<staticText>
+					<reportElement  x="3" y="2" width="78" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Legendas:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="14" y="14" width="160" height="10"/>
+					<textElement>
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Tempo de Exposição:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="14" y="24" width="160" height="10"/>
+					<textElement>
+						<font size="5"/>
+					</textElement>
+					<text><![CDATA[P - Permanente / I - Intermitente / O - Ocasional]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="14" y="50" width="160" height="10"/>
+					<textElement>
+						<font size="5"/>
+					</textElement>
+					<text><![CDATA[L - Leve / B - Baixo / M - Médio / A - Alto / I - Iminente]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="14" y="40" width="160" height="10"/>
+					<textElement>
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Potencial de dano:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="184" y="24" width="160" height="10"/>
+					<textElement>
+						<font size="5"/>
+					</textElement>
+					<text><![CDATA[B - Baixa / M - Média / A - Alta / - MA - Muito alta]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="184" y="40" width="160" height="10"/>
+					<textElement>
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Grau de Risco]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="184" y="50" width="160" height="10"/>
+					<textElement>
+						<font size="5"/>
+					</textElement>
+					<text><![CDATA[AC - Aceitável / M - Moderado / A - Alto / MA - Muito Alto]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="184" y="14" width="160" height="10"/>
+					<textElement>
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Intensidade]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="355" y="24" width="160" height="10"/>
+					<textElement>
+						<font size="5"/>
+					</textElement>
+					<text><![CDATA[C - Crítica / A - Atenção / I - Irrelevante / IN - Incerta]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="355" y="14" width="160" height="10"/>
+					<textElement>
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Exposição Resultante:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="355" y="50" width="160" height="10"/>
+					<textElement>
+						<font size="5"/>
+					</textElement>
+					<text><![CDATA[E - Existente / R - Recomendado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement  x="355" y="40" width="160" height="10"/>
+					<textElement>
+						<font size="5" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Tecnologia de Proteção]]></text>
+				</staticText>
+			</frame>
+			<frame>
+				<reportElement  style="ligth-bordered" x="16" y="320" width="521" height="38"/>
+				<staticText>
+					<reportElement  x="3" y="5" width="132" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Medidas de Controle Existente:]]></text>
+				</staticText>
+				<textField>
+					<reportElement  x="3" y="15" width="512" height="20"/>
+					<textElement verticalAlignment="Top">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{medidas_controle}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement  style="ligth-bordered" x="17" y="60" width="259" height="47"/>
+				<staticText>
+					<reportElement  x="0" y="1" width="258" height="10"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="4" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FONTES GERADORAS DA EXPOSICAO]]></text>
+				</staticText>
+				<subreport>
+					<reportElement  mode="Transparent" x="1" y="16" width="257" height="31"/>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="CODIGO_GRUPOS_EXPOSICAO_RISCO">
+						<subreportParameterExpression><![CDATA[$V{CODIGO_GRUPOS_EXPOSICAO_RISCO}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:relatorio_fontes_geradoras_exposicao.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+			<frame>
+				<reportElement  style="ligth-bordered" x="281" y="60" width="257" height="47"/>
+				<staticText>
+					<reportElement  x="11" y="0" width="240" height="10"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="4" isBold="true"/>
+					</textElement>
+					<text><![CDATA[EFEITO CRÍTICO]]></text>
+				</staticText>
+				<subreport>
+					<reportElement  x="0" y="12" width="257" height="35"/>
+					<subreportParameter name="CODIGO_GRUPOS_EXPOSICAO_RISCO">
+						<subreportParameterExpression><![CDATA[$F{CODIGO_GRUPOS_EXPOSICAO_RISCO}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA["repo:sub_rel_efeito_critico.jrxml"]]></subreportExpression>
+				</subreport>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

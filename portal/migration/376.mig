@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;FichasAssistenciais
+create;buonny/FichasAssistenciais;listagem
+create;buonny/FichasAssistenciais;listagemPedidoDeExame
+create;buonny/FichasAssistenciais;index
+create;buonny/FichasAssistenciais;incluir
+create;buonny/FichasAssistenciais;selecionarPedidoDeExameAssistencial
+create;buonny/FichasAssistenciais;editar
+create;buonny/FichasAssistenciais;imprimir_relatorio

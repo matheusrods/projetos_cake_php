@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="grade_pcmso" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="ca109c1c-3aa3-4d03-b9e7-1bd214b06680">
+	<property name="ireport.zoom" value="2.853116706110003"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/pedidos_exame"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="CODIGO_FORNECEDOR" class="java.lang.Integer"/>
+	<parameter name="CODIGO_PEDIDO_EXAME" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT RHHealth.publico.Ufn_decode_utf8_string(exames.descricao) AS exame_descricao,
+CASE
+    WHEN age.codigo IS NOT NULL
+    THEN
+        (case
+            when len(age.hora) < '3'
+            then CONCAT ('Agendado: ', CONVERT(VARCHAR, age.data, 103), ' às ', cast(age.hora as varchar))
+            else CONCAT('Agendado: ', CONVERT(VARCHAR, age.data, 103), ' às ', concat(left(cast(age.hora as varchar), len(cast(age.hora as varchar))-2), ':',substring(cast(age.hora as varchar), len(cast(age.hora as varchar)) - 1, 2)))
+        end)
+    ELSE
+        (case
+            when itens_pedidos_exames.tipo_atendimento = 0
+            then 'Ordem de Chegada'
+            else 'Hora Marcada'
+        end)
+END AS tipo_agendamento
+FROM RHHealth.dbo.itens_pedidos_exames
+    INNER JOIN RHHealth.dbo.pedidos_exames ON (pedidos_exames.codigo = itens_pedidos_exames.codigo_pedidos_exames)
+    INNER JOIN RHHealth.dbo.exames ON (exames.codigo = itens_pedidos_exames.codigo_exame)
+    LEFT JOIN RHHealth.dbo.agendamento_exames age ON (itens_pedidos_exames.codigo = age.codigo_itens_pedidos_exames)
+WHERE pedidos_exames.codigo = $P{CODIGO_PEDIDO_EXAME}
+    --AND pedidos_exames.pontual <> 1
+    AND(pedidos_exames.pontual is null OR pedidos_exames.pontual = 0)
+    AND itens_pedidos_exames.codigo_fornecedor = $P{CODIGO_FORNECEDOR}
+group by exames.codigo, exames.descricao,
+CASE
+    WHEN age.codigo IS NOT NULL
+    THEN
+        (case
+            when len(age.hora) < '3'
+            then CONCAT ('Agendado: ', CONVERT(VARCHAR, age.data, 103), ' às ', cast(age.hora as varchar))
+            else CONCAT('Agendado: ', CONVERT(VARCHAR, age.data, 103), ' às ', concat(left(cast(age.hora as varchar), len(cast(age.hora as varchar))-2), ':',substring(cast(age.hora as varchar), len(cast(age.hora as varchar)) - 1, 2)))
+        end)
+    ELSE
+        (case
+            when itens_pedidos_exames.tipo_atendimento = 0
+            then 'Ordem de Chegada'
+            else 'Hora Marcada'
+        end)
+END;]]>
+	</queryString>
+	<field name="exame_descricao" class="java.lang.String"/>
+	<field name="tipo_agendamento" class="java.lang.String"/>
+	<detail>
+		<band height="17" splitType="Stretch">
+			<textField>
+				<reportElement x="9" y="2" width="200" height="13" uuid="4a7813a2-df4e-4704-b14b-bfda3b7046d1"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exame_descricao}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="199" y="8" width="194" height="1" uuid="0f2dbb7b-85ec-42b2-83c0-92c88fc16a8e"/>
+			</line>
+			<textField>
+				<reportElement x="400" y="1" width="143" height="15" uuid="18ca50da-51f0-4910-a22a-3a57d925e612"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo_agendamento}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

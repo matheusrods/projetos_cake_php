@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;Enderecos
+create;buonny/Enderecos;index
+create;buonny/Enderecos;incluir
+create;buonny/Enderecos;editar
+create;buonny/Enderecos;listagem
+create;buonny/Enderecos;listagem_combo_cidade
+create;buonny/Enderecos;listar_por_cep
+

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_cid_avaliacao_pcd_condicao_pcd" pageWidth="555" pageHeight="500" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.652892561983471"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="57"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ficha_clinica"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/relatorio_ficha_clinica_files/sub_cid_avaliacao_pcd_condicao_pcd.jrxml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="0"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="1000"/>
+	<style name="style1">
+		<box>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<scriptlet name="gJSON" class="net.sf.jasperreports.engine.JRDefaultScriptlet"/>
+	<parameter name="CODIGO_FICHA_CLINICA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[DECLARE @MaxCount INT;
+DECLARE @Cod INT;
+SELECT @MaxCount = max(cnt)
+FROM (
+    SELECT
+        count(codigo) AS cnt
+    FROM RHHealth.dbo.fichas_clinicas_questoes fcq
+    ) X;
+DECLARE @SQL NVARCHAR(max)
+    ,@i INT;
+SET @i = 0;
+WHILE @i < @MaxCount
+BEGIN
+    SET @i = @i + 1;
+    SELECT @Cod = codigo from (
+    SELECT codigo, CAST(row_number() OVER (ORDER BY codigo) AS Varchar(10)) AS RowNo FROM RHHealth.dbo.fichas_clinicas_questoes
+    ) pv WHERE RowNo = @i
+    SET @SQL = COALESCE(@Sql + ', ', '') + 'questao_' + CONVERT(VARCHAR(10), @Cod);
+END
+;SET @SQL = N';WITH CTE AS (
+        SELECT
+             CONCAT(
+			IIF(fichas_clinicas_respostas.resposta  = ''0'', '' '', dbBuonny.publico.ufn_decode_utf8_string(fichas_clinicas_respostas.resposta)) COLLATE SQL_Latin1_General_CP1_CI_AS,
+			''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+			ISNULL(CASE fichas_clinicas_respostas.parentesco
+				WHEN '''' THEN '' ''
+				ELSE dbBuonny.publico.ufn_decode_utf8_string(fichas_clinicas_respostas.parentesco)
+				END, '' '') COLLATE SQL_Latin1_General_CP1_CI_AS,
+			''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+			CASE fichas_clinicas_respostas.campo_livre
+				WHEN '''' THEN '' ''
+				ELSE dbBuonny.publico.ufn_decode_utf8_string(fichas_clinicas_respostas.campo_livre)
+				END COLLATE SQL_Latin1_General_CP1_CI_AS) AS resposta,
+        ''questao_'' +  CONVERT(VARCHAR(10), fichas_clinicas_questoes.codigo) COLLATE database_default AS RowNo FROM RHHealth.dbo.fichas_clinicas_questoes
+        LEFT JOIN RHHealth.dbo.fichas_clinicas_respostas
+        ON(fichas_clinicas_respostas.codigo_ficha_clinica_questao = fichas_clinicas_questoes.codigo)
+        WHERE fichas_clinicas_questoes.codigo_ficha_clinica_grupo_questao = 8 AND fichas_clinicas_respostas.codigo_ficha_clinica = ' + $P{CODIGO_FICHA_CLINICA} + ' )
+SELECT *
+FROM   CTE
+PIVOT (MAX(resposta) FOR RowNo IN (' + @SQL + N')) pvt';
+EXECUTE (@SQL)]]>
+	</queryString>
+	<field name="questao_288" class="java.lang.String"/>
+	<field name="questao_290" class="java.lang.String"/>
+	<field name="questao_291" class="java.lang.String"/>
+	<field name="questao_293" class="java.lang.String"/>
+	<field name="questao_294" class="java.lang.String"/>
+	<field name="questao_295" class="java.lang.String"/>
+	<field name="questao_296" class="java.lang.String"/>
+	<field name="questao_297" class="java.lang.String"/>
+	<field name="questao_298" class="java.lang.String"/>
+	<field name="questao_299" class="java.lang.String"/>
+	<variable name="JSON_STRING" class="java.lang.String"/>
+	<pageHeader>
+		<band height="1">
+			<line>
+				<reportElement x="0" y="0" width="555" height="1"/>
+				<graphicElement>
+					<pen lineWidth="0.5"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="287" splitType="Stretch">
+			<staticText>
+				<reportElement x="1" y="2" width="100" height="12"/>
+				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ORIGEM DA DEFICIÊNCIA:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="101" y="2" width="451" height="12"/>
+				<textElement>
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{questao_288} != null) ? $F{questao_288}.split("#")[0] : "-"]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement key="" positionType="Float" isPrintRepeatedValues="false" x="1" y="15" width="551" height="26" isRemoveLineWhenBlank="true">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[new Boolean($F{questao_290}.toString() != "null")]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement x="0" y="1" width="551" height="12"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Descrição detalhada das alterações físicas (anatômicas e funcionais), sensoriais, intelectuais e mentais:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="0" y="13" width="551" height="12">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_290} != null) ? $F{questao_290}.split("#")[0] : "-"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="1" y="42" width="551" height="26" isRemoveLineWhenBlank="true">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[new Boolean($F{questao_291}.toString() != "null")]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement x="0" y="1" width="551" height="12"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Descrição das limitações funcionais para atividades da vida diária e social e dos apoios necessários:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="0" y="13" width="551" height="12"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_291} != null) ? $F{questao_291}.split("#")[0] : "-"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="1" y="69" width="551" height="38" isRemoveLineWhenBlank="true">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[new Boolean($F{questao_293}.toString() != "null")]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement x="0" y="1" width="551" height="12"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[I- Deficiência Física]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement mode="Opaque" x="0" y="13" width="551" height="12" isRemoveLineWhenBlank="true">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_293} != null) ? $F{questao_293}.split("#")[0] : ""]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" x="0" y="25" width="551" height="12" isRemoveLineWhenBlank="true"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_293} != null && $F{questao_293}.split("#").length >= 3) ? $F{questao_293}.split("#")[2] : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement key="" positionType="Float" x="1" y="108" width="551" height="26" isRemoveLineWhenBlank="true">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[new Boolean($F{questao_294}.toString() != "null")]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement x="0" y="1" width="551" height="12"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[II- Deficiência Auditiva]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="0" y="13" width="551" height="12"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_294} != null) ? $F{questao_294}.split("#")[0] : "-"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="1" y="135" width="551" height="26" isRemoveLineWhenBlank="true">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[new Boolean($F{questao_295}.toString() != "null")]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement x="0" y="1" width="551" height="12"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[III- Deficiência Visual]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="0" y="13" width="551" height="12" isRemoveLineWhenBlank="true"/>
+					<textElement>
+						<font size="6" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_295}.split("#")[0].replaceAll("\\[", "").replaceAll("]", "").replaceAll("\",\"", "\n").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="1" y="162" width="551" height="42" isRemoveLineWhenBlank="true">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[new Boolean($F{questao_296}.toString() != "null")]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement x="0" y="1" width="551" height="16"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IV- Deficiência Intelectual- funcionamento intelectual significativamente inferior à média, com manifestação antes dos 18 anos e limitações associadas a duas ou mais habilidades adaptativas, tais como:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="0" y="17" width="551" height="12" isRemoveLineWhenBlank="true"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{questao_296}.split("#")[0].replaceAll("\\[", "").replaceAll("]", "").replaceAll("\",\"", "\n").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement positionType="Float" x="0" y="29" width="551" height="12" isRemoveLineWhenBlank="true"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_296} != null && $F{questao_296}.split("#").length >= 3) ? $F{questao_296}.split("#")[2] : ""]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="1" y="205" width="551" height="26" isRemoveLineWhenBlank="true">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[new Boolean($F{questao_297}.toString() != "null")]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement x="0" y="1" width="551" height="12"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IV a- Deficiência Mental]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="0" y="13" width="551" height="12"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_297} != null) ? $F{questao_297}.split("#")[0] : "-"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="1" y="232" width="551" height="26" isRemoveLineWhenBlank="true">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[new Boolean($F{questao_298}.toString() != "null")]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement x="0" y="1" width="551" height="12"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[IV b- Deficiência Mental]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="0" y="13" width="551" height="12"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_298} != null) ? $F{questao_298}.split("#")[0] : "-"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement positionType="Float" x="1" y="259" width="551" height="26" isRemoveLineWhenBlank="true">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[new Boolean($F{questao_299}.toString() != "null")]]></printWhenExpression>
+				</reportElement>
+				<staticText>
+					<reportElement x="0" y="1" width="551" height="12"/>
+					<textElement>
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outras deficiências físicas:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="0" y="13" width="551" height="12"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_299} != null) ? $F{questao_299}.split("#")[0] : "-"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="50">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="555" height="50" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="CODIGO_FICHA_CLINICA">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_FICHA_CLINICA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["repo:sub_cid_pcd.jrxml"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,11 @@
+[ACO]
+create;buonny;ClientesProdutos
+create;buonny;EmbarcadoresTransportadores
+create;buonny;MatrizesFiliais
+create;buonny/ClientesProdutos/incluir2
+create;buonny/ClientesProdutos/cadastrar_valores_servicos_do_produto
+create;buonny/ClientesProdutos/excluir_servico_assinatura
+create;buonny/ClientesProdutosServicos/atualizar_servico_assinatura
+create;buonny/ClientesProdutos/editar
+create;buonny/EmbarcadoresTransportadores/listar_assinaturas
+create;buonny/MatrizesFiliais/listar_assinaturas

@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)\.[\d]+\.(css|js)$ $1.$2 [L] 
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
+</IfModule>
+php_value upload_max_filesize 20M
+php_value post_max_size 20M
+AddType text/xml .wsdl

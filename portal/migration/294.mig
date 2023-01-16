@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;FornecedoresUnidades
+create;buonny/FornecedoresUnidades;index
+create;buonny/FornecedoresUnidades;listagem
+create;buonny/FornecedoresUnidades;incluir
+create;buonny/FornecedoresUnidades;editar
+create;buonny/FornecedoresUnidades;excluir
+create;buonny/FornecedoresUnidades;atualiza_status

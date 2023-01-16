@@ -1,0 +1,2742 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_exame_fisico" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="1062"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ficha_clinica"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/relatorio_ficha_clinica_files/sub_exame_fisico.jrxml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<style name="style1">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FICHA_CLINICA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[12091]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[DECLARE @MaxCount INT;
+DECLARE @Cod INT;
+SELECT @MaxCount = max(cnt)
+FROM (
+    SELECT
+        count(codigo) AS cnt
+    FROM RHHealth.dbo.fichas_clinicas_questoes fcq
+    ) X;
+DECLARE @SQL NVARCHAR(max)
+    ,@i INT;
+SET @i = 0;
+WHILE @i < @MaxCount
+BEGIN
+    SET @i = @i + 1;
+    SELECT @Cod = codigo from (
+    SELECT codigo, CAST(row_number() OVER (ORDER BY codigo) AS Varchar(10)) AS RowNo FROM RHHealth.dbo.fichas_clinicas_questoes
+    ) pv WHERE RowNo = @i
+    SET @SQL = COALESCE(@Sql + ', ', '') + 'questao_' + CONVERT(VARCHAR(10), @Cod);
+END
+;SET @SQL = N';WITH CTE AS (
+        SELECT
+        CONCAT(fichas_clinicas_respostas.resposta COLLATE SQL_Latin1_General_CP1_CI_AS, ''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+        ISNULL(CASE fichas_clinicas_respostas.parentesco
+        WHEN '''' THEN '' ''
+        ELSE RHHealth.publico.ufn_decode_utf8_string(fichas_clinicas_respostas.parentesco)
+        END, '' '') COLLATE SQL_Latin1_General_CP1_CI_AS,
+        ''#'' COLLATE SQL_Latin1_General_CP1_CI_AS,
+       CASE fichas_clinicas_respostas.campo_livre
+				WHEN '''' THEN '' ''
+				ELSE RHHealth.publico.ufn_decode_utf8_string(fichas_clinicas_respostas.campo_livre)
+				END COLLATE SQL_Latin1_General_CP1_CI_AS) AS resposta,
+        ''questao_'' +  CONVERT(VARCHAR(10), fichas_clinicas_questoes.codigo) COLLATE SQL_Latin1_General_CP1_CI_AS AS RowNo
+        FROM RHHealth.dbo.fichas_clinicas_questoes
+        LEFT JOIN RHHealth.dbo.fichas_clinicas_respostas
+        ON(fichas_clinicas_respostas.codigo_ficha_clinica_questao = fichas_clinicas_questoes.codigo)
+        WHERE fichas_clinicas_questoes.codigo_ficha_clinica_grupo_questao = 9 AND fichas_clinicas_respostas.codigo_ficha_clinica = ' + $P{CODIGO_FICHA_CLINICA} + ' )
+SELECT *
+FROM   CTE
+PIVOT (MAX(resposta) FOR RowNo IN (' + @SQL + N')) pvt';
+EXECUTE (@SQL)]]>
+	</queryString>
+	<field name="questao_7" class="java.lang.String"/>
+	<field name="questao_8" class="java.lang.String"/>
+	<field name="questao_9" class="java.lang.String"/>
+	<field name="questao_10" class="java.lang.String"/>
+	<field name="questao_11" class="java.lang.String"/>
+	<field name="questao_12" class="java.lang.String"/>
+	<field name="questao_13" class="java.lang.String"/>
+	<field name="questao_15" class="java.lang.String"/>
+	<field name="questao_16" class="java.lang.String"/>
+	<field name="questao_17" class="java.lang.String"/>
+	<field name="questao_18" class="java.lang.String"/>
+	<field name="questao_19" class="java.lang.String"/>
+	<field name="questao_20" class="java.lang.String"/>
+	<field name="questao_21" class="java.lang.String"/>
+	<field name="questao_22" class="java.lang.String"/>
+	<field name="questao_23" class="java.lang.String"/>
+	<field name="questao_24" class="java.lang.String"/>
+	<field name="questao_25" class="java.lang.String"/>
+	<field name="questao_26" class="java.lang.String"/>
+	<field name="questao_31" class="java.lang.String"/>
+	<field name="questao_35" class="java.lang.String"/>
+	<field name="questao_36" class="java.lang.String"/>
+	<field name="questao_37" class="java.lang.String"/>
+	<field name="questao_38" class="java.lang.String"/>
+	<field name="questao_39" class="java.lang.String"/>
+	<field name="questao_40" class="java.lang.String"/>
+	<field name="questao_41" class="java.lang.String"/>
+	<field name="questao_42" class="java.lang.String"/>
+	<field name="questao_43" class="java.lang.String"/>
+	<field name="questao_44" class="java.lang.String"/>
+	<field name="questao_49" class="java.lang.String"/>
+	<field name="questao_50" class="java.lang.String"/>
+	<field name="questao_53" class="java.lang.String"/>
+	<field name="questao_54" class="java.lang.String"/>
+	<field name="questao_55" class="java.lang.String"/>
+	<field name="questao_56" class="java.lang.String"/>
+	<field name="questao_61" class="java.lang.String"/>
+	<field name="questao_62" class="java.lang.String"/>
+	<field name="questao_63" class="java.lang.String"/>
+	<field name="questao_64" class="java.lang.String"/>
+	<field name="questao_65" class="java.lang.String"/>
+	<field name="questao_70" class="java.lang.String"/>
+	<field name="questao_71" class="java.lang.String"/>
+	<field name="questao_72" class="java.lang.String"/>
+	<field name="questao_73" class="java.lang.String"/>
+	<field name="questao_74" class="java.lang.String"/>
+	<field name="questao_75" class="java.lang.String"/>
+	<field name="questao_76" class="java.lang.String"/>
+	<field name="questao_81" class="java.lang.String"/>
+	<field name="questao_82" class="java.lang.String"/>
+	<field name="questao_83" class="java.lang.String"/>
+	<field name="questao_84" class="java.lang.String"/>
+	<field name="questao_109" class="java.lang.String"/>
+	<field name="questao_110" class="java.lang.String"/>
+	<field name="questao_111" class="java.lang.String"/>
+	<field name="questao_112" class="java.lang.String"/>
+	<field name="questao_117" class="java.lang.String"/>
+	<field name="questao_118" class="java.lang.String"/>
+	<field name="questao_119" class="java.lang.String"/>
+	<field name="questao_120" class="java.lang.String"/>
+	<field name="questao_122" class="java.lang.String"/>
+	<field name="questao_123" class="java.lang.String"/>
+	<field name="questao_124" class="java.lang.String"/>
+	<field name="questao_126" class="java.lang.String"/>
+	<field name="questao_127" class="java.lang.String"/>
+	<field name="questao_128" class="java.lang.String"/>
+	<field name="questao_129" class="java.lang.String"/>
+	<field name="questao_130" class="java.lang.String"/>
+	<field name="questao_131" class="java.lang.String"/>
+	<field name="questao_132" class="java.lang.String"/>
+	<field name="questao_137" class="java.lang.String"/>
+	<field name="questao_138" class="java.lang.String"/>
+	<field name="questao_139" class="java.lang.String"/>
+	<field name="questao_140" class="java.lang.String"/>
+	<field name="questao_141" class="java.lang.String"/>
+	<field name="questao_143" class="java.lang.String"/>
+	<field name="questao_148" class="java.lang.String"/>
+	<field name="questao_150" class="java.lang.String"/>
+	<field name="questao_152" class="java.lang.String"/>
+	<field name="questao_153" class="java.lang.String"/>
+	<field name="questao_154" class="java.lang.String"/>
+	<field name="questao_155" class="java.lang.String"/>
+	<field name="questao_156" class="java.lang.String"/>
+	<field name="questao_157" class="java.lang.String"/>
+	<field name="questao_158" class="java.lang.String"/>
+	<field name="questao_159" class="java.lang.String"/>
+	<field name="questao_160" class="java.lang.String"/>
+	<field name="questao_161" class="java.lang.String"/>
+	<field name="questao_162" class="java.lang.String"/>
+	<field name="questao_163" class="java.lang.String"/>
+	<field name="questao_164" class="java.lang.String"/>
+	<field name="questao_165" class="java.lang.String"/>
+	<field name="questao_166" class="java.lang.String"/>
+	<field name="questao_168" class="java.lang.String"/>
+	<field name="questao_169" class="java.lang.String"/>
+	<field name="questao_170" class="java.lang.String"/>
+	<field name="questao_171" class="java.lang.String"/>
+	<field name="questao_172" class="java.lang.String"/>
+	<field name="questao_173" class="java.lang.String"/>
+	<field name="questao_174" class="java.lang.String"/>
+	<field name="questao_181" class="java.lang.String"/>
+	<field name="questao_182" class="java.lang.String"/>
+	<field name="questao_183" class="java.lang.String"/>
+	<field name="questao_190" class="java.lang.String"/>
+	<field name="questao_192" class="java.lang.String"/>
+	<field name="questao_195" class="java.lang.String"/>
+	<field name="questao_197" class="java.lang.String"/>
+	<field name="questao_199" class="java.lang.String"/>
+	<field name="questao_201" class="java.lang.String"/>
+	<field name="questao_203" class="java.lang.String"/>
+	<field name="questao_205" class="java.lang.String"/>
+	<field name="questao_207" class="java.lang.String"/>
+	<field name="questao_209" class="java.lang.String"/>
+	<field name="questao_210" class="java.lang.String"/>
+	<field name="questao_211" class="java.lang.String"/>
+	<field name="questao_212" class="java.lang.String"/>
+	<field name="questao_213" class="java.lang.String"/>
+	<field name="questao_214" class="java.lang.String"/>
+	<field name="questao_215" class="java.lang.String"/>
+	<field name="questao_216" class="java.lang.String"/>
+	<field name="questao_217" class="java.lang.String"/>
+	<field name="questao_218" class="java.lang.String"/>
+	<field name="questao_219" class="java.lang.String"/>
+	<field name="questao_220" class="java.lang.String"/>
+	<field name="questao_221" class="java.lang.String"/>
+	<field name="questao_222" class="java.lang.String"/>
+	<field name="questao_223" class="java.lang.String"/>
+	<field name="questao_224" class="java.lang.String"/>
+	<field name="questao_225" class="java.lang.String"/>
+	<field name="questao_226" class="java.lang.String"/>
+	<field name="questao_227" class="java.lang.String"/>
+	<field name="questao_228" class="java.lang.String"/>
+	<field name="questao_229" class="java.lang.String"/>
+	<field name="questao_230" class="java.lang.String"/>
+	<field name="questao_231" class="java.lang.String"/>
+	<field name="questao_232" class="java.lang.String"/>
+	<field name="questao_233" class="java.lang.String"/>
+	<field name="questao_234" class="java.lang.String"/>
+	<field name="questao_235" class="java.lang.String"/>
+	<field name="questao_236" class="java.lang.String"/>
+	<field name="questao_237" class="java.lang.String"/>
+	<field name="questao_238" class="java.lang.String"/>
+	<field name="questao_239" class="java.lang.String"/>
+	<field name="questao_240" class="java.lang.String"/>
+	<field name="questao_241" class="java.lang.String"/>
+	<field name="questao_242" class="java.lang.String"/>
+	<field name="questao_243" class="java.lang.String"/>
+	<field name="questao_244" class="java.lang.String"/>
+	<field name="questao_245" class="java.lang.String"/>
+	<field name="questao_246" class="java.lang.String"/>
+	<field name="questao_247" class="java.lang.String"/>
+	<field name="questao_248" class="java.lang.String"/>
+	<field name="questao_249" class="java.lang.String"/>
+	<field name="questao_250" class="java.lang.String"/>
+	<field name="questao_251" class="java.lang.String"/>
+	<field name="questao_252" class="java.lang.String"/>
+	<field name="questao_253" class="java.lang.String"/>
+	<field name="questao_254" class="java.lang.String"/>
+	<field name="questao_255" class="java.lang.String"/>
+	<field name="questao_256" class="java.lang.String"/>
+	<field name="questao_257" class="java.lang.String"/>
+	<field name="questao_258" class="java.lang.String"/>
+	<field name="questao_259" class="java.lang.String"/>
+	<field name="questao_260" class="java.lang.String"/>
+	<field name="questao_261" class="java.lang.String"/>
+	<field name="questao_262" class="java.lang.String"/>
+	<field name="questao_263" class="java.lang.String"/>
+	<field name="questao_264" class="java.lang.String"/>
+	<field name="questao_265" class="java.lang.String"/>
+	<field name="questao_266" class="java.lang.String"/>
+	<field name="questao_267" class="java.lang.String"/>
+	<field name="questao_268" class="java.lang.String"/>
+	<field name="questao_269" class="java.lang.String"/>
+	<field name="questao_270" class="java.lang.String"/>
+	<field name="questao_271" class="java.lang.String"/>
+	<field name="questao_272" class="java.lang.String"/>
+	<field name="questao_273" class="java.lang.String"/>
+	<field name="questao_274" class="java.lang.String"/>
+	<field name="questao_280" class="java.lang.String"/>
+	<field name="questao_281" class="java.lang.String"/>
+	<field name="questao_282" class="java.lang.String"/>
+	<field name="questao_283" class="java.lang.String"/>
+	<field name="questao_284" class="java.lang.String"/>
+	<field name="questao_285" class="java.lang.String"/>
+	<field name="questao_286" class="java.lang.String"/>
+	<field name="questao_288" class="java.lang.String"/>
+	<field name="questao_290" class="java.lang.String"/>
+	<field name="questao_291" class="java.lang.String"/>
+	<field name="questao_293" class="java.lang.String"/>
+	<field name="questao_294" class="java.lang.String"/>
+	<field name="questao_295" class="java.lang.String"/>
+	<field name="questao_296" class="java.lang.String"/>
+	<field name="questao_297" class="java.lang.String"/>
+	<field name="questao_298" class="java.lang.String"/>
+	<field name="questao_299" class="java.lang.String"/>
+	<field name="questao_300" class="java.lang.String"/>
+	<field name="questao_302" class="java.lang.String"/>
+    <field name="questao_303" class="java.lang.String"/>
+    <field name="questao_304" class="java.lang.String"/>
+    <field name="questao_305" class="java.lang.String"/>
+    <field name="questao_306" class="java.lang.String"/>
+    <field name="questao_307" class="java.lang.String"/>
+    <field name="questao_308" class="java.lang.String"/>
+    <field name="questao_309" class="java.lang.String"/>
+    <field name="questao_310" class="java.lang.String"/>
+    <field name="questao_311" class="java.lang.String"/>
+    <field name="questao_312" class="java.lang.String"/>
+    <field name="questao_313" class="java.lang.String"/>
+    <field name="questao_314" class="java.lang.String"/>
+    <field name="questao_315" class="java.lang.String"/>
+    <field name="questao_316" class="java.lang.String"/>
+    <field name="questao_317" class="java.lang.String"/>
+    <field name="questao_318" class="java.lang.String"/>
+    <field name="questao_319" class="java.lang.String"/>
+    <field name="questao_320" class="java.lang.String"/>
+    <field name="questao_321" class="java.lang.String"/>
+    <field name="questao_322" class="java.lang.String"/>
+    <field name="questao_323" class="java.lang.String"/>
+    <field name="questao_324" class="java.lang.String"/>
+	<title>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="207" y="0" width="140" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EXAME FÍSICO]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="85" splitType="Stretch">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="13" width="555" height="12"/>
+				<staticText>
+					<reportElement x="252" y="0" width="45" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CABEÇA E PESCOÇO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_197} != null)? ($F{questao_197}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_197}.split("#").length < 3) ? "Não informado" : $F{questao_197}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="style1" x="0" y="25" width="555" height="12"/>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_199}.split("#").length < 3) ? "Não informado" : $F{questao_199}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[AUSCULTA CARDÍACA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_199} != null)? ($F{questao_199}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="37" width="555" height="12"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_201}.split("#").length < 3) ? "Não informado" : $F{questao_201}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[AUSCULTA PULMONAR:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_201} != null)? ($F{questao_201}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="49" width="555" height="12"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_203}.split("#").length < 3) ? "Não informado" : $F{questao_203}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PELE:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_203} != null)? ($F{questao_203}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="61" width="555" height="12"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_205}.split("#").length < 3) ? "Não informado" : $F{questao_205}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MUCOSAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_205} != null)? ($F{questao_205}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+			</frame>
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="73" width="555" height="12"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_207}.split("#").length < 3) ? "Não informado" : $F{questao_207}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ABDOME:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_207} != null)? ($F{questao_207}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="85">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="84"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_209}.split("#").length < 3) ? "Não informado" : $F{questao_209}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[OMBRO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_209} != null)? ($F{questao_209}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BURSITE:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_210}  != null && $F{questao_210}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="48" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_211}  != null && $F{questao_211}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="48" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TENDINITE:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_212}  != null && $F{questao_212}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="60" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="60" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_213}  != null && $F{questao_213}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_214}  != null && $F{questao_214}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CREPTAÇÕES:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_210} != null && $F{questao_210}.split("#").length >= 3) ? $F{questao_210}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_212} != null && $F{questao_212}.split("#").length >= 3) ? $F{questao_212}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_214} != null && $F{questao_214}.split("#").length >= 3) ? $F{questao_214}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="252" y="48" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="48" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_211} != null && $F{questao_211}.split("#").length >= 3) ? $F{questao_211}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="60" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="60" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_213} != null && $F{questao_213}.split("#").length >= 3) ? $F{questao_213}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="72" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="72" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_312} != null && $F{questao_312}.split("#").length >= 3) ? $F{questao_312}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="72" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="72" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_312} != null && $F{questao_312}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="49">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="48"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_215}.split("#").length < 3) ? "Não informado" : $F{questao_215}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[BRAÇO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_215} != null)? ($F{questao_215}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_216}  != null && $F{questao_216}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_217}  != null && $F{questao_217}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_216} != null && $F{questao_216}.split("#").length >= 3) ? $F{questao_216}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_217} != null && $F{questao_217}.split("#").length >= 3) ? $F{questao_217}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="252" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_313} != null && $F{questao_313}.split("#").length >= 3) ? $F{questao_313}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_313} != null && $F{questao_313}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="73">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="72"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_218}.split("#").length < 3) ? "Não informado" : $F{questao_218}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[COTOVELO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_218} != null)? ($F{questao_218}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_219}  != null && $F{questao_219}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TENDINITE:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_220}  != null && $F{questao_220}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_221}  != null && $F{questao_221}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="48" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_222}  != null && $F{questao_222}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="48" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CREPTAÇÕES:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_219} != null && $F{questao_219}.split("#").length >= 3) ? $F{questao_219}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="252" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_221} != null && $F{questao_221}.split("#").length >= 3) ? $F{questao_221}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="48" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="252" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_220} != null && $F{questao_220}.split("#").length >= 3) ? $F{questao_220}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="48" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_222} != null && $F{questao_222}.split("#").length >= 3) ? $F{questao_222}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="60" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="60" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_314} != null && $F{questao_314}.split("#").length >= 3) ? $F{questao_314}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="60" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_314} != null && $F{questao_314}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="60" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="49">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="48"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_223}.split("#").length < 3) ? "Não informado" : $F{questao_223}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ANTEBRAÇO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_223} != null)? ($F{questao_223}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_224}  != null && $F{questao_224}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_225}  != null && $F{questao_225}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_224} != null && $F{questao_224}.split("#").length >= 3) ? $F{questao_224}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_225} != null && $F{questao_225}.split("#").length >= 3) ? $F{questao_225}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_315} != null && $F{questao_315}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_315} != null && $F{questao_315}.split("#").length >= 3) ? $F{questao_315}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="108">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="108">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_226}.split("#").length < 3) ? "Não informado" : $F{questao_226}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PUNHO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_226} != null)? ($F{questao_226}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_227}  != null && $F{questao_227}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TENDINITE:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="60" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_228}  != null && $F{questao_228}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="60" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_229}  != null && $F{questao_229}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="72" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_230}  != null && $F{questao_230}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="72" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CREPTAÇÕES:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_231}  != null && $F{questao_231}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="96" y="84" width="156" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_232}  != null && $F{questao_232}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SINAL DE TINEL:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="84" width="74" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SINAL DE PHALEN:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="103" y="48" width="149" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_233}  != null && $F{questao_233}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="48" width="81" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[SINAL DE FILKENSTEIN:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_227} != null && $F{questao_227}.split("#").length >= 3) ? $F{questao_227}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_229} != null && $F{questao_229}.split("#").length >= 3) ? $F{questao_229}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="48" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_233} != null && $F{questao_233}.split("#").length >= 3) ? $F{questao_233}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_231} != null && $F{questao_231}.split("#").length >= 3) ? $F{questao_231}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="48" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="252" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="60" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_228} != null && $F{questao_228}.split("#").length >= 3) ? $F{questao_228}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="84" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="252" y="72" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="84" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_232} != null && $F{questao_232}.split("#").length >= 3) ? $F{questao_232}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="60" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="72" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_230} != null && $F{questao_230}.split("#").length >= 3) ? $F{questao_230}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="96" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_316} != null && $F{questao_316}.split("#").length >= 3) ? $F{questao_316}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="96" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="96" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="96" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_316} != null && $F{questao_316}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="73">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="72" isPrintWhenDetailOverflows="true">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="296" y="0" width="218" height="12">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_234}.split("#").length < 3) ? "Não informado" : $F{questao_234}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MÃO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_234} != null)? ($F{questao_234}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_235}  != null && $F{questao_235}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TENDINITE:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_236}  != null && $F{questao_236}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_237}  != null && $F{questao_237}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="49" width="174" height="10"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_238}  != null && $F{questao_238}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="48" width="56" height="12">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CREPTAÇÕES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="252" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_235} != null && $F{questao_235}.split("#").length >= 3) ? $F{questao_235}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_237} != null && $F{questao_237}.split("#").length >= 3) ? $F{questao_237}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="252" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_236} != null && $F{questao_236}.split("#").length >= 3) ? $F{questao_236}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="48" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_238} != null && $F{questao_238}.split("#").length >= 3) ? $F{questao_238}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="48" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="60" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_317} != null && $F{questao_317}.split("#").length >= 3) ? $F{questao_317}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="60" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_317} != null && $F{questao_317}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="60" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="60" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="61">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="60"/>
+				<box>
+					<pen lineColor="#000000"/>
+				</box>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_239}.split("#").length < 3) ? "Não informado" : $F{questao_239}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[QUADRIL:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_239} != null)? ($F{questao_239}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_240}  != null && $F{questao_240}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_241}  != null && $F{questao_241}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_242}  != null && $F{questao_242}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CREPTAÇÕES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="253" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_240} != null && $F{questao_240}.split("#").length >= 3) ? $F{questao_240}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_242} != null && $F{questao_242}.split("#").length >= 3) ? $F{questao_242}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_241} != null && $F{questao_241}.split("#").length >= 3) ? $F{questao_241}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="48" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_318} != null && $F{questao_318}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="48" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_318} != null && $F{questao_318}.split("#").length >= 3) ? $F{questao_318}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="48" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="48" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="50">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="49"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_243}.split("#").length < 3) ? "Não informado" : $F{questao_243}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[COXA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_243} != null)? ($F{questao_243}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_244}  != null && $F{questao_244}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_245}  != null && $F{questao_245}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_244} != null && $F{questao_244}.split("#").length >= 3) ? $F{questao_244}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="253" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_245} != null && $F{questao_245}.split("#").length >= 3) ? $F{questao_245}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_319} != null && $F{questao_319}.split("#").length >= 3) ? $F{questao_319}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_319} != null && $F{questao_319}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="74">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="72"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_246}.split("#").length < 3) ? "Não informado" : $F{questao_246}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[JOELHO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_246} != null)? ($F{questao_246}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_247}  != null && $F{questao_247}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TENDINITE:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_248}  != null && $F{questao_248}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_249}  != null && $F{questao_249}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="48" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_250}  != null && $F{questao_250}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="48" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CREPTAÇÕES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="253" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_247} != null && $F{questao_247}.split("#").length >= 3) ? $F{questao_247}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_249} != null && $F{questao_249}.split("#").length >= 3) ? $F{questao_249}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="253" y="48" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_248} != null && $F{questao_248}.split("#").length >= 3) ? $F{questao_248}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="48" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_250} != null && $F{questao_250}.split("#").length >= 3) ? $F{questao_250}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="60" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="60" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_320} != null && $F{questao_320}.split("#").length >= 3) ? $F{questao_320}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="60" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_320} != null && $F{questao_320}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="60" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="50">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="48"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_251}.split("#").length < 3) ? "Não informado" : $F{questao_251}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PERNA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_251} != null)? ($F{questao_251}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_252}  != null && $F{questao_252}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_253}  != null && $F{questao_253}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_252} != null && $F{questao_252}.split("#").length >= 3) ? $F{questao_252}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_253} != null && $F{questao_253}.split("#").length >= 3) ? $F{questao_253}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="252" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_321} != null && $F{questao_321}.split("#").length >= 3) ? $F{questao_321}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_321} != null && $F{questao_321}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="72">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="72"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_254}.split("#").length < 3) ? "Não informado" : $F{questao_254}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TORNOZELO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_254} != null)? ($F{questao_254}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_255}  != null && $F{questao_255}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TENDINITE:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_256}  != null && $F{questao_256}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_257}  != null && $F{questao_257}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="48" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_258}  != null && $F{questao_258}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="48" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CREPTAÇÕES:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_255} != null && $F{questao_255}.split("#").length >= 3) ? $F{questao_255}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="253" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_257} != null && $F{questao_257}.split("#").length >= 3) ? $F{questao_257}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_256} != null && $F{questao_256}.split("#").length >= 3) ? $F{questao_256}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="48" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="48" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_258} != null && $F{questao_258}.split("#").length >= 3) ? $F{questao_258}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="60" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_322} != null && $F{questao_322}.split("#").length >= 3) ? $F{questao_322}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="60" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="60" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_322} != null && $F{questao_322}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="60" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="49">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="48"/>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="296" y="0" width="218" height="12" isPrintInFirstWholeBand="true"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_259}.split("#").length < 3) ? "Não informado" : $F{questao_259}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[PÉ:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_259} != null)? ($F{questao_259}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_260}  != null && $F{questao_260}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[FRATURAS:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_261}  != null && $F{questao_261}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_260} != null && $F{questao_260}.split("#").length >= 3) ? $F{questao_260}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="253" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_261} != null && $F{questao_261}.split("#").length >= 3) ? $F{questao_261}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_323} != null && $F{questao_323}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_323} != null && $F{questao_323}.split("#").length >= 3) ? $F{questao_323}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+			</frame>
+		</band>
+		<band height="133">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="132"/>
+				<textField isStretchWithOverflow="true">
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_262}.split("#").length < 3) ? "Não informado" : $F{questao_262}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="73" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[COLUNA VERTEBRAL:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_262} != null)? ($F{questao_262}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="12" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_263}  != null && $F{questao_263}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="12" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CERVICALGIA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="72" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_264}  != null && $F{questao_264}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="24" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ESCOLIOSE:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="72" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[LOMBALGIA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="24" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_265}  != null && $F{questao_265}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="78" y="84" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_266}  != null && $F{questao_266}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="84" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CIFOSE:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="36" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_267}  != null && $F{questao_267}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="160" y="96" width="92" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_268}  != null && $F{questao_268}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="36" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[LORDOSE:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="96" width="138" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CONTRATURA SUPRA-ESCAPULAR DIREITA:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="167" y="48" width="85" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_269}  != null && $F{questao_269}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="48" width="145" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CONTRATURA SUPRA-ESCAPULAR ESQUERDA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="108" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[CICATRIZES:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="108" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_270}  != null && $F{questao_270}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="22" y="60" width="81" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[MANOBRA DE LASEG:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="103" y="60" width="149" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_271}  != null && $F{questao_271}.split("#")[0].toString().equals("1"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="36" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="48" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_269} != null && $F{questao_269}.split("#").length >= 3) ? $F{questao_269}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="24" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="253" y="48" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="36" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_267} != null && $F{questao_267}.split("#").length >= 3) ? $F{questao_267}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="12" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="24" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_265} != null && $F{questao_265}.split("#").length >= 3) ? $F{questao_265}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="12" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_263} != null && $F{questao_263}.split("#").length >= 3) ? $F{questao_263}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="84" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="96" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_268} != null && $F{questao_268}.split("#").length >= 3) ? $F{questao_268}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="72" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="253" y="96" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="84" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_266} != null && $F{questao_266}.split("#").length >= 3) ? $F{questao_266}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="60" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="296" y="72" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_264} != null && $F{questao_264}.split("#").length >= 3) ? $F{questao_264}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="60" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_271} != null && $F{questao_271}.split("#").length >= 3) ? $F{questao_271}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="108" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_270} != null && $F{questao_270}.split("#").length >= 3) ? $F{questao_270}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="253" y="108" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="252" y="120" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Alteração:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="22" y="120" width="56" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Outros:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="120" width="174" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_324} != null && $F{questao_324}.split("#")[0].toString().equals("subquestion_exibe_outra_alteracao"))? "Sim" : "Não"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="296" y="120" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_324} != null && $F{questao_324}.split("#").length >= 3) ? $F{questao_324}.split("#")[2].toString().replaceAll("\\{\"descricao\":\"", "").replaceAll("\"}","") : "-"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="12">
+			<frame>
+				<reportElement style="style1" positionType="Float" x="0" y="0" width="555" height="12"/>
+				<textField>
+					<reportElement x="296" y="0" width="218" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_272}.split("#").length < 3) ? "Não informado" : $F{questao_272}.split("#")[2].trim().replaceAll("\\[","").replaceAll("]","").replaceAll("\"", "")]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="252" y="0" width="44" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ALTERAÇÃO:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="5" y="0" width="117" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<text><![CDATA[ORIENTAÇÃO NO TEMPO E ESPAÇO:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="122" y="0" width="130" height="12"/>
+					<textElement verticalAlignment="Middle">
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[($F{questao_272} != null)? ($F{questao_272}.split("#")[0].toLowerCase().equals("normal"))? "Sem Alteração Aparente" : "Alterado" : "Sem Alteração Aparente"]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+		<band height="1"/>
+	</detail>
+</jasperReport>

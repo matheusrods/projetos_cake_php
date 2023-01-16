@@ -1,0 +1,8 @@
+[ACO]
+create;buonny;DetalhesGruposExames
+create;buonny/DetalhesGruposExames;busca_por_cliente
+create;buonny/DetalhesGruposExames;index
+create;buonny/DetalhesGruposExames;listagem
+create;buonny/DetalhesGruposExames;incluir
+create;buonny/DetalhesGruposExames;trocar_status
+create;buonny/DetalhesGruposExames;lista_servicos_grupo

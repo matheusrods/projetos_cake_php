@@ -1,0 +1,4 @@
+[ACO]
+create;buonny/Exames;relatorio_exames
+create;buonny/Exames;relatorio_exames_listagem
+create;buonny/Exames;export_relatorio_exames

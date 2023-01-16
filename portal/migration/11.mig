@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;LogsAplicacoes
+create;buonny/LogsAplicacoes;index
+create;buonny;Sistemas
+create;buonny/Sistemas;lista_log
+create;buonny;LogRecuperacaoSenha
+create;buonny/LogRecuperacaoSenha;index
+create;buonny;Referencias
+create;buonny/Referencias;consultar_sistema_origem

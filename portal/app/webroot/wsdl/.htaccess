@@ -1,0 +1,4 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)\.(wsdl|xsd)$ $1.$2.php [QSA,L]
+</IfModule>

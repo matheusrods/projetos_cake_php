@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_hpp_problemas_respiratorios" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_ficha_clinica"/>
+	<property name="ireport.jasperserver.url" value="http:// jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="questao_50" class="java.lang.String"/>
+	<parameter name="questao_53" class="java.lang.String"/>
+	<parameter name="questao_54" class="java.lang.String"/>
+	<parameter name="questao_55" class="java.lang.String"/>
+	<parameter name="questao_56" class="java.lang.String"/>
+	<parameter name="CODIGO_FICHA_CLINICA" class="java.lang.String">
+		<defaultValueExpression><![CDATA[12091]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+ISNULL((SELECT RHHealth.publico.Ufn_decode_utf8_string(posologia) FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (50)), '') AS posologia_50,
+ISNULL((SELECT RHHealth.publico.Ufn_decode_utf8_string(posologia) FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (53)), '') AS posologia_53,
+ISNULL((SELECT RHHealth.publico.Ufn_decode_utf8_string(posologia) FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (54)), '') AS posologia_54,
+ISNULL((SELECT RHHealth.publico.Ufn_decode_utf8_string(posologia) FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (55)), '') AS posologia_55,
+ISNULL((SELECT RHHealth.publico.Ufn_decode_utf8_string(posologia) FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (56)), '') AS posologia_56,
+
+ISNULL((SELECT dose_diaria FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (50)), '') AS dose_diaria_50,
+ISNULL((SELECT dose_diaria FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (53)), '') AS dose_diaria_53,
+ISNULL((SELECT dose_diaria FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (54)), '') AS dose_diaria_54,
+ISNULL((SELECT dose_diaria FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (55)), '') AS dose_diaria_55,
+ISNULL((SELECT dose_diaria FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (56)), '') AS dose_diaria_56,
+
+ISNULL((SELECT aprazamento FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (50)), '') AS aprazamento_50,
+ISNULL((SELECT aprazamento FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (53)), '') AS aprazamento_53,
+ISNULL((SELECT aprazamento FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (54)), '') AS aprazamento_54,
+ISNULL((SELECT aprazamento FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (55)), '') AS aprazamento_55,
+ISNULL((SELECT aprazamento FROM RHHealth.dbo.fichas_clinicas_farmacos fcf
+WHERE fcf.codigo_ficha_clinica = $P{CODIGO_FICHA_CLINICA} and fcf.codigo_ficha_clinica_questao IN (56)), '') AS aprazamento_56]]>
+	</queryString>
+	<field name="posologia_50" class="java.lang.String"/>
+	<field name="posologia_53" class="java.lang.String"/>
+	<field name="posologia_54" class="java.lang.String"/>
+	<field name="posologia_55" class="java.lang.String"/>
+	<field name="posologia_56" class="java.lang.String"/>
+	<field name="dose_diaria_50" class="java.lang.String"/>
+	<field name="dose_diaria_53" class="java.lang.String"/>
+	<field name="dose_diaria_54" class="java.lang.String"/>
+	<field name="dose_diaria_55" class="java.lang.String"/>
+	<field name="dose_diaria_56" class="java.lang.String"/>
+	<field name="aprazamento_50" class="java.lang.String"/>
+	<field name="aprazamento_53" class="java.lang.String"/>
+	<field name="aprazamento_54" class="java.lang.String"/>
+	<field name="aprazamento_55" class="java.lang.String"/>
+	<field name="aprazamento_56" class="java.lang.String"/>
+	<detail>
+		<band height="150" splitType="Stretch">
+			<textField>
+				<reportElement x="139" y="6" width="95" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($P{questao_50} != null && $P{questao_50}.split("#")[0] != null)? "Sim" : "Não"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="22" y="6" width="117" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BRONQUITE (J42.0):]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="68" y="18" width="145" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_50} != null && $P{questao_50}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{posologia_50}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="265" y="18" width="115" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_50} != null && $P{questao_50}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dose_diaria_50}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="439" y="18" width="90" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_50} != null && $P{questao_50}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{aprazamento_50}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="22" y="18" width="45" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_50} != null && $P{questao_50}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Posologia:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="18" width="45" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_50} != null && $P{questao_50}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dose Diária:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="386" y="18" width="52" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_50} != null && $P{questao_50}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Aprazamento:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="45" width="45" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_53} != null && $P{questao_53}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dose Diária:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="265" y="45" width="115" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_53} != null && $P{questao_53}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dose_diaria_53}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="22" y="33" width="117" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ENFISEMA (J43.9):]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="22" y="45" width="45" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_53} != null && $P{questao_53}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Posologia:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="439" y="45" width="90" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_53} != null && $P{questao_53}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{aprazamento_53}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="386" y="45" width="52" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_53} != null && $P{questao_53}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Aprazamento:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="68" y="45" width="145" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_53} != null && $P{questao_53}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{posologia_53}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="139" y="33" width="95" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($P{questao_53} != null && $P{questao_53}.split("#")[0] != null)? "Sim" : "Não"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="265" y="73" width="115" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_54} != null && $P{questao_54}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dose_diaria_54}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="139" y="61" width="95" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($P{questao_54} != null && $P{questao_54}.split("#")[0] != null)? "Sim" : "Não"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="22" y="73" width="45" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_54} != null && $P{questao_54}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Posologia:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="68" y="73" width="145" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_54} != null && $P{questao_54}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{posologia_54}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="386" y="73" width="52" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_54} != null && $P{questao_54}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Aprazamento:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="439" y="73" width="90" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_54} != null && $P{questao_54}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{aprazamento_54}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="219" y="73" width="45" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_54} != null && $P{questao_54}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dose Diária:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="22" y="61" width="117" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ASMA (J45.9):]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="68" y="102" width="145" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_55} != null && $P{questao_55}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{posologia_55}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="265" y="102" width="115" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_55} != null && $P{questao_55}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dose_diaria_55}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="22" y="90" width="117" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HIPERTENSÃO PULMONAR (I27.0):]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="22" y="102" width="45" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_55} != null && $P{questao_55}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Posologia:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="386" y="102" width="52" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_55} != null && $P{questao_55}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Aprazamento:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="219" y="102" width="45" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_55} != null && $P{questao_55}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dose Diária:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="439" y="102" width="90" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_55} != null && $P{questao_55}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{aprazamento_55}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="139" y="90" width="95" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($P{questao_55} != null && $P{questao_55}.split("#")[0] != null)? "Sim" : "Não"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="219" y="131" width="45" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_56} != null && $P{questao_56}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dose Diária:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="386" y="131" width="52" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_56} != null && $P{questao_56}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Aprazamento:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="139" y="119" width="95" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($P{questao_56} != null && $P{questao_56}.split("#")[0] != null)? "Sim" : "Não"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="22" y="119" width="117" height="12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PNEUMOCONIOSE (J64.0):]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="68" y="131" width="145" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_56} != null && $P{questao_56}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{posologia_56}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="22" y="131" width="45" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_56} != null && $P{questao_56}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Posologia:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="265" y="131" width="115" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_56} != null && $P{questao_56}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dose_diaria_56}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="439" y="131" width="90" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$P{questao_56} != null && $P{questao_56}.split("#")[0] != null]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{aprazamento_56}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

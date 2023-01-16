@@ -1,0 +1,9 @@
+[ACO]
+create;buonny;ClientesProdutosContratos
+create;buonny/ClientesProdutosContratos;atualizacao_contratos
+create;buonny/ClientesProdutosContratos;atualizacao_contratos_listagem
+create;buonny/ClientesProdutosContratos;index
+create;buonny/ClientesProdutosContratos;listagem_contratos
+create;buonny/ClientesProdutosContratos;gerenciar
+create;buonny/ClientesProdutosContratos;listagem
+create;buonny/ClientesProdutosContratos;atualizar

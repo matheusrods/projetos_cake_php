@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;MotivosRecusa
+create;buonny/MotivosRecusa;index
+create;buonny/MotivosRecusa;incluir
+create;buonny/MotivosRecusa;editar
+create;buonny/MotivosRecusa;listagem
+

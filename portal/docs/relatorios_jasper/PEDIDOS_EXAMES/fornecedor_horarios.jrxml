@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="fornecedor_horarios" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="4.831530000000009"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/pedidos_exame"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<parameter name="CODIGO_FORNECEDOR" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select concat(left(cast(de_hora as varchar),
+	len(cast(de_hora as varchar))-2), ':',
+	substring(cast(de_hora as varchar),
+	len(cast(de_hora as varchar)) - 1, 2)) as de_hora,
+	concat(left(cast(ate_hora as varchar),
+	len(cast(ate_hora as varchar))-2), ':',
+	substring(cast(ate_hora as varchar),
+	len(cast(ate_hora as varchar)) - 1, 2)) as ate_hora,
+	dias_semana
+from RHHealth.dbo.fornecedores_horario
+where codigo_fornecedor = $P{CODIGO_FORNECEDOR}]]>
+	</queryString>
+	<field name="de_hora" class="java.lang.String"/>
+	<field name="ate_hora" class="java.lang.String"/>
+	<field name="dias_semana" class="java.lang.String"/>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="26" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{de_hora}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="0" width="20" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[Até:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="30" y="0" width="38" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ate_hora}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="64" y="0" width="129" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dias_semana}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;TiposAcoes
+create;buonny/TiposAcoes;index
+create;buonny/TiposAcoes;listagem
+create;buonny/TiposAcoes;incluir
+create;buonny/TiposAcoes;store
+create;buonny/TiposAcoes;editar

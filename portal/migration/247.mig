@@ -1,0 +1,7 @@
+[ACO]
+create;buonny;ClientesFornecedores
+create;buonny/ClientesFornecedores;listagem
+create;buonny/ClientesFornecedores;buscar_cliente_fornecedor
+create;buonny/ClientesFornecedores;buscar_listagem_cliente_fornecedor
+create;buonny/ClientesFornecedores;incluir
+create;buonny/ClientesFornecedores;atualiza_status

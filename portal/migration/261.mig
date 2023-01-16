@@ -1,0 +1,8 @@
+[ACO]
+create;buonny/Importar;importar_funcionario
+create;buonny/Importar;gravaArquivo
+create;buonny/Importar;abre_arquivo
+create;buonny/Importar;importar_ppra
+create;buonny/Importar;gravaArquivoPpra
+create;buonny/Importar;importar_pcmso
+create;buonny/Importar;gravaArquivoPcmso

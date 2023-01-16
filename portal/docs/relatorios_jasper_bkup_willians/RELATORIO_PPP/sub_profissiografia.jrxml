@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_profissiografia" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" >
+	<property name="ireport.zoom" value="1.7715610000000013"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="CODIGO_FUNCIONARIO" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT
+CONVERT(VARCHAR(10), CF.admissao, 103) as admissao,
+(SELECT TOP 1 CONVERT(VARCHAR(10), admissao, 103) as admissao from RHHealth.dbo.cliente_funcionario_log WHERE codigo > CF.codigo ORDER BY admissao ASC) as data_saida,
+ISNULL(RHHealth.publico.Ufn_decode_utf8_string(CA.descricao_ppp), '') AS descricao_ppp
+FROM RHHealth.dbo.cliente_funcionario CF
+	inner join RHHealth.dbo.funcionario_setores_cargos fsc on fsc.codigo_cliente_funcionario = CF.codigo
+    INNER JOIN RHHealth.dbo.cargos CA  ON(CA.codigo = fsc.codigo_cargo)
+WHERE CF.codigo_funcionario = $P{CODIGO_FUNCIONARIO}
+GROUP BY CF.codigo, CF.admissao, CA.descricao_ppp, cf.data_inclusao, CF.matricula
+ORDER BY CF.data_inclusao ASC]]>
+	</queryString>
+	<field name="admissao" class="java.lang.String"/>
+	<field name="data_saida" class="java.lang.String"/>
+	<field name="descricao_ppp" class="java.lang.String"/>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement  x="5" y="2" width="99" height="11"/>
+				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{admissao} + (($F{data_saida} != null  )?  ' a ' + $F{data_saida} : '')]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement  x="104" y="2" width="451" height="11"/>
+				<textElement>
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descricao_ppp}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

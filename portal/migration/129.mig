@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;DecretosDeficiencia
+create;buonny/DecretosDeficiencia;index
+create;buonny/DecretosDeficiencia;incluir
+create;buonny/DecretosDeficiencia;editar
+create;buonny/DecretosDeficiencia;listagem

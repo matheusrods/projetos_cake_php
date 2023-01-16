@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.4.0.final using JasperReports Library version 4.5.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sub_medicamentos_uso_regular" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/ficha_assitencial"/>
+	<property name="ireport.jasperserver.url" value="http://gol:8090/jasperserver/services/repository/"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/ficha_assitencial_files/sub_historico_doenca_atual.jrxml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Homologação)"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="style1">
+		<box>
+			<pen lineWidth="0.5"/>
+			<topPen lineWidth="0.5"/>
+			<leftPen lineWidth="0.5"/>
+			<bottomPen lineWidth="0.5"/>
+			<rightPen lineWidth="0.5"/>
+		</box>
+	</style>
+	<parameter name="CODIGO_FICHA_ASSISTENCIAL" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT 
+codigo,
+codigo_ficha_assistencial_questao,
+RHHealth.publico.ufn_decode_utf8_string(resposta) AS resposta,
+campo_livre,
+data_inclusao,
+codigo_ficha_assistencial,
+parentesco,
+observacao
+FROM RHHealth.dbo.fichas_assistenciais_respostas fcr
+	WHERE fcr.codigo_ficha_assistencial = $P{CODIGO_FICHA_ASSISTENCIAL} 
+and fcr.codigo_ficha_assistencial_questao = 175]]>
+	</queryString>
+	<field name="codigo" class="java.lang.Integer"/>
+	<field name="codigo_ficha_assistencial_questao" class="java.lang.Integer"/>
+	<field name="resposta" class="java.lang.String"/>
+	<field name="campo_livre" class="java.lang.String"/>
+	<field name="data_inclusao" class="java.sql.Timestamp"/>
+	<field name="codigo_ficha_assistencial" class="java.lang.Integer"/>
+	<field name="parentesco" class="java.lang.String"/>
+	<field name="observacao" class="java.lang.String"/>
+	<title>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="126" y="0" width="298" height="20" isPrintInFirstWholeBand="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HISTÓRICO DA DOENÇA ATUAL]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="140" splitType="Stretch">
+			<frame>
+				<reportElement style="style1" x="0" y="0" width="555" height="140" isPrintWhenDetailOverflows="true"/>
+				<textField>
+					<reportElement x="6" y="6" width="543" height="130" isPrintWhenDetailOverflows="true"/>
+					<textElement>
+						<font size="6"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{resposta}]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+</jasperReport>

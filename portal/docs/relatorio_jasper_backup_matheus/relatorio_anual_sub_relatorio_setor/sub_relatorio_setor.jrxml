@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="subrelatorio_detalhes.jrxml" language="groovy" pageWidth="555" pageHeight="802" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.jasperserver.reportUnit" value="/reports/RHHealth/relatorio_anual"/>
+	<property name="ireport.jasperserver.url" value="http://jasperdev.ithealth.corp:8080/jasperserver/services/repository"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/RHHealth/relatorio_anual_files/subrelatorio_setor.jrxml"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SQL Server (Produção)"/>
+	<parameter name="CODIGO_CLIENTE" class="java.lang.String"/>
+	<parameter name="CODIGO_EXAME" class="java.lang.String"/>
+	<parameter name="DATA_INICIO" class="java.lang.String"/>
+	<parameter name="DATA_FIM" class="java.lang.String"/>
+	<parameter name="DATA_ANO_QUE_VEM" class="java.lang.String"/>
+	<parameter name="TIPO_AGRUPAMENTO" class="java.lang.String"/>
+	<parameter name="TIPO_EXAME" class="java.lang.String"/>
+	<parameter name="CODIGO_UNIDADE" class="java.lang.String"/>
+	<parameter name="CODIGO_SETOR" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[DECLARE @cod_exames VARCHAR(max);
+DECLARE @SQL VARCHAR(max);
+
+DECLARE @tipo_exame VARCHAR(max);
+DECLARE @codigo_exame VARCHAR(max);
+DECLARE @codigo_setor VARCHAR(max);
+DECLARE @where_setor VARCHAR(max);
+DECLARE @codigo_unidade VARCHAR(max);
+DECLARE @where_unidade VARCHAR(max);
+
+set @tipo_exame = $P!{TIPO_EXAME};
+set @codigo_exame = $P!{CODIGO_EXAME};
+set @codigo_setor = $P!{CODIGO_SETOR};
+set @where_setor = '';
+set @codigo_unidade = $P!{CODIGO_UNIDADE};
+set @where_unidade = '';
+
+if(@tipo_exame = '1')
+	begin
+		set @cod_exames = ' Exame.codigo = 52'
+	end
+else if(@tipo_exame = '2')
+	BEGIN
+		if(@codigo_exame <> 'null')
+			begin
+				set @cod_exames = ' Exame.codigo = ' + @codigo_exame
+			end
+		else
+			begin
+				set @cod_exames = ' Exame.codigo <> 52'
+			end
+	end
+else
+	BEGIN
+		if(@codigo_exame <> '')
+			begin
+				set @cod_exames = ' Exame.codigo = ' + @codigo_exame
+			end
+		else
+			begin
+				set @cod_exames = ' 1=1 '
+			end
+	end
+
+if(@codigo_setor <> '')
+	begin
+		set @where_setor = ' AND [FuncionarioSetorCargo].[codigo_setor] = ' + @codigo_setor
+	end
+
+if(@codigo_unidade <> '')
+	begin
+		set @where_unidade = ' AND [FuncionarioSetorCargo].[codigo_cliente_alocacao] = ' + @codigo_unidade
+	end
+
+select @SQL = N'
+SELECT
+  codigo_setor as codigo_setor,
+  RHHealth.publico.Ufn_decode_utf8_string(setor) AS setor,
+  COUNT(data_ultima_baixa) AS quantidade,
+  COUNT((CASE WHEN resultado = ''1'' THEN 1 END)) AS normal,
+  COUNT((CASE WHEN resultado = ''0'' THEN 1 END)) AS anormal,
+  (COUNT((CASE WHEN resultado = ''0'' THEN 1  END)) / COUNT(data_ultima_baixa) * 100) AS percentual,
+  SUM(ISNULL(total_exames_funcionarios,0)) AS total_preditivo
+FROM (SELECT
+  Cliente.codigo AS codigo_unidade,
+  Cliente.nome_fantasia AS nome_unidade,
+  Setor.codigo AS codigo_setor,
+  Setor.descricao AS setor,
+  Exame.descricao as exame,
+  CASE
+    WHEN PedidoExame.exame_admissional = ''1'' THEN ''Admissional''
+    WHEN PedidoExame.exame_periodico = ''1'' THEN ''Periodico''
+    WHEN PedidoExame.exame_demissional = ''1'' THEN ''Demissional''
+    WHEN PedidoExame.exame_retorno = ''1'' THEN ''Retorno''
+    WHEN PedidoExame.exame_mudanca = ''1'' THEN ''Mudanca''
+    WHEN PedidoExame.exame_monitoracao = ''1'' THEN ''Monitoracao''
+  END AS tipo_pedido,
+
+  ItemPedidoExameBaixa.data_realizacao_exame AS data_ultima_baixa,
+  ItemPedidoExameBaixa.resultado AS resultado,
+
+  (DATEDIFF(MONTH, ItemPedidoExameBaixa.data_realizacao_exame,''$P!{DATA_ANO_QUE_VEM}'' )/(SELECT TOP 1
+    CASE
+      WHEN (DATEDIFF(YEAR, Funcionario.data_nascimento, GETDATE())) <= AplicacaoExame.periodo_idade THEN AplicacaoExame.qtd_periodo_idade
+      WHEN (DATEDIFF(YEAR, Funcionario.data_nascimento, GETDATE())) > AplicacaoExame.periodo_idade AND
+        (DATEDIFF(YEAR, Funcionario.data_nascimento, GETDATE())) <= AplicacaoExame.periodo_idade_2 THEN AplicacaoExame.qtd_periodo_idade_2
+      WHEN (DATEDIFF(YEAR, Funcionario.data_nascimento, GETDATE())) > AplicacaoExame.periodo_idade_2 AND
+        (DATEDIFF(YEAR, Funcionario.data_nascimento, GETDATE())) <= AplicacaoExame.periodo_idade_3 THEN AplicacaoExame.qtd_periodo_idade_3
+      WHEN (DATEDIFF(YEAR, Funcionario.data_nascimento, GETDATE())) > AplicacaoExame.periodo_idade_3 AND
+        (DATEDIFF(YEAR, Funcionario.data_nascimento, GETDATE())) <= AplicacaoExame.periodo_idade_4 THEN AplicacaoExame.qtd_periodo_idade_4
+      ELSE
+	CASE
+	WHEN AplicacaoExame.periodo_meses = 0 THEN 1
+	WHEN AplicacaoExame.periodo_meses IS NULL THEN 1
+	WHEN AplicacaoExame.periodo_meses = '''' THEN 1
+	ELSE
+		AplicacaoExame.periodo_meses END
+    END AS periodicidade_padrao
+  FROM [RHHealth].[dbo].aplicacao_exames AplicacaoExame
+  WHERE AplicacaoExame.codigo_cliente_alocacao = FuncionarioSetorCargo.codigo_cliente_alocacao
+  AND AplicacaoExame.codigo_setor = Setor.codigo
+  AND AplicacaoExame.codigo_cargo = FuncionarioSetorCargo.codigo_cargo
+  AND AplicacaoExame.codigo_exame = Exame.codigo
+  AND AplicacaoExame.ativo = 1)
+  )  AS total_exames_funcionarios
+FROM RHHealth.dbo.exames AS [Exame]
+INNER JOIN [RHHealth].[dbo].[itens_pedidos_exames] AS [ItemPedidoExame]
+  ON ([ItemPedidoExame].[codigo_exame] = [Exame].[codigo])
+INNER JOIN [RHHealth].[dbo].[pedidos_exames] AS [PedidoExame]
+  ON ([PedidoExame].[codigo] = [ItemPedidoExame].[codigo_pedidos_exames])
+INNER JOIN [RHHealth].[dbo].[itens_pedidos_exames_baixa] AS [ItemPedidoExameBaixa]
+  ON ([ItemPedidoExameBaixa].[codigo_itens_pedidos_exames] = [ItemPedidoExame].[codigo])
+INNER JOIN [RHHealth].[dbo].[funcionario_setores_cargos] AS [FuncionarioSetorCargo]
+  ON ([FuncionarioSetorCargo].[codigo] = [PedidoExame].[codigo_func_setor_cargo])
+INNER JOIN [RHHealth].[dbo].[setores] AS [Setor]
+  ON ([Setor].[codigo] = [FuncionarioSetorCargo].[codigo_setor])
+INNER JOIN [RHHealth].[dbo].[cliente] AS [Cliente]
+  ON ([Cliente].[codigo] = [FuncionarioSetorCargo].[codigo_cliente_alocacao])
+INNER JOIN [RHHealth].[dbo].[grupos_economicos_clientes] AS [GrupoEconomicoCliente]
+  ON ([GrupoEconomicoCliente].[codigo_cliente] = [Cliente].[codigo])
+INNER JOIN [RHHealth].[dbo].[grupos_economicos] AS [GrupoEconomico]
+  ON ([GrupoEconomico].[codigo] = [GrupoEconomicoCliente].[codigo_grupo_economico])
+INNER JOIN [RHHealth].[dbo].[cliente_funcionario] AS [ClienteFuncionario]
+  ON ([ClienteFuncionario].[codigo_cliente_matricula] = [GrupoEconomico].[codigo_cliente]
+  AND [ClienteFuncionario].[codigo] = [FuncionarioSetorCargo].[codigo_cliente_funcionario])
+INNER JOIN [RHHealth].[dbo].[funcionarios] AS [Funcionario]
+  ON ([Funcionario].[codigo] = [ClienteFuncionario].[codigo_funcionario])
+WHERE [GrupoEconomico].[codigo_cliente] = '+$P{CODIGO_CLIENTE}+'
+'+@where_unidade+'
+'+@where_setor+'
+AND CAST([ItemPedidoExameBaixa].[data_realizacao_exame] AS date) >= ''$P!{DATA_INICIO}''
+AND CAST([ItemPedidoExameBaixa].[data_realizacao_exame] AS date) <= ''$P!{DATA_FIM}''
+AND ('+@cod_exames+N')
+) AS [sintetico]
+WHERE 1 = 1
+GROUP BY setor, codigo_setor
+ORDER BY setor'
+
+EXECUTE (@SQL);]]>
+	</queryString>
+	<field name="codigo_setor" class="java.lang.String"/>
+	<field name="setor" class="java.lang.String"/>
+	<field name="quantidade" class="java.lang.Integer"/>
+	<field name="normal" class="java.lang.Integer"/>
+	<field name="anormal" class="java.lang.Integer"/>
+	<field name="percentual" class="java.lang.Integer"/>
+	<field name="total_preditivo" class="java.lang.Integer"/>
+	<pageHeader>
+		<band height="71">
+			<staticText>
+				<reportElement isPrintRepeatedValues="false" x="0" y="-10" width="140" height="80" isPrintInFirstWholeBand="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Setor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement isPrintRepeatedValues="false" x="140" y="0" width="140" height="70" isPrintInFirstWholeBand="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Natureza do Exame]]></text>
+			</staticText>
+			<staticText>
+				<reportElement isPrintRepeatedValues="false" x="280" y="0" width="45" height="70" isPrintInFirstWholeBand="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nº de Exames Realizados]]></text>
+			</staticText>
+			<staticText>
+				<reportElement isPrintRepeatedValues="false" x="325" y="0" width="45" height="70" isPrintInFirstWholeBand="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nº de Resultados Normais]]></text>
+			</staticText>
+			<staticText>
+				<reportElement isPrintRepeatedValues="false" x="370" y="0" width="45" height="70" isPrintInFirstWholeBand="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nº de Resultados Anormais]]></text>
+			</staticText>
+			<staticText>
+				<reportElement isPrintRepeatedValues="false" x="415" y="0" width="95" height="35" isPrintInFirstWholeBand="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nº de Resultados Anormais X 100]]></text>
+			</staticText>
+			<staticText>
+				<reportElement isPrintRepeatedValues="false" x="415" y="35" width="95" height="35" isPrintInFirstWholeBand="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nº Anual de Exames]]></text>
+			</staticText>
+			<staticText>
+				<reportElement isPrintRepeatedValues="false" x="510" y="0" width="45" height="70" isPrintInFirstWholeBand="true"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nº de Exames para o Ano Seguinte]]></text>
+			</staticText>
+			<line>
+				<reportElement x="415" y="34" width="95" height="1"/>
+			</line>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="0" y="5" width="140" height="15"/>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{setor}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="140" y="5" width="415" height="15"/>
+				<subreportParameter name="CODIGO_UNIDADE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_UNIDADE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_SETOR">
+					<subreportParameterExpression><![CDATA[$F{codigo_setor}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATA_FIM">
+					<subreportParameterExpression><![CDATA[$P{DATA_FIM}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="TIPO_AGRUPAMENTO">
+					<subreportParameterExpression><![CDATA[$P{TIPO_AGRUPAMENTO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_EXAME">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_EXAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="TIPO_EXAME">
+					<subreportParameterExpression><![CDATA[$P{TIPO_EXAME}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATA_ANO_QUE_VEM">
+					<subreportParameterExpression><![CDATA[$P{DATA_ANO_QUE_VEM}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="CODIGO_CLIENTE">
+					<subreportParameterExpression><![CDATA[$P{CODIGO_CLIENTE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DATA_INICIO">
+					<subreportParameterExpression><![CDATA[$P{DATA_INICIO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[($P{TIPO_AGRUPAMENTO}.equals("tipo_pedido") ? "repo:subrelatorio_detalhes.jrxml" : "repo:subrelatorio_detalhes_exames.jrxml")]]></subreportExpression>
+			</subreport>
+			<line>
+				<reportElement x="0" y="2" width="555" height="1"/>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,6 @@
+[ACO]
+create;buonny;Medicamentos
+create;buonny/Medicamentos;index
+create;buonny/Medicamentos;incluir
+create;buonny/Medicamentos;editar
+create;buonny/Medicamentos;listagem
